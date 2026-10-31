@@ -9,6 +9,17 @@
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
 @source "../../_build/dev/phoenix-colocated/guiltty_website/*/";
 
+/* PhoenixPaper (Material Design 3 components), as a bare specifier resolved
+   through NODE_PATH (see the :tailwind config in config/config.exs). Its CSS
+   carries its own `@source` for its lib/. Every token it defines is `pp-`
+   prefixed, so it sits next to daisyUI below without either touching the
+   other. */
+@import "phoenix_paper/priv/static/phoenix_paper.css";
+
+/* guiltty's MD3 scheme: `mix phoenix_paper.gen.theme --seed "#7c3aed"
+   --scheme vibrant` (the violet of guiltty's icon). Regenerate, don't edit. */
+@import "./phoenix_paper_theme.css";
+
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
@@ -102,4 +113,32 @@
 /* Make LiveView wrapper divs transparent for layout */
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
+/* Fonts: Roboto Flex (PhoenixPaper's --font-pp-brand/--font-pp-plain) is
+   self-hosted from priv/static/fonts/roboto-flex (SIL OFL); code and the
+   terminals use each platform's own monospace. */
+@font-face {
+  font-family: "Roboto Flex";
+  font-style: normal;
+  font-weight: 100 1000;
+  font-display: swap;
+  src: url("/fonts/roboto-flex/roboto-flex-latin-opsz-normal.woff2") format("woff2-variations");
+}
+
+/* guiltty's own default font, with its ligatures (|> -> !=). */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+@theme {
+  --font-sans: var(--font-pp-plain);
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", "DejaVu Sans Mono", monospace;
+}
+
 /* This file is for your main application CSS */
+@import "./site.css";

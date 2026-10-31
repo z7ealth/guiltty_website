@@ -1,43 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="GuilttyWebsite" suffix=" · Phoenix Framework" phx-no-format>{assigns[:page_title]}</.live_title>
+    <meta
+      name="description"
+      content="guiltty: a Linux GPU terminal emulator written in Elixir. Self-healing tabs, Vulkan rendering, live config."
+    />
+    <meta name="theme-color" content="#1d1f21" />
+    <.live_title default="guiltty · a GPU terminal emulator in Elixir" phx-no-format>{assigns[:page_title]}</.live_title>
+    <link rel="icon" type="image/svg+xml" href={~p"/images/favicon.svg"} />
+    <link rel="icon" href={~p"/favicon.ico"} sizes="any" />
+    <link
+      rel="preload"
+      href={~p"/fonts/roboto-flex/roboto-flex-latin-opsz-normal.woff2"}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={~p"/fonts/jetbrains-mono/jetbrains-mono-latin-wght-normal.woff2"}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
+    <%!-- No data-theme by default: the page follows the OS, which is
+          PhoenixPaper.ThemeToggle's "System" (it removes the attribute;
+          daisyUI's `prefersdark` theme follows the same media query). A
+          Light/Dark choice is saved under "phx:theme"; restore it before
+          first paint so there's no flash. --%>
     <script>
       (() => {
-        const systemTheme = () => matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-        const setTheme = (theme) => {
-          if (theme === "system") {
-            localStorage.removeItem("phx:theme");
-            document.documentElement.setAttribute("data-theme", systemTheme());
-            document.documentElement.setAttribute("data-theme-source", "system");
-          } else {
-            localStorage.setItem("phx:theme", theme);
-            document.documentElement.setAttribute("data-theme", theme);
-            document.documentElement.setAttribute("data-theme-source", "user");
-          }
-        };
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          setTheme(localStorage.getItem("phx:theme") || "system");
-        }
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
-
-        matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-          if (document.documentElement.getAttribute("data-theme-source") === "system") {
-            document.documentElement.setAttribute("data-theme", systemTheme());
-          }
-        });
+        const theme = localStorage.getItem("phx:theme");
+        if (theme) document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
   </head>
-  <body>
+  <body class="bg-pp-surface text-pp-on-surface antialiased">
     {@inner_content}
   </body>
 </html>

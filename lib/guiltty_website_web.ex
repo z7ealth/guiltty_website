@@ -81,6 +81,10 @@ defmodule GuilttyWebsiteWeb do
       import Phoenix.HTML
       # Core UI components
       import GuilttyWebsiteWeb.CoreComponents
+      # PhoenixPaper's Material Design 3 components (pp_button, pp_card, ...)
+      use PhoenixPaper.Components
+      # The site's own pieces: logo, terminal window, code blocks
+      import GuilttyWebsiteWeb.SiteComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

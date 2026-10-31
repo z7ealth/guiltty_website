@@ -35,41 +35,95 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
+    <.pp_top_app_bar position="sticky" class="site-bar z-40 px-3 sm:px-6 lg:px-8">
+      <:leading>
+        <a
+          href="#top"
+          class="flex items-center rounded-pp-full pp-focus-ring"
+          aria-label="guiltty home"
+        >
+          <.wordmark />
         </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <li>
-            <a href="https://phoenix.hexdocs.pm/overview.html" class="btn btn-primary">
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </header>
+      </:leading>
+      <span class="sr-only">guiltty</span>
+      <:actions>
+        <nav class="hidden md:flex items-center gap-2 mr-3" aria-label="Sections">
+          <.pp_button
+            :for={{label, href} <- nav_links()}
+            href={href}
+            variant="text"
+            color="secondary"
+            class="px-5!"
+          >
+            {label}
+          </.pp_button>
+        </nav>
+        <.pp_icon_button href={github_url()} label="guiltty on GitHub" target="_blank" rel="noopener">
+          <.github_mark />
+        </.pp_icon_button>
+        <.pp_theme_toggle class="hidden sm:inline-flex" />
+      </:actions>
+    </.pp_top_app_bar>
 
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
-        {render_slot(@inner_block)}
-      </div>
+    <main id="top">
+      {render_slot(@inner_block)}
     </main>
+
+    <footer class="border-t border-pp-outline-variant bg-pp-surface-container-low">
+      <div class="mx-auto max-w-6xl px-6 py-12 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div class="space-y-3">
+          <.wordmark />
+          <p class="pp-body-medium text-pp-on-surface-variant max-w-sm">
+            A GPU terminal emulator in Elixir and C. Linux only, built from source, no guilt.
+          </p>
+          <.pp_theme_toggle class="sm:hidden" />
+        </div>
+        <div>
+          <p class="pp-title-small mb-3">Project</p>
+          <ul class="space-y-2 pp-body-medium text-pp-on-surface-variant">
+            <li><a class="footer-link" href={github_url()}>Source on GitHub</a></li>
+            <li>
+              <a class="footer-link" href={github_url() <> "/blob/master/CHANGELOG.md"}>Changelog</a>
+            </li>
+            <li><a class="footer-link" href={github_url() <> "/blob/master/DEVLOG.md"}>Devlog</a></li>
+            <li><a class="footer-link" href={github_url() <> "/tree/master/book"}>The book</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="pp-title-small mb-3">This site</p>
+          <p class="pp-body-medium text-pp-on-surface-variant">
+            Built with Phoenix and <a
+              class="footer-link text-pp-primary"
+              href="https://phoenixpaper.dev"
+            >PhoenixPaper</a>.
+          </p>
+        </div>
+      </div>
+      <div class="border-t border-pp-outline-variant">
+        <p
+          id="copyright"
+          class="mx-auto max-w-6xl px-6 py-5 text-center pp-body-small text-pp-on-surface-variant"
+        >
+          © z7ealth 2026
+        </p>
+      </div>
+    </footer>
 
     <.flash_group flash={@flash} />
     """
+  end
+
+  @doc "The GitHub repository."
+  def github_url, do: "https://github.com/z7ealth/guiltty"
+
+  defp nav_links do
+    [
+      {"Features", "#features"},
+      {"Crash it", "#supervision"},
+      {"Themes", "#themes"},
+      {"Install", "#install"},
+      {"Book", "#book"}
+    ]
   end
 
   @doc """
@@ -117,43 +171,6 @@ defmodule GuilttyWebsiteWeb.Layouts do
         Attempting to reconnect
         <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
-    </div>
-    """
-  end
-
-  @doc """
-  Provides dark vs light theme toggle based on themes defined in app.css.
-
-  See <head> in root.html.heex which applies the theme before page load.
-  """
-  def theme_toggle(assigns) do
-    ~H"""
-    <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
-      <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 [[data-theme-source=system]_&]:!left-0 transition-[left]" />
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="system"
-      >
-        <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-      >
-        <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-      >
-        <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
     </div>
     """
   end
