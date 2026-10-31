@@ -6,10 +6,13 @@
     <meta name="csrf-token" content={get_csrf_token()} />
     <meta
       name="description"
-      content="guiltty: a Linux GPU-accelerated terminal emulator written in Elixir. Self-healing tabs, Vulkan rendering, live config."
+      content="guiltty: a Linux GPU-accelerated terminal emulator written in Elixir and C. Self-healing tabs, Vulkan rendering, live config."
     />
     <meta name="theme-color" content="#1d1f21" />
-    <.live_title default="guiltty · a GPU-accelerated terminal emulator in Elixir" phx-no-format>{assigns[:page_title]}</.live_title>
+    <.live_title
+      default="guiltty · a GPU-accelerated terminal emulator in Elixir and C"
+      phx-no-format
+    >{assigns[:page_title]}</.live_title>
     <link rel="icon" type="image/svg+xml" href={~p"/images/favicon.svg"} />
     <link rel="icon" href={~p"/favicon.ico"} sizes="any" />
     <link

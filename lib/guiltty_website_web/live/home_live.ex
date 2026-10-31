@@ -178,7 +178,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
 
     {:ok,
      socket
-     |> assign(:page_title, "guiltty · a GPU-accelerated terminal emulator in Elixir")
+     |> assign(:page_title, "guiltty · a GPU-accelerated terminal emulator in Elixir and C")
      |> assign(:github, @github)
      |> assign(:tree, @tree)
      |> assign(:status, Map.new(ids, &{&1, :up}))
@@ -322,7 +322,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             </h1>
 
             <p class="pp-body-large sm:text-xl! sm:leading-8! mx-auto mt-6 max-w-2xl text-pp-on-surface-variant text-pretty">
-              guiltty is a Linux-only, GPU-accelerated terminal emulator written in Elixir. Every tab is a supervised
+              guiltty is a Linux-only, GPU-accelerated terminal emulator written in Elixir and C. Every tab is a supervised
               process tree and the renderer is its own OS process, so when a part crashes, its
               supervisor restarts it and your tabs stay.
             </p>
