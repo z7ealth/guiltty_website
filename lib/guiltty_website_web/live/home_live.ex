@@ -899,7 +899,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             </h2>
             <p class="pp-body-large mt-4 text-pp-on-primary-container/80 max-w-xl mx-auto">
               Linux. Tried on openSUSE Tumbleweed, X11 and an AMD GPU; Wayland, Intel and NVIDIA
-              should work but haven't been tried. Source on GitHub.
+              should work but haven't been tried. Open source, MIT licensed.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-3">
               <.pp_button href="#install" size="md">Install guiltty</.pp_button>

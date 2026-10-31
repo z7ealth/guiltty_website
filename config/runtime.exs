@@ -52,6 +52,7 @@ if config_env() == :prod do
       """
 
   host = System.get_env("PHX_HOST") || "example.com"
+  apex_host = String.replace_prefix(host, "www.", "")
 
   config :guiltty_website, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
@@ -64,7 +65,14 @@ if config_env() == :prod do
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
       ip: {0, 0, 0, 0, 0, 0, 0, 0}
     ],
-    secret_key_base: secret_key_base
+    secret_key_base: secret_key_base,
+    # Accept the LiveView socket from both the apex host and its www
+    # subdomain. Phoenix's default (check_origin: true) only allows the one
+    # PHX_HOST names, so the other would load but never connect. Extra
+    # origins can be added via CHECK_ORIGIN (comma-separated).
+    check_origin:
+      ["https://#{apex_host}", "https://www.#{apex_host}"] ++
+        String.split(System.get_env("CHECK_ORIGIN") || "", ",", trim: true)
 
   # ## SSL Support
   #

@@ -41,6 +41,14 @@ docker run -p 4000:4000 \
   guiltty-website
 ```
 
-`PHX_HOST` must be the domain people use, or LiveView refuses the
-websocket. `PORT` changes the port (4000 by default). Put it behind a
-proxy that terminates TLS: the app builds its URLs as `https://PHX_HOST`.
+`PHX_HOST` is the site's domain. LiveView accepts its websocket from that
+domain and its `www.` subdomain (`config/runtime.exs`); add other origins
+with `CHECK_ORIGIN` (comma-separated `https://…` URLs). `PORT` changes the
+port (4000 by default).
+
+Put it behind a proxy that terminates TLS (Azure, Fly, Caddy, nginx…): the
+app builds its URLs as `https://PHX_HOST`, redirects plain HTTP to HTTPS,
+and trusts the proxy's `X-Forwarded-Proto` header to tell them apart.
+
+`bin/guiltty_website remote` opens an IEx shell on the running node, from
+inside the container (`docker exec -it <container> bin/guiltty_website remote`).
