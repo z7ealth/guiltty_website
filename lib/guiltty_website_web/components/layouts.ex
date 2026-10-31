@@ -74,7 +74,7 @@ defmodule GuilttyWebsiteWeb.Layouts do
         <div class="space-y-3">
           <.wordmark />
           <p class="pp-body-medium text-pp-on-surface-variant max-w-sm">
-            A GPU terminal emulator in Elixir and C. Linux only, built from source, no guilt.
+            A GPU-accelerated terminal emulator in Elixir and C. Linux only, built from source, no guilt.
           </p>
           <.pp_theme_toggle class="sm:hidden" />
         </div>
