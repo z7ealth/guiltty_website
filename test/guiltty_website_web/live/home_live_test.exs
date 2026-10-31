@@ -13,6 +13,7 @@ defmodule GuilttyWebsiteWeb.HomeLiveTest do
 
     assert has_element?(view, "#deps-opensuse")
     assert has_element?(view, "#theme-dracula")
+    assert has_element?(view, "#versions-table")
   end
 
   test "killing a process takes down what its supervisor restarts", %{conn: conn} do

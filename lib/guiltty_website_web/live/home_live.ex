@@ -86,13 +86,22 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "The one guiltty is developed on."},
     {"fedora", "Fedora 45+",
      "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel vulkan-loader-devel vulkan-headers glslc elixir",
-     "Fedora 43 and 44 have everything but Elixir 1.20: leave out elixir and get it from asdf."},
+     "If Fedora's Elixir is older than 1.18 (elixir --version), leave out elixir and get Elixir and Erlang from asdf."},
     {"ubuntu", "Ubuntu 26.04+",
-     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libvulkan-dev glslc",
-     "26.04's Elixir is 1.18: get Elixir 1.20 and Erlang from asdf. From 26.10 on, add elixir erlang-dev instead."},
+     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libvulkan-dev glslc elixir erlang-dev",
+     "Older Ubuntus have neither SDL3 nor GCC 15."},
     {"arch", "Arch Linux",
      "sudo pacman -S --needed base-devel sdl3 freetype2 fontconfig harfbuzz \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
      "Everything is in the official repositories."}
+  ]
+
+  # Elixir and Erlang/OTP versions guiltty has been built and tested on, per
+  # its README: {elixir, otp, what was done}.
+  @tested_versions [
+    {"1.20.4", "29", "Developed on"},
+    {"1.19.7", "28", "Builds, tests pass"},
+    {"1.19.7", "26", "Builds, tests pass"},
+    {"1.18.4", "26", "Builds, tests pass"}
   ]
 
   @keys [
@@ -189,6 +198,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      |> assign(:hero_features, @hero_features)
      |> assign(:themes, @themes)
      |> assign(:distros, @distros)
+     |> assign(:tested_versions, @tested_versions)
      |> assign(:keys, @keys)
      |> assign(:milestones, @milestones)
      |> assign(:chapters, @chapters)
@@ -762,8 +772,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               title="Built on your machine. Runs without Elixir."
               class="mx-auto text-center"
             >
-              guiltty builds from source, so you need Elixir 1.20 and GCC 15+ once. The installed
-              copy carries its own Erlang runtime and needs no root.
+              guiltty builds from source, so you need Elixir 1.18+ on Erlang/OTP 26+, and GCC 15+,
+              once. The installed copy carries its own Erlang runtime and needs no root.
             </.section_header>
 
             <div class="mt-12 space-y-10">
@@ -793,6 +803,40 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                     </p>
                   </.pp_tab_panel>
                 </.pp_card>
+                <p class="pp-body-small mt-3 text-pp-on-surface-variant">
+                  Only openSUSE has been tried; the other package names come from each distribution's
+                  package listings.
+                </p>
+
+                <div id="versions" class="mt-8">
+                  <p class="pp-title-small">Tested Elixir and Erlang/OTP</p>
+                  <p class="pp-body-small mt-1 text-pp-on-surface-variant">
+                    The minimum is Elixir 1.18 on Erlang/OTP 26. Older versions aren't supported.
+                  </p>
+                  <.pp_table_container class="mt-3">
+                    <.pp_table id="versions-table">
+                      <.pp_table_head>
+                        <.pp_table_row>
+                          <.pp_table_cell variant="head">Elixir</.pp_table_cell>
+                          <.pp_table_cell variant="head">Erlang/OTP</.pp_table_cell>
+                          <.pp_table_cell variant="head">Status</.pp_table_cell>
+                        </.pp_table_row>
+                      </.pp_table_head>
+                      <.pp_table_body>
+                        <.pp_table_row :for={{elixir, otp, status} <- @tested_versions}>
+                          <.pp_table_cell class="font-mono">{elixir}</.pp_table_cell>
+                          <.pp_table_cell class="font-mono">{otp}</.pp_table_cell>
+                          <.pp_table_cell>
+                            <span class="inline-flex items-center gap-1.5">
+                              <span class="hero-check-circle-micro size-4 text-pp-primary"></span>
+                              {status}
+                            </span>
+                          </.pp_table_cell>
+                        </.pp_table_row>
+                      </.pp_table_body>
+                    </.pp_table>
+                  </.pp_table_container>
+                </div>
               </div>
 
               <div>
