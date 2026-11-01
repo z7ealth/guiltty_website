@@ -18,15 +18,31 @@ with warnings as errors, formats and runs the tests.
 ## Where things are
 
 - `lib/guiltty_website_web/live/home_live.ex`: the page. Its content (the
-  supervision tree, milestones, book chapters, keys, distros) is module
-  attributes at the top; update them from guiltty's `CHANGELOG.md`,
-  `README.md` and `book/` when it releases.
+  supervision tree, milestones, book chapters, keys, distros, tested
+  Elixir/OTP versions) is module attributes at the top.
 - `lib/guiltty_website_web/components/site_components.ex`: the terminal
   window, code blocks, the logo.
 - `assets/css/site.css`: the site's own styles, including guiltty's theme
   palettes. `assets/css/phoenix_paper_theme.css` is generated:
   `mix phoenix_paper.gen.theme --seed "#7c3aed" --scheme vibrant`.
 - `priv/static/fonts`: Roboto Flex and JetBrains Mono, both OFL.
+
+## When guiltty releases
+
+Everything on the page comes from guiltty's `CHANGELOG.md`, `README.md`,
+`book/` and `lib/guiltty/config.ex`. In `home_live.ex`:
+
+- the hero badge (version and headline) and, for a big feature, a chip;
+- `@milestones`, and the "milestones implemented" count;
+- `@chapters` for a new book chapter (titles are each file's `#+TITLE`),
+  the chapter count, and the book section's last chapter;
+- `@keys` from `@default_keys` in `lib/guiltty/config.ex`;
+- `@distros` and `@tested_versions` from the README's install section;
+- `@tree` and `@crashes` if book chapter 12's supervision tree changed;
+- feature cards whose wording the CHANGELOG or README contradicts.
+
+Keep the claims to what guiltty's own docs say: no "never", no numbers
+without what they were measured against.
 
 ## Deploy
 

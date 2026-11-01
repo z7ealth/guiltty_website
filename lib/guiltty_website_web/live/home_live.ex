@@ -69,6 +69,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-magnifying-glass", "Scrollback search"},
     {"hero-language", "Unicode & emoji"},
     {"hero-code-bracket", "Ligatures"},
+    {"hero-bell", "Activity marks"},
     {"hero-swatch", "Built-in themes"}
   ]
 
@@ -107,10 +108,14 @@ defmodule GuilttyWebsiteWeb.HomeLive do
   @keys [
     {"Ctrl+Shift+N", "New window"},
     {"Ctrl+Shift+T", "New tab"},
-    {"Ctrl+Shift+W", "Close tab"},
+    {"Ctrl+Shift+W", "Close tab (asks if busy)"},
     {"Ctrl+PgUp", "Previous tab"},
     {"Ctrl+PgDn", "Next tab"},
+    {"Ctrl+Shift+PgUp", "Move tab left"},
+    {"Ctrl+Shift+PgDn", "Move tab right"},
+    {"Ctrl+Shift+R", "Rename the tab"},
     {"Shift+PgUp", "Scroll back"},
+    {"Ctrl+Shift+K", "Clear the scrollback"},
     {"Ctrl+Shift+F", "Search the scrollback"},
     {"Ctrl+Shift+C", "Copy"},
     {"Ctrl+Shift+V", "Paste"},
@@ -151,7 +156,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.14", "Performance", "Oct 31",
      "Floods of short lines show up 3x faster, startup is 100 ms sooner, and make bench measures it all."},
     {"0.15.3", "Client and server", "Oct 31",
-     "guiltty is a small client that asks the running guiltty for a window, like emacsclient: 0.1 s."}
+     "guiltty is a small client that asks the running guiltty for a window, like emacsclient: 0.1 s."},
+    {"0.16", "Tab comforts", "Nov 1",
+     "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, and tabs can be renamed, reordered and cleared."}
   ]
 
   @chapters [
@@ -178,7 +185,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"20-security", "Security: making the C hard to break"},
     {"21-multi-window", "Multi window: every window its own desk"},
     {"22-performance", "Performance: measure, then fix what the numbers say"},
-    {"23-client-server", "Client and server: the guiltty command"}
+    {"23-client-server", "Client and server: the guiltty command"},
+    {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"}
   ]
 
   @impl true
@@ -320,9 +328,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.15.3
+                v0.16.0
               </span>
-              <span>Client and server: a new window in 0.1 s</span>
+              <span>Tab comforts: rename, reorder, activity marks</span>
               <span class="hero-arrow-right-micro size-4"></span>
             </a>
 
@@ -362,7 +370,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 title="you@linux:~/src"
                 tabs={[
                   {"you@linux:~", false},
-                  {"you@linux:~/guiltty", false},
+                  {"● you@linux:~/guiltty", false},
                   {"you@linux:~/src", true}
                 ]}
               >
@@ -393,10 +401,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             <div
               :for={
                 {value, label} <- [
-                  {"15", "milestones implemented"},
+                  {"16", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
-                  {"24", "book chapters on how it works"}
+                  {"25", "book chapters on how it works"}
                 ]
               }
               class="py-8 text-center"
@@ -476,8 +484,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <h3 class="pp-headline-small mt-5">Vulkan 1.3, or OpenGL. Same pixels.</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant max-w-lg">
                   guiltty draws with Vulkan by default. No driver? It falls back to OpenGL by itself and
-                  says so in the tab bar. A test replays recorded frames through both and checks they
-                  match, pixel for pixel.
+                  says so in the tab bar, and <code class="inline-code">GUILTTY_RENDERER=gl</code>
+                  picks one
+                  for a run. A test replays recorded frames through both and checks they match, pixel
+                  for pixel.
                 </p>
                 <div class="pixel-compare mt-6" aria-hidden="true">
                   <div class="pixel-pane"><span class="pp-label-medium">guiltty_vk</span></div>
@@ -887,8 +897,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
         <%!-- ───────────────────────── Timeline ───────────────────────── --%>
         <section id="changelog" class="mx-auto max-w-6xl px-6 py-24 sm:py-32">
           <.section_header eyebrow="The build" title="Implemented in milestones.">
-            Each version is one milestone of the build plan, from the first byte through a PTY to a
-            client and server. The devlog tells how each one went.
+            Each version is one milestone of the build plan, from the first byte through a PTY to
+            tab comforts. The devlog tells how each one went.
           </.section_header>
 
           <ol class="milestones mt-14">
@@ -920,8 +930,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               eyebrow="The book"
               title="Learn how a terminal works, from the kernel up."
             >
-              guiltty comes with a book: twenty-four chapters with diagrams, one for every part, from
-              pseudoterminals to the client and server.
+              guiltty comes with a book: twenty-five chapters with diagrams, one for every part, from
+              pseudoterminals to tab comforts.
             </.section_header>
             <ol class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <li :for={{slug, title} <- @chapters}>
