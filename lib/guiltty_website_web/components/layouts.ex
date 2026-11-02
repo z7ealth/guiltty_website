@@ -62,8 +62,34 @@ defmodule GuilttyWebsiteWeb.Layouts do
           <.github_mark />
         </.pp_icon_button>
         <.pp_theme_toggle class="hidden sm:inline-flex" />
+        <.pp_icon_button
+          id="mobile-nav-button"
+          label="Menu"
+          class="md:hidden"
+          aria-controls="mobile-nav"
+          aria-expanded="false"
+          phx-click={toggle_mobile_nav()}
+        >
+          <span class="hero-bars-3 size-6"></span>
+        </.pp_icon_button>
       </:actions>
     </.pp_top_app_bar>
+
+    <%!-- Phones and small tablets: the section links in a panel under the bar --%>
+    <nav id="mobile-nav" class="mobile-nav md:hidden" aria-label="Sections" style="display: none">
+      <ul>
+        <li :for={{label, href} <- nav_links()}>
+          <a href={href} class="mobile-nav-link" phx-click={hide_mobile_nav()}>
+            {label}
+            <span class="hero-chevron-right-micro size-4 opacity-50"></span>
+          </a>
+        </li>
+      </ul>
+      <div class="mobile-nav-theme">
+        <span class="pp-body-medium text-pp-on-surface-variant">Theme</span>
+        <.pp_theme_toggle />
+      </div>
+    </nav>
 
     <main id="top">
       {render_slot(@inner_block)}
@@ -116,6 +142,27 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   @doc "The GitHub repository."
   def github_url, do: "https://github.com/z7ealth/guiltty"
+
+  defp toggle_mobile_nav do
+    JS.toggle(
+      to: "#mobile-nav",
+      in:
+        {"transition ease-out duration-200", "opacity-0 -translate-y-2",
+         "opacity-100 translate-y-0"},
+      out:
+        {"transition ease-in duration-150", "opacity-100 translate-y-0",
+         "opacity-0 -translate-y-2"}
+    )
+    |> JS.toggle_attribute({"aria-expanded", "true", "false"}, to: "#mobile-nav-button")
+  end
+
+  defp hide_mobile_nav do
+    JS.hide(
+      to: "#mobile-nav",
+      transition: {"transition ease-in duration-150", "opacity-100", "opacity-0"}
+    )
+    |> JS.set_attribute({"aria-expanded", "false"}, to: "#mobile-nav-button")
+  end
 
   defp nav_links do
     [

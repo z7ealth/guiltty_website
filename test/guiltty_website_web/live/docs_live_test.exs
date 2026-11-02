@@ -33,5 +33,7 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/")
 
     assert has_element?(view, ~s(header a[href="/docs"]))
+    assert has_element?(view, ~s(#mobile-nav a[href="/docs"]))
+    assert has_element?(view, "#mobile-nav-button")
   end
 end

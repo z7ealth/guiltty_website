@@ -581,7 +581,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
 
         <%!-- ───────────────────────── Supervision demo ───────────────────────── --%>
         <section id="supervision" class="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-          <div class="grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:items-start">
+          <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.15fr] lg:items-start [&>*]:min-w-0">
             <div class="lg:sticky lg:top-28">
               <.section_header eyebrow="Self-healing" title="Go on. Kill something.">
                 A simulation of guiltty's real supervision tree. Click a process to kill it and watch what its
@@ -590,8 +590,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <ul class="mt-8 space-y-3 pp-body-medium text-pp-on-surface-variant">
                 <li class="flex gap-3">
                   <span class="hero-check-circle size-5 shrink-0 text-pp-primary"></span>
-                  Each tab is its own <code class="inline-code">rest_for_one</code>
-                  tree: Pty, Screen, Parser.
+                  <span>
+                    Each tab is its own <code class="inline-code">rest_for_one</code>
+                    tree: Pty, Screen, Parser.
+                  </span>
                 </li>
                 <li class="flex gap-3">
                   <span class="hero-check-circle size-5 shrink-0 text-pp-primary"></span>
@@ -670,7 +672,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
         <%!-- ───────────────────────── Themes ───────────────────────── --%>
         <section id="themes" class="themes-section border-y border-pp-outline-variant">
           <div class="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-            <div class="grid gap-12 lg:grid-cols-[1fr_1.25fr] lg:items-center">
+            <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.25fr] lg:items-center [&>*]:min-w-0">
               <div>
                 <.section_header eyebrow="Themes" title="Built-in themes. Or bring your own.">
                   Pick one by name, or start from one and change single colors. Every terminal on this
@@ -764,6 +766,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                       id="distro"
                       value={slug}
                       default_selected={i == 0}
+                      class="shrink-0"
                     >
                       {name}
                     </.pp_tab>
@@ -905,7 +908,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               guiltty comes with a book: twenty-six chapters with diagrams, one for every part, from
               pseudoterminals to tab styles.
             </.section_header>
-            <ol class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <ol
+              id="chapters"
+              class="chapters is-collapsed mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            >
               <li :for={{slug, title} <- @chapters}>
                 <a href={book_url(@github, slug)} class="chapter pp-state-layer pp-focus-ring">
                   <span class="chapter-num">{String.slice(slug, 0, 2)}</span>
@@ -913,6 +919,14 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 </a>
               </li>
             </ol>
+            <.pp_button
+              id="chapters-more"
+              variant="outlined"
+              class="chapters-more mt-4 w-full sm:hidden"
+              phx-click={JS.remove_class("is-collapsed", to: "#chapters") |> JS.hide()}
+            >
+              Show all {length(@chapters)} chapters
+            </.pp_button>
           </div>
         </section>
 

@@ -299,13 +299,37 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
         <div class="mt-12 grid gap-12 lg:grid-cols-[14rem_1fr]">
           <nav id="docs-toc" class="docs-toc" aria-label="Documentation" phx-hook=".DocsToc">
+            <button
+              type="button"
+              id="docs-toc-toggle"
+              class="docs-toc-toggle"
+              aria-expanded="false"
+              aria-controls="docs-toc"
+              phx-click={
+                JS.toggle_class("is-open", to: "#docs-toc")
+                |> JS.toggle_attribute({"aria-expanded", "true", "false"})
+              }
+            >
+              <span class="hero-list-bullet size-5"></span>
+              On this page <span class="hero-chevron-down-micro size-4 docs-toc-chevron"></span>
+            </button>
             <div :for={{group, sections} <- @toc} class="docs-toc-group">
               <p class="pp-label-medium uppercase tracking-widest text-pp-on-surface-variant">
                 {group}
               </p>
               <ul class="mt-2 space-y-0.5">
                 <li :for={{id, title} <- sections}>
-                  <a href={"##{id}"} class="docs-toc-link" data-section={id}>{title}</a>
+                  <a
+                    href={"##{id}"}
+                    class="docs-toc-link"
+                    data-section={id}
+                    phx-click={
+                      JS.remove_class("is-open", to: "#docs-toc")
+                      |> JS.set_attribute({"aria-expanded", "false"}, to: "#docs-toc-toggle")
+                    }
+                  >
+                    {title}
+                  </a>
                 </li>
               </ul>
             </div>
@@ -399,6 +423,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     id="docs-distro"
                     value={slug}
                     default_selected={i == 0}
+                    class="shrink-0"
                   >
                     {name}
                   </.pp_tab>
@@ -579,7 +604,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 These are the defaults, as they ship. Every one can be rebound in the config's <code>keys</code>, and
                 <.keys keys="Ctrl+Shift+/" /> shows them as you bound them.
               </p>
-              <.doc_table id="keys-table" head={["Action", "Keys", "What it does"]}>
+              <.doc_table id="keys-table" head={["Action", "Keys", "What it does"]} stacked>
                 <tr :for={{action, keys, what} <- @bindings}>
                   <td><code>{action}</code></td>
                   <td>
@@ -635,7 +660,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             </.doc_section>
 
             <.doc_section id="settings" title="Settings">
-              <.doc_table id="settings-table" head={["Setting", "Default", "Accepts"]}>
+              <.doc_table id="settings-table" head={["Setting", "Default", "Accepts"]} stacked>
                 <%= for {name, default, accepts, notes} <- @settings do %>
                   <tr>
                     <td><code>{name}</code></td>
@@ -971,12 +996,17 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
   attr :id, :string, required: true
   attr :head, :list, required: true
+
+  attr :stacked, :boolean,
+    default: false,
+    doc: "on phones, the first two cells share a line and the third goes under them"
+
   slot :inner_block, required: true
 
   defp doc_table(assigns) do
     ~H"""
     <div class="doc-table-wrap">
-      <table id={@id} class="doc-table">
+      <table id={@id} class={["doc-table", @stacked && "is-stacked"]}>
         <thead>
           <tr>
             <th :for={h <- @head}>{h}</th>
