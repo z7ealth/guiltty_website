@@ -299,7 +299,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
                 v0.17.0
               </span>
-              <span>Tab styles: powerline, rounded, minimal, separators</span>
+              <span> Faster text rendering: printed text to cells in C</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
