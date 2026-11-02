@@ -324,10 +324,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 It runs on Linux only. It's been tried on openSUSE Tumbleweed, X11 and an AMD GPU;
                 Wayland, Intel, NVIDIA and other distributions should work but haven't been tried.
               </p>
-              <.doc_note>
-                guiltty isn't fast at heavy output: a big <code>cat</code>
-                goes by at about 3 to 4 MB/s (book chapter 22).
-              </.doc_note>
             </.doc_section>
 
             <.doc_section id="requirements" title="Requirements">
@@ -886,12 +882,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     guiltty again. Its output is in <code>~/.local/state/guiltty/install.log</code>.
                   </p>
                 </dd>
-                <dt>Heavy output is slow</dt>
-                <dd>
-                  <p>
-                    It is: about 3 to 4 MB/s for a big <code>cat</code>. Book chapter 22 measures it.
-                  </p>
-                </dd>
               </dl>
             </.doc_section>
 
@@ -995,17 +985,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
         <tbody>{render_slot(@inner_block)}</tbody>
       </table>
     </div>
-    """
-  end
-
-  slot :inner_block, required: true
-
-  defp doc_note(assigns) do
-    ~H"""
-    <p class="doc-note">
-      <span class="hero-information-circle size-5 shrink-0"></span>
-      <span>{render_slot(@inner_block)}</span>
-    </p>
     """
   end
 

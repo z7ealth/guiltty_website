@@ -831,14 +831,6 @@
   transition: text-decoration-color 150ms ease;
 }
 .doc-link:hover { text-decoration-color: currentColor; }
-.doc-note {
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-pp-md);
-  background: var(--color-pp-secondary-container);
-}
-.doc .doc-note, .doc .doc-note span { color: var(--color-pp-on-secondary-container); }
 
 .doc-table-wrap {
   margin-top: 1.25rem;

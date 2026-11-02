@@ -543,10 +543,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <h3 class="pp-title-large mt-5">Measured, then faster</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Floods of short lines (<code class="inline-code">seq</code>, logs) land about 3x faster
-                  than in v0.13, laid down together and scrolled once. Heavy output is still slow: a big
-                  <code class="inline-code">cat</code>
-                  runs at 3 to 4 MB/s, and <code class="inline-code">make bench</code>
-                  says so.
+                  than in v0.13, laid down together and scrolled once.
+                  <code class="inline-code">make bench</code>
+                  measures it.
                 </p>
               </.pp_card>
 
