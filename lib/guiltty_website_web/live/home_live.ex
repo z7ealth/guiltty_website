@@ -769,7 +769,13 @@ defmodule GuilttyWebsiteWeb.HomeLive do
           </div>
           <.pp_card variant="outlined" class="mt-12" content_class="py-2!">
             <.pp_list id="keys-list" class="key-list" aria-label="Default keys">
-              <.pp_list_item :for={{combo, action} <- @keys}>
+              <%!-- three_line so a long label wraps on phones; the rows stay
+                    one-line height and centered (PhoenixPaper's ! overrides) --%>
+              <.pp_list_item
+                :for={{combo, action} <- @keys}
+                three_line
+                class="min-h-14! items-center! py-2!"
+              >
                 {action}
                 <:trailing><.keys keys={combo} /></:trailing>
               </.pp_list_item>
@@ -799,7 +805,6 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                       id="distro"
                       value={slug}
                       default_selected={i == 0}
-                      class="shrink-0"
                     >
                       {name}
                     </.pp_tab>

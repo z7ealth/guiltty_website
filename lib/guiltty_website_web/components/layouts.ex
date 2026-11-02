@@ -62,7 +62,6 @@ defmodule GuilttyWebsiteWeb.Layouts do
           <.pp_icon_button
             href={github_url()}
             label="guiltty on GitHub"
-            title={false}
             target="_blank"
             rel="noopener"
           >

@@ -104,22 +104,30 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
 
   def code_block(assigns) do
     ~H"""
-    <div class={["code-block group/code", @class]}>
-      <div class="flex items-center justify-between px-4 pt-2.5">
-        <span class="pp-label-small uppercase tracking-widest text-white/45">{@label}</span>
+    <%!-- Always dark: data-theme="dark" gives PhoenixPaper's dark roles to
+          everything inside, the icon button included --%>
+    <div class={["code-block", @class]} data-theme="dark">
+      <div class="flex items-center justify-between ps-4 pe-1 pt-1">
+        <.pp_typography
+          variant="label-small"
+          color="on-surface-variant"
+          tag="span"
+          class="uppercase tracking-widest"
+        >
+          {@label}
+        </.pp_typography>
         <.pp_tooltip title="Copy" placement="left">
-          <button
-            type="button"
+          <.pp_icon_button
             id={"#{@id}-copy"}
+            label="Copy to clipboard"
+            size="xs"
+            class="copy-btn"
             phx-hook=".Copy"
             data-copy={"##{@id}"}
-            class="copy-btn"
-            aria-label="Copy to clipboard"
           >
-            <.pp_icon name="hero-clipboard-document" size="none" class="size-4 copy-idle" />
-            <.pp_icon name="hero-check" size="none" class="size-4 copy-done" />
-            <span class="copy-done pp-label-medium">Copied</span>
-          </button>
+            <.pp_icon name="hero-clipboard-document" size="xs" class="copy-idle" />
+            <.pp_icon name="hero-check" size="xs" class="copy-done" />
+          </.pp_icon_button>
         </.pp_tooltip>
       </div>
       <pre class="overflow-x-auto px-4 pt-1 pb-4"><code id={@id}>{@code}</code></pre>

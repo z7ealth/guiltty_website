@@ -434,7 +434,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     id="docs-distro"
                     value={slug}
                     default_selected={i == 0}
-                    class="shrink-0"
                   >
                     {name}
                   </.pp_tab>
@@ -627,7 +626,33 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 These are the defaults, as they ship. Every one can be rebound in the config's <code>keys</code>, and
                 <.keys keys="Ctrl+Shift+/" /> shows them as you bound them.
               </p>
-              <.doc_table id="keys-table" head={["Action", "Keys", "What it does"]} stacked>
+              <.pp_card variant="outlined" class="doc-compact mt-5 min-[600px]:hidden">
+                <.pp_list id="keys-list" aria-label="Default keys">
+                  <%!-- The description goes in the headline, which wraps in full;
+                        a three-line item's :secondary stops at two lines --%>
+                  <.pp_list_item :for={{action, keys, what} <- @bindings} three_line>
+                    <code>{action}</code>
+                    <.pp_typography
+                      variant="body-medium"
+                      color="on-surface-variant"
+                      tag="span"
+                      class="mt-1 block"
+                    >
+                      {what}
+                    </.pp_typography>
+                    <:trailing>
+                      <span class="flex flex-col items-end gap-1">
+                        <.keys :for={key <- keys} keys={key_label(key)} />
+                      </span>
+                    </:trailing>
+                  </.pp_list_item>
+                </.pp_list>
+              </.pp_card>
+              <.doc_table
+                id="keys-table"
+                head={["Action", "Keys", "What it does"]}
+                class="max-[599px]:hidden"
+              >
                 <.pp_table_row :for={{action, keys, what} <- @bindings}>
                   <.pp_table_cell><code>{action}</code></.pp_table_cell>
                   <.pp_table_cell>
@@ -683,7 +708,34 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             </.doc_section>
 
             <.doc_section id="settings" title="Settings">
-              <.doc_table id="settings-table" head={["Setting", "Default", "Accepts"]} stacked>
+              <.pp_card variant="outlined" class="doc-compact mt-5 min-[600px]:hidden">
+                <.pp_list id="settings-list" aria-label="Settings">
+                  <.pp_list_item :for={{name, default, accepts, notes} <- @settings} three_line>
+                    <code>{name}</code>
+                    <.pp_typography
+                      variant="body-medium"
+                      color="on-surface-variant"
+                      tag="span"
+                      class="mt-1 block"
+                    >
+                      {accepts}<span :if={notes}>. {notes}</span>
+                    </.pp_typography>
+                    <:trailing>
+                      <%= case default do %>
+                        <% {:text, text} -> %>
+                          {text}
+                        <% value -> %>
+                          <code>{value}</code>
+                      <% end %>
+                    </:trailing>
+                  </.pp_list_item>
+                </.pp_list>
+              </.pp_card>
+              <.doc_table
+                id="settings-table"
+                head={["Setting", "Default", "Accepts"]}
+                class="max-[599px]:hidden"
+              >
                 <%= for {name, default, accepts, notes} <- @settings do %>
                   <.pp_table_row>
                     <.pp_table_cell><code>{name}</code></.pp_table_cell>
@@ -1036,16 +1088,14 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   attr :id, :string, required: true
   attr :head, :list, required: true
 
-  attr :stacked, :boolean,
-    default: false,
-    doc: "on phones, the first two cells share a line and the third goes under them"
+  attr :class, :any, default: nil, doc: "for the container, e.g. hiding it on phones"
 
   slot :inner_block, required: true
 
   defp doc_table(assigns) do
     ~H"""
-    <.pp_table_container class="mt-5">
-      <.pp_table id={@id} class={[@stacked && "is-stacked"]}>
+    <.pp_table_container class={["mt-5", @class]}>
+      <.pp_table id={@id}>
         <.pp_table_head>
           <.pp_table_row>
             <.pp_table_cell :for={h <- @head} variant="head">{h}</.pp_table_cell>
