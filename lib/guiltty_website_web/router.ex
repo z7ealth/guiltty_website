@@ -18,6 +18,7 @@ defmodule GuilttyWebsiteWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/docs", DocsLive
   end
 
   # Other scopes may use custom stacks.

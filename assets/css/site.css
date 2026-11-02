@@ -752,6 +752,199 @@
   .milestone-dot { left: -0.55rem; }
 }
 
+/* ───────────────────────── Docs ───────────────────────── */
+
+.docs-toc {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 1.25rem 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-pp-outline-variant);
+  border-radius: var(--radius-pp-lg);
+  align-self: start;
+}
+@media (min-width: 1024px) {
+  .docs-toc {
+    position: sticky;
+    top: 6rem;
+    display: block;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    padding: 0;
+    border: 0;
+  }
+  .docs-toc-group + .docs-toc-group { margin-top: 1.5rem; }
+  .docs-toc-group > p { padding-left: 0.75rem; }
+}
+.docs-toc-link {
+  display: block;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pp-full);
+  color: var(--color-pp-on-surface-variant);
+  font: 400 0.875rem/1.4 var(--font-pp-plain);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.docs-toc-link:hover {
+  background: color-mix(in srgb, var(--color-pp-on-surface) 8%, transparent);
+  color: var(--color-pp-on-surface);
+}
+.docs-toc-link[aria-current] {
+  background: var(--color-pp-secondary-container);
+  color: var(--color-pp-on-secondary-container);
+  font-weight: 500;
+}
+
+.doc { color: var(--color-pp-on-surface); }
+.doc-section { scroll-margin-top: 5.5rem; }
+.doc-section + .doc-section {
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--color-pp-outline-variant);
+}
+.doc h2 { font: 500 1.75rem/1.25 var(--font-pp-plain); letter-spacing: -0.01em; }
+.doc h3 { margin-top: 2rem; font: 500 1.125rem/1.4 var(--font-pp-plain); }
+.doc p, .doc ul, .doc dl { margin-top: 1rem; }
+.doc p, .doc li, .doc dd {
+  font: 400 1rem/1.7 var(--font-pp-plain);
+  color: var(--color-pp-on-surface-variant);
+}
+.doc ul { padding-left: 1.25rem; list-style: disc; }
+.doc li + li { margin-top: 0.5rem; }
+.doc li::marker { color: var(--color-pp-primary); }
+.doc :is(p, li, td, dt) code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-pp-xs);
+  background: var(--color-pp-surface-container-highest);
+  color: var(--color-pp-on-surface);
+  overflow-wrap: anywhere;
+}
+.doc .code-block { margin-top: 1rem; }
+.doc-anchor { color: inherit; }
+.doc-anchor:hover { color: var(--color-pp-primary); }
+.doc-link {
+  color: var(--color-pp-primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-pp-primary) 40%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 150ms ease;
+}
+.doc-link:hover { text-decoration-color: currentColor; }
+.doc-note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-pp-md);
+  background: var(--color-pp-secondary-container);
+}
+.doc .doc-note, .doc .doc-note span { color: var(--color-pp-on-secondary-container); }
+
+.doc-table-wrap {
+  margin-top: 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-pp-outline-variant);
+  border-radius: var(--radius-pp-md);
+}
+.doc-table { width: 100%; border-collapse: collapse; font: 400 0.9375rem/1.55 var(--font-pp-plain); }
+.doc-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font: 500 0.8125rem/1.4 var(--font-pp-plain);
+  color: var(--color-pp-on-surface-variant);
+  background: var(--color-pp-surface-container-low);
+}
+.doc-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  border-top: 1px solid var(--color-pp-outline-variant);
+  color: var(--color-pp-on-surface);
+}
+.doc-table tbody tr { transition: background-color 150ms ease; }
+.doc-table tbody tr:hover { background: color-mix(in srgb, var(--color-pp-on-surface) 4%, transparent); }
+/* setting and action names stay whole */
+.doc-table td:first-child code { white-space: nowrap; overflow-wrap: normal; }
+.doc-cell-note {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-pp-on-surface-variant);
+}
+
+.doc-defs dt { margin-top: 1.5rem; font: 500 1rem/1.5 var(--font-pp-plain); }
+.doc-defs dt:first-child { margin-top: 0; }
+.doc-defs dd > p { margin-top: 0.5rem; }
+
+.doc .doc-themes { padding-left: 0; list-style: none; }
+.doc-themes li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.doc-theme-swatch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-pp-sm);
+  background: var(--t-bg);
+}
+.doc-theme-swatch span { width: 0.75rem; height: 1.25rem; }
+.doc-theme-swatch span:first-child { border-radius: 3px 0 0 3px; }
+.doc-theme-swatch span:last-child { border-radius: 0 3px 3px 0; }
+
+/* Tab style previews (docs), after build_tab_bar() in guiltty's renderer:
+   the bar is 8% of the text color over the background, other titles 55%,
+   the accent the theme's blue. */
+.tabstyle {
+  --bar: color-mix(in srgb, var(--t-fg) 8%, var(--t-bg));
+  --muted: color-mix(in srgb, var(--t-fg) 55%, var(--t-bg));
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: var(--radius-pp-sm);
+  background: var(--bar);
+  color: var(--muted);
+  font: 0.8125rem/1.9 var(--font-mono);
+}
+.tabstyle-tab { position: relative; padding: 0 2ch; white-space: nowrap; }
+
+.tabstyle-flat .tabstyle-tab.is-active {
+  background: color-mix(in srgb, var(--t-fg) 16%, var(--t-bg));
+  color: var(--t-fg);
+}
+.tabstyle-flat .tabstyle-tab.is-active::after,
+.tabstyle-minimal .tabstyle-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--t-4);
+}
+.tabstyle-flat .tabstyle-tab.is-active::after { top: 0; }
+.tabstyle-minimal .tabstyle-tab.is-active::after { bottom: 0; left: 2ch; right: 2ch; }
+
+.tabstyle-powerline .tabstyle-tab {
+  margin-right: -1ch;
+  padding: 0 2ch 0 2.5ch;
+  background: color-mix(in srgb, var(--t-fg) 14%, var(--t-bg));
+  clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%, 1ch 50%);
+}
+.tabstyle-powerline .tabstyle-tab:first-child {
+  clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%);
+}
+.tabstyle-powerline .tabstyle-tab.is-active,
+.tabstyle-separators .tabstyle-tab.is-active {
+  background: var(--t-4);
+  color: var(--t-bg);
+}
+
+.tabstyle-rounded { gap: 0.5ch; padding: 0.2rem 0.5ch; }
+.tabstyle-rounded .tabstyle-tab { border-radius: 999px; line-height: 1.6; }
+.tabstyle-rounded .tabstyle-tab.is-active { background: var(--t-4); color: var(--t-bg); }
+
+.tabstyle-minimal { background: var(--t-bg); }
+.tabstyle-minimal .tabstyle-tab.is-active { color: var(--t-fg); }
+
+.tabstyle-separators .tabstyle-tab + .tabstyle-tab {
+  border-left: 1px solid color-mix(in srgb, var(--t-fg) 30%, var(--t-bg));
+}
+
 /* ───────────────────────── Book ───────────────────────── */
 
 .chapter {

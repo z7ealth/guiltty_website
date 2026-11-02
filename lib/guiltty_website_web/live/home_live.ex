@@ -6,7 +6,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
   """
   use GuilttyWebsiteWeb, :live_view
 
-  @github "https://github.com/z7ealth/guiltty"
+  alias GuilttyWebsite.Guiltty
 
   # {id, tree prefix, module, note, killable?}
   @tree [
@@ -73,38 +73,6 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-swatch", "Built-in themes"}
   ]
 
-  @themes [
-    {"tomorrow-night", "Tomorrow Night"},
-    {"catppuccin-mocha", "Catppuccin Mocha"},
-    {"dracula", "Dracula"},
-    {"gruvbox-dark", "Gruvbox Dark"},
-    {"solarized-dark", "Solarized Dark"}
-  ]
-
-  @distros [
-    {"opensuse", "openSUSE Tumbleweed",
-     "sudo zypper install gcc make pkg-config SDL3-devel freetype2-devel \\\n  fontconfig-devel harfbuzz-devel vulkan-devel shaderc elixir erlang-epmd",
-     "The one guiltty is developed on."},
-    {"fedora", "Fedora 45+",
-     "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel vulkan-loader-devel vulkan-headers glslc elixir",
-     "If Fedora's Elixir is older than 1.18 (elixir --version), leave out elixir and get Elixir and Erlang from asdf."},
-    {"ubuntu", "Ubuntu 26.04+",
-     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libvulkan-dev glslc elixir erlang-dev",
-     "Older Ubuntus have neither SDL3 nor GCC 15."},
-    {"arch", "Arch Linux",
-     "sudo pacman -S --needed base-devel sdl3 freetype2 fontconfig harfbuzz \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
-     "Everything is in the official repositories."}
-  ]
-
-  # Elixir and Erlang/OTP versions guiltty has been built and tested on, per
-  # its README: {elixir, otp, what was done}.
-  @tested_versions [
-    {"1.20.4", "29", "Developed on"},
-    {"1.19.7", "28", "Builds, tests pass"},
-    {"1.19.7", "26", "Builds, tests pass"},
-    {"1.18.4", "26", "Builds, tests pass"}
-  ]
-
   @keys [
     {"Ctrl+Shift+N", "New window"},
     {"Ctrl+Shift+T", "New tab"},
@@ -157,8 +125,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "Floods of short lines show up 3x faster, startup is 100 ms sooner, and make bench measures it all."},
     {"0.15.3", "Client and server", "Oct 31",
      "guiltty is a small client that asks the running guiltty for a window, like emacsclient: 0.1 s."},
-    {"0.16", "Tab comforts", "Nov 1",
-     "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, and tabs can be renamed, reordered and cleared."}
+    {"0.16.1", "Tab comforts and styles", "Nov 1",
+     "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."}
   ]
 
   @chapters [
@@ -186,7 +154,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"21-multi-window", "Multi window: every window its own desk"},
     {"22-performance", "Performance: measure, then fix what the numbers say"},
     {"23-client-server", "Client and server: the guiltty command"},
-    {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"}
+    {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"},
+    {"25-tab-styles", "Tab styles: five ways to draw one row"}
   ]
 
   @impl true
@@ -196,7 +165,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {:ok,
      socket
      |> assign(:page_title, "guiltty · a GPU-accelerated terminal emulator in Elixir and C")
-     |> assign(:github, @github)
+     |> assign(:github, Guiltty.github())
      |> assign(:tree, @tree)
      |> assign(:status, Map.new(ids, &{&1, :up}))
      |> assign(:pids, ids |> Enum.with_index() |> Map.new(fn {id, i} -> {id, 212 + i * 7} end))
@@ -204,9 +173,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      |> assign(:kills, 0)
      |> assign(:hero_scenes, Jason.encode!(@hero_scenes))
      |> assign(:hero_features, @hero_features)
-     |> assign(:themes, @themes)
-     |> assign(:distros, @distros)
-     |> assign(:tested_versions, @tested_versions)
+     |> assign(:themes, Guiltty.themes())
+     |> assign(:distros, Guiltty.distros())
+     |> assign(:tested_versions, Guiltty.tested_versions())
      |> assign(:keys, @keys)
      |> assign(:milestones, @milestones)
      |> assign(:chapters, @chapters)
@@ -328,9 +297,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.16.0
+                v0.16.1
               </span>
-              <span>Tab comforts: rename, reorder, activity marks</span>
+              <span>Tab styles: powerline, rounded, minimal, separators</span>
               <span class="hero-arrow-right-micro size-4"></span>
             </a>
 
@@ -404,7 +373,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   {"16", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
-                  {"25", "book chapters on how it works"}
+                  {"26", "book chapters on how it works"}
                 ]
               }
               class="py-8 text-center"
@@ -856,7 +825,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <.code_block
                   id="install-cmd"
                   class="mt-4"
-                  code={"git clone #{@github}.git\ncd guiltty\n./install.sh"}
+                  code={Guiltty.install_command()}
                 />
                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
                   <div
@@ -889,6 +858,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   Vulkan where there's a 1.3 driver. It looks best with a Nerd Font, Noto Color Emoji
                   and a font for Chinese, Japanese and Korean.
                 </p>
+                <.pp_button href="/docs" variant="tonal" class="mt-6" id="install-docs">
+                  <:start_icon><span class="hero-book-open size-5"></span></:start_icon>
+                  Read the docs: keys, settings, themes
+                </.pp_button>
               </div>
             </div>
           </div>
@@ -930,8 +903,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               eyebrow="The book"
               title="Learn how a terminal works, from the kernel up."
             >
-              guiltty comes with a book: twenty-five chapters with diagrams, one for every part, from
-              pseudoterminals to tab comforts.
+              guiltty comes with a book: twenty-six chapters with diagrams, one for every part, from
+              pseudoterminals to tab styles.
             </.section_header>
             <ol class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <li :for={{slug, title} <- @chapters}>

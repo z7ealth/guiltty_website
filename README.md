@@ -17,9 +17,14 @@ with warnings as errors, formats and runs the tests.
 
 ## Where things are
 
-- `lib/guiltty_website_web/live/home_live.ex`: the page. Its content (the
-  supervision tree, milestones, book chapters, keys, distros, tested
-  Elixir/OTP versions) is module attributes at the top.
+- `lib/guiltty_website_web/live/home_live.ex`: the landing page. Its
+  content (the supervision tree, milestones, book chapters, keys) is module
+  attributes at the top.
+- `lib/guiltty_website_web/live/docs_live.ex`: the documentation at
+  `/docs`. Its key bindings, settings and example config are module
+  attributes at the top.
+- `lib/guiltty_website/guiltty.ex`: what both pages show: the distros'
+  install commands, tested Elixir/OTP versions, themes, the GitHub URL.
 - `lib/guiltty_website_web/components/site_components.ex`: the terminal
   window, code blocks, the logo.
 - `assets/css/site.css`: the site's own styles, including guiltty's theme
@@ -29,15 +34,23 @@ with warnings as errors, formats and runs the tests.
 
 ## When guiltty releases
 
-Everything on the page comes from guiltty's `CHANGELOG.md`, `README.md`,
-`book/` and `lib/guiltty/config.ex`. In `home_live.ex`:
+Everything on the site comes from guiltty's `CHANGELOG.md`, `README.md`,
+`book/`, `priv/config.example.exs` and `lib/guiltty/config.ex`.
+
+In `guiltty.ex`: `@distros` and `@tested_versions`, from the README's
+install section.
+
+In `docs_live.ex`: `@bindings` and `@settings` from `lib/guiltty/config.ex`,
+`@example_config` from `priv/config.example.exs`, and any section the
+README or CHANGELOG changes.
+
+In `home_live.ex`:
 
 - the hero badge (version and headline) and, for a big feature, a chip;
 - `@milestones`, and the "milestones implemented" count;
 - `@chapters` for a new book chapter (titles are each file's `#+TITLE`),
   the chapter count, and the book section's last chapter;
 - `@keys` from `@default_keys` in `lib/guiltty/config.ex`;
-- `@distros` and `@tested_versions` from the README's install section;
 - `@tree` and `@crashes` if book chapter 12's supervision tree changed;
 - feature cards whose wording the CHANGELOG or README contradicts.
 

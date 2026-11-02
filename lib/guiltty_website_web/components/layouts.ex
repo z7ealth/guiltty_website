@@ -38,7 +38,7 @@ defmodule GuilttyWebsiteWeb.Layouts do
     <.pp_top_app_bar position="sticky" class="site-bar z-40 px-3 sm:px-6 lg:px-8">
       <:leading>
         <a
-          href="#top"
+          href="/"
           class="flex items-center rounded-pp-full pp-focus-ring"
           aria-label="guiltty home"
         >
@@ -81,6 +81,7 @@ defmodule GuilttyWebsiteWeb.Layouts do
         <div>
           <p class="pp-title-small mb-3">Project</p>
           <ul class="space-y-2 pp-body-medium text-pp-on-surface-variant">
+            <li><a class="footer-link" href="/docs">Documentation</a></li>
             <li><a class="footer-link" href={github_url()}>Source on GitHub</a></li>
             <li>
               <a class="footer-link" href={github_url() <> "/blob/master/CHANGELOG.md"}>Changelog</a>
@@ -118,11 +119,12 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   defp nav_links do
     [
-      {"Features", "#features"},
-      {"Crash it", "#supervision"},
-      {"Themes", "#themes"},
-      {"Install", "#install"},
-      {"Book", "#book"}
+      {"Features", "/#features"},
+      {"Crash it", "/#supervision"},
+      {"Themes", "/#themes"},
+      {"Install", "/#install"},
+      {"Docs", "/docs"},
+      {"Book", "/#book"}
     ]
   end
 
