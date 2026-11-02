@@ -263,7 +263,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
       <span class="p10k-seg p10k-seg-left">
         <.logo_mark class="p10k-os" />
         <span class="p10k-sub">│</span>
-        <span class="p10k-dir"><span class="hero-home-micro size-3.5"></span><span>~/<b>src</b></span></span>
+        <span class="p10k-dir"><.pp_icon name="hero-home-micro" size="none" class="size-3.5" /><span>~/<b>src</b></span></span>
       </span>
       <span class="p10k-gap"></span>
       <span class="p10k-seg p10k-seg-right">
@@ -271,7 +271,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
         <span class="p10k-sub">│</span>
         <span class="p10k-time">
           at <span class="p10k-clock">16:24:55</span>
-          <span class="hero-clock-micro size-3.5"></span>
+          <.pp_icon name="hero-clock-micro" size="none" class="size-3.5" />
         </span>
       </span>
       <span class="p10k-frame">─╮</span>
@@ -300,7 +300,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 v0.16.1
               </span>
               <span>Tab styles: powerline, rounded, minimal, separators</span>
-              <span class="hero-arrow-right-micro size-4"></span>
+              <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
             <h1 class="hero-title mt-8 text-balance">
@@ -314,7 +314,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               supervisor restarts it and your tabs stay.
             </p>
 
-            <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <.pp_button_group size="md" class="mt-10 flex-wrap justify-center">
               <.pp_button href="#install" size="md" id="cta-install">
                 <:start_icon><.pp_icon name="hero-arrow-down-tray" /></:start_icon>
                 Install guiltty
@@ -323,7 +323,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <:start_icon><.github_mark class="size-5" /></:start_icon>
                 Read the source
               </.pp_button>
-            </div>
+            </.pp_button_group>
 
             <div class="mx-auto mt-6 flex max-w-4xl flex-wrap justify-center gap-2">
               <.pp_chip :for={{icon, label} <- @hero_features}>
@@ -356,7 +356,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   </div>
                 </div>
                 <div class="term-toast" aria-hidden="true">
-                  <span class="hero-arrow-path-micro size-4"></span>
+                  <.pp_icon name="hero-arrow-path-micro" size="none" class="size-4" />
                   renderer restarted · every tab intact
                 </div>
               </.terminal>
@@ -399,7 +399,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
 
           <div class="pipeline mt-14" role="list">
             <div class="pipe-node" role="listitem">
-              <span class="pipe-icon"><span class="hero-command-line size-6"></span></span>
+              <span class="pipe-icon"><.pp_icon name="hero-command-line" size="none" class="size-6" /></span>
               <p class="pp-title-medium">Your shell</p>
               <p class="pp-body-small text-pp-on-surface-variant">
                 bash, zsh, fish: your login shell
@@ -410,19 +410,23 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <p class="pipe-beam-label pp-label-medium">the BEAM</p>
               <div class="pipe-beam-row">
                 <div class="pipe-node">
-                  <span class="pipe-icon"><span class="hero-cpu-chip size-6"></span></span>
+                  <span class="pipe-icon"><.pp_icon name="hero-cpu-chip" size="none" class="size-6" /></span>
                   <p class="pp-title-medium">PTY NIF</p>
                   <p class="pp-body-small text-pp-on-surface-variant">C · enif_select</p>
                 </div>
                 <div class="pipe-link" aria-hidden="true"><span></span></div>
                 <div class="pipe-node">
-                  <span class="pipe-icon"><span class="hero-funnel size-6"></span></span>
+                  <span class="pipe-icon"><.pp_icon name="hero-funnel" size="none" class="size-6" /></span>
                   <p class="pp-title-medium">Parser</p>
                   <p class="pp-body-small text-pp-on-surface-variant">DEC state machine</p>
                 </div>
                 <div class="pipe-link" aria-hidden="true"><span></span></div>
                 <div class="pipe-node">
-                  <span class="pipe-icon"><span class="hero-squares-2x2 size-6"></span></span>
+                  <span class="pipe-icon"><.pp_icon
+                    name="hero-squares-2x2"
+                    size="none"
+                    class="size-6"
+                  /></span>
                   <p class="pp-title-medium">Screen</p>
                   <p class="pp-body-small text-pp-on-surface-variant">grid, scrollback</p>
                 </div>
@@ -430,7 +434,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             </div>
             <div class="pipe-link" aria-hidden="true"><span></span></div>
             <div class="pipe-node pipe-node-gpu" role="listitem">
-              <span class="pipe-icon"><span class="hero-sparkles size-6"></span></span>
+              <span class="pipe-icon"><.pp_icon name="hero-sparkles" size="none" class="size-6" /></span>
               <p class="pp-title-medium">Renderer</p>
               <p class="pp-body-small text-pp-on-surface-variant">its own process · Vulkan or GL</p>
             </div>
@@ -449,7 +453,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
 
             <div class="bento mt-14">
               <.pp_card variant="filled" class="bento-wide feature-card" id="feature-vulkan">
-                <div class="feature-icon"><span class="hero-sparkles size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-sparkles" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-headline-small mt-5">Vulkan 1.3, or OpenGL. Same pixels.</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant max-w-lg">
                   guiltty draws with Vulkan by default. No driver? It falls back to OpenGL by itself and
@@ -466,7 +472,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-lock">
-                <div class="feature-icon"><span class="hero-lock-closed size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-lock-closed" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Lockable tabs</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Lock a tab and close its window: it keeps running, and the next
@@ -477,7 +485,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-broadcast">
-                <div class="feature-icon"><span class="hero-signal size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-signal" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Safe broadcast</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Type once into every tab in the group. If a connection drops, typing goes nowhere, so a command
@@ -487,7 +497,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-unicode">
-                <div class="feature-icon"><span class="hero-language size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-language" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Unicode, properly</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Grapheme clusters, wide characters, HarfBuzz shaping, ligatures, fallback fonts, color
@@ -498,7 +510,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
 
               <.pp_card variant="filled" class="feature-card" id="feature-config">
                 <div class="feature-icon">
-                  <span class="hero-adjustments-horizontal size-6"></span>
+                  <.pp_icon name="hero-adjustments-horizontal" size="none" class="size-6" />
                 </div>
                 <h3 class="pp-title-large mt-5">Live config, in Elixir</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
@@ -509,7 +521,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-fullscreen">
-                <div class="feature-icon"><span class="hero-window size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-window" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Full-screen programs</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Alternate screen, scroll regions, mouse reporting, bracketed paste, cursor shapes.
@@ -518,7 +532,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-windows">
-                <div class="feature-icon"><span class="hero-square-2-stack size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-square-2-stack" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Many windows, one guiltty</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Each window has its own tabs, locked tabs and broadcast group. Closing one never
@@ -528,7 +544,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-client">
-                <div class="feature-icon"><span class="hero-rocket-launch size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-rocket-launch" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">A window in 0.1 s</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   <code class="inline-code">guiltty</code>
@@ -539,7 +557,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-performance">
-                <div class="feature-icon"><span class="hero-chart-bar size-6"></span></div>
+                <div class="feature-icon">
+                  <.pp_icon name="hero-chart-bar" size="none" class="size-6" />
+                </div>
                 <h3 class="pp-title-large mt-5">Measured, then faster</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Floods of short lines (<code class="inline-code">seq</code>, logs) land about 3x faster
@@ -552,7 +572,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <.pp_card variant="filled" class="bento-wide feature-card" id="feature-scrollback">
                 <div class="grid gap-6 md:grid-cols-2 md:items-center">
                   <div>
-                    <div class="feature-icon"><span class="hero-magnifying-glass size-6"></span></div>
+                    <div class="feature-icon">
+                      <.pp_icon name="hero-magnifying-glass" size="none" class="size-6" />
+                    </div>
                     <h3 class="pp-headline-small mt-5">Scrollback, search, selection</h3>
                     <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                       10,000 rows per tab, searched with Enter and Shift+Enter. Select to copy to the
@@ -569,7 +591,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                       200 in 2ms
                     </div>
                     <div class="term-search mt-2">
-                      <span class="hero-magnifying-glass-micro size-3.5"></span>
+                      <.pp_icon name="hero-magnifying-glass-micro" size="none" class="size-3.5" />
                       GET /health <span class="ml-auto t-dim">2 of 48</span>
                     </div>
                   </.terminal>
@@ -589,18 +611,29 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.section_header>
               <ul class="mt-8 space-y-3 pp-body-medium text-pp-on-surface-variant">
                 <li class="flex gap-3">
-                  <span class="hero-check-circle size-5 shrink-0 text-pp-primary"></span>
+                  <.pp_icon
+                    name="hero-check-circle"
+                    size="none"
+                    class="size-5 shrink-0 text-pp-primary"
+                  />
                   <span>
                     Each tab is its own <code class="inline-code">rest_for_one</code>
                     tree: Pty, Screen, Parser.
                   </span>
                 </li>
                 <li class="flex gap-3">
-                  <span class="hero-check-circle size-5 shrink-0 text-pp-primary"></span>
-                  Every window is its own Desk: crash one and the others never notice.
+                  <.pp_icon
+                    name="hero-check-circle"
+                    size="none"
+                    class="size-5 shrink-0 text-pp-primary"
+                  /> Every window is its own Desk: crash one and the others never notice.
                 </li>
                 <li class="flex gap-3">
-                  <span class="hero-check-circle size-5 shrink-0 text-pp-primary"></span>
+                  <.pp_icon
+                    name="hero-check-circle"
+                    size="none"
+                    class="size-5 shrink-0 text-pp-primary"
+                  />
                   <span>
                     <code class="inline-code">kill -9</code>
                     the renderer and its Desk starts a new Window. The screen heals.
@@ -734,13 +767,13 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <.keys keys="Ctrl+Shift+/" /> opens the cheatsheet, built from your own config.
             </.section_header>
           </div>
-          <.pp_card variant="outlined" class="mt-12" content_class="p-0!">
-            <dl class="key-grid">
-              <div :for={{combo, action} <- @keys} class="key-row">
-                <dt class="pp-body-medium">{action}</dt>
-                <dd><.keys keys={combo} /></dd>
-              </div>
-            </dl>
+          <.pp_card variant="outlined" class="mt-12" content_class="py-2!">
+            <.pp_list id="keys-list" class="key-list" aria-label="Default keys">
+              <.pp_list_item :for={{combo, action} <- @keys}>
+                {action}
+                <:trailing><.keys keys={combo} /></:trailing>
+              </.pp_list_item>
+            </.pp_list>
           </.pp_card>
         </section>
 
@@ -780,7 +813,11 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   >
                     <.code_block id={"deps-#{slug}"} code={cmd} />
                     <p class="pp-body-small mt-3 flex gap-2 text-pp-on-surface-variant">
-                      <span class="hero-information-circle size-4 shrink-0 mt-0.5"></span>{note}
+                      <.pp_icon
+                        name="hero-information-circle"
+                        size="none"
+                        class="size-4 shrink-0 mt-0.5"
+                      />{note}
                     </p>
                   </.pp_tab_panel>
                 </.pp_card>
@@ -809,7 +846,11 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                           <.pp_table_cell class="font-mono">{otp}</.pp_table_cell>
                           <.pp_table_cell>
                             <span class="inline-flex items-center gap-1.5">
-                              <span class="hero-check-circle-micro size-4 text-pp-primary"></span>
+                              <.pp_icon
+                                name="hero-check-circle-micro"
+                                size="none"
+                                class="size-4 text-pp-primary"
+                              />
                               {status}
                             </span>
                           </.pp_table_cell>
@@ -830,7 +871,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   code={Guiltty.install_command()}
                 />
                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
-                  <div
+                  <.pp_card
                     :for={
                       {icon, title, body} <- [
                         {"hero-arrow-path", "Update", "git pull && ./install.sh"},
@@ -838,17 +879,18 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                         {"hero-folder", "Elsewhere", "PREFIX=/opt/guiltty ./install.sh"}
                       ]
                     }
-                    class="mini-card"
+                    variant="outlined"
+                    content_class="p-4!"
                   >
-                    <span class={[icon, "size-5 text-pp-primary"]}></span>
-                    <p class="pp-title-small mt-2">{title}</p>
+                    <.pp_icon name={icon} size="sm" class="text-pp-primary" />
+                    <.pp_typography variant="title-small" class="mt-2">{title}</.pp_typography>
                     <code class="pp-body-small block font-mono text-pp-on-surface-variant">
                       <%!-- Wrap at spaces only, never after a "/" --%>
                       <%= for word <- String.split(body, " ") do %>
                         <span class="whitespace-nowrap">{word}</span>
                       <% end %>
                     </code>
-                  </div>
+                  </.pp_card>
                 </div>
               </div>
 
@@ -861,7 +903,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   and a font for Chinese, Japanese and Korean.
                 </p>
                 <.pp_button href="/docs" variant="tonal" class="mt-6" id="install-docs">
-                  <:start_icon><span class="hero-book-open size-5"></span></:start_icon>
+                  <:start_icon>
+                    <.pp_icon name="hero-book-open" size="none" class="size-5" />
+                  </:start_icon>
                   Read the docs: keys, settings, themes
                 </.pp_button>
               </div>
@@ -887,7 +931,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <p class="pp-body-medium mt-1 text-pp-on-surface-variant">{body}</p>
             </li>
           </ol>
-          <div class="mt-10 flex flex-wrap gap-3">
+          <.pp_button_group class="mt-10 flex-wrap">
             <.pp_button href={"#{@github}/blob/master/CHANGELOG.md"} variant="tonal">
               The changelog
             </.pp_button>
@@ -895,7 +939,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               The devlog
               <:end_icon><.pp_icon name="hero-arrow-up-right" /></:end_icon>
             </.pp_button>
-          </div>
+          </.pp_button_group>
         </section>
 
         <%!-- ───────────────────────── Book ───────────────────────── --%>
@@ -913,10 +957,15 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               class="chapters is-collapsed mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
             >
               <li :for={{slug, title} <- @chapters}>
-                <a href={book_url(@github, slug)} class="chapter pp-state-layer pp-focus-ring">
+                <.pp_card
+                  variant="outlined"
+                  href={book_url(@github, slug)}
+                  class="chapter-card h-full"
+                  content_class="flex items-start gap-3 p-4!"
+                >
                   <span class="chapter-num">{String.slice(slug, 0, 2)}</span>
-                  <span class="pp-body-medium">{title}</span>
-                </a>
+                  <.pp_typography variant="body-medium" tag="span">{title}</.pp_typography>
+                </.pp_card>
               </li>
             </ol>
             <.pp_button
@@ -941,13 +990,13 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               Linux. Tried on openSUSE Tumbleweed, X11 and an AMD GPU; Wayland, Intel and NVIDIA
               should work but haven't been tried. Open source, MIT licensed.
             </p>
-            <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <.pp_button_group size="md" class="mt-8 flex-wrap justify-center">
               <.pp_button href="#install" size="md">Install guiltty</.pp_button>
               <.pp_button href={@github} variant="elevated" size="md">
                 <:start_icon><.github_mark class="size-5" /></:start_icon>
                 Star it on GitHub
               </.pp_button>
-            </div>
+            </.pp_button_group>
           </div>
         </section>
       </div>

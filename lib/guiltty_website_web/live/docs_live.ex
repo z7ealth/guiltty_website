@@ -285,16 +285,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     <Layouts.app flash={@flash}>
       <div id="docs" class="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <header class="max-w-2xl">
-          <p class="pp-label-large uppercase tracking-[0.2em] text-pp-primary">Documentation</p>
-          <h1 class="pp-display-small-emphasized mt-3">Install, use and configure guiltty.</h1>
-          <p class="pp-body-large mt-4 text-pp-on-surface-variant text-pretty">
+          <.pp_breadcrumbs>
+            <:item href="/">Home</:item>
+            <:item>Docs</:item>
+          </.pp_breadcrumbs>
+          <.pp_typography variant="display-small" emphasized tag="h1" class="mt-4">
+            Install, use and configure guiltty.
+          </.pp_typography>
+          <.pp_typography variant="body-large" color="on-surface-variant" class="mt-4 text-pretty">
             Everything here is also in guiltty's
             <a class="doc-link" href={Guiltty.github_path("README.md")}>README</a>
             and <a class="doc-link" href={@example_url}>example config</a>. How each part works is in <a
               class="doc-link"
               href={"#{@github}/tree/master/book"}
             >the book</a>.
-          </p>
+          </.pp_typography>
         </header>
 
         <div class="mt-12 grid gap-12 lg:grid-cols-[14rem_1fr]">
@@ -310,8 +315,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 |> JS.toggle_attribute({"aria-expanded", "true", "false"})
               }
             >
-              <span class="hero-list-bullet size-5"></span>
-              On this page <span class="hero-chevron-down-micro size-4 docs-toc-chevron"></span>
+              <.pp_icon name="hero-list-bullet" size="none" class="size-5" /> On this page
+              <.pp_icon name="hero-chevron-down-micro" size="none" class="size-4 docs-toc-chevron" />
             </button>
             <div :for={{group, sections} <- @toc} class="docs-toc-group">
               <p class="pp-label-medium uppercase tracking-widest text-pp-on-surface-variant">
@@ -335,9 +340,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             </div>
           </nav>
 
-          <article class="doc min-w-0">
+          <article class="doc pp-body-large min-w-0">
             <%!-- ───────────────────────── Getting started ───────────────────────── --%>
-            <.doc_section id="overview" title="Overview">
+            <.doc_section id="overview" title="Overview" divider={false}>
               <p>
                 guiltty is a GPU-accelerated terminal emulator in Elixir and C. Elixir holds the
                 behavior: the parser, the screen, tabs, windows, config. C does the syscalls and the
@@ -357,30 +362,30 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 runs without Elixir.
               </p>
               <.doc_table id="requirements-table" head={["What", "Why"]}>
-                <tr>
-                  <td>Elixir 1.18+, Erlang/OTP 26+</td>
-                  <td>building guiltty and its release</td>
-                </tr>
-                <tr>
-                  <td>GCC 15+, make, pkg-config</td>
-                  <td>the C is C23 and uses <code>#embed</code></td>
-                </tr>
-                <tr>
-                  <td>SDL3 (development files)</td>
-                  <td>the window, keyboard and mouse</td>
-                </tr>
-                <tr>
-                  <td>FreeType, fontconfig, HarfBuzz (dev files)</td>
-                  <td>finding fonts, drawing and shaping text</td>
-                </tr>
-                <tr>
-                  <td>Vulkan loader and headers (dev files)</td>
-                  <td>the Vulkan renderer</td>
-                </tr>
-                <tr>
-                  <td>glslc (from shaderc)</td>
-                  <td>compiles the Vulkan shaders to SPIR-V</td>
-                </tr>
+                <.pp_table_row>
+                  <.pp_table_cell>Elixir 1.18+, Erlang/OTP 26+</.pp_table_cell>
+                  <.pp_table_cell>building guiltty and its release</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>GCC 15+, make, pkg-config</.pp_table_cell>
+                  <.pp_table_cell>the C is C23 and uses <code>#embed</code></.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>SDL3 (development files)</.pp_table_cell>
+                  <.pp_table_cell>the window, keyboard and mouse</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>FreeType, fontconfig, HarfBuzz (dev files)</.pp_table_cell>
+                  <.pp_table_cell>finding fonts, drawing and shaping text</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>Vulkan loader and headers (dev files)</.pp_table_cell>
+                  <.pp_table_cell>the Vulkan renderer</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>glslc (from shaderc)</.pp_table_cell>
+                  <.pp_table_cell>compiles the Vulkan shaders to SPIR-V</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
               <p>
                 Your distribution's packages work if they're recent enough; for Elixir and Erlang, a
@@ -388,16 +393,20 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 gets you exact versions. <code>elixir --version</code>
                 should say Elixir 1.18 or newer, compiled with Erlang/OTP 26 or newer.
               </p>
-              <h3>Tested Elixir and Erlang/OTP</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Tested Elixir and Erlang/OTP
+              </.pp_typography>
               <.doc_table id="docs-versions-table" head={["Elixir", "Erlang/OTP", "Status"]}>
-                <tr :for={{elixir, otp, status} <- @tested_versions}>
-                  <td class="font-mono">{elixir}</td>
-                  <td class="font-mono">{otp}</td>
-                  <td>{status}</td>
-                </tr>
+                <.pp_table_row :for={{elixir, otp, status} <- @tested_versions}>
+                  <.pp_table_cell class="font-mono">{elixir}</.pp_table_cell>
+                  <.pp_table_cell class="font-mono">{otp}</.pp_table_cell>
+                  <.pp_table_cell>{status}</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
               <p>Anything older than Elixir 1.18 or Erlang/OTP 26 isn't supported.</p>
-              <h3>GPU and fonts</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                GPU and fonts
+              </.pp_typography>
               <p>
                 guiltty needs a GPU driver with OpenGL 3.3, which almost any desktop from the last
                 decade has. For Vulkan it needs a Vulkan 1.3 driver (for AMD and Intel GPUs, Mesa's;
@@ -411,7 +420,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             </.doc_section>
 
             <.doc_section id="install" title="Install">
-              <h3>1. What to install first</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                1. What to install first
+              </.pp_typography>
               <p>
                 On these distributions, one command installs it all. Only openSUSE has been tried;
                 the other package names come from each distribution's package listings.
@@ -440,32 +451,36 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </.pp_tab_panel>
               </.pp_card>
 
-              <h3>2. guiltty</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">2. guiltty</.pp_typography>
               <.code_block id="docs-install-cmd" code={@install_command} />
               <p>
                 <code>install.sh</code>
                 checks for the tools above, builds a release and installs it into <code>~/.local</code>; it needs no root.
               </p>
               <.doc_table id="install-paths-table" head={["Where", "What"]}>
-                <tr>
-                  <td><code>~/.local/lib/guiltty/</code></td>
-                  <td>the release</td>
-                </tr>
-                <tr>
-                  <td><code>~/.local/bin/guiltty</code></td>
-                  <td>the command</td>
-                </tr>
-                <tr>
-                  <td><code>~/.local/share/applications/guiltty.desktop</code></td>
-                  <td>the menu entry</td>
-                </tr>
-                <tr>
-                  <td><code>~/.local/share/icons/hicolor/*/apps/guiltty.png</code></td>
-                  <td>the icon</td>
-                </tr>
+                <.pp_table_row>
+                  <.pp_table_cell><code>~/.local/lib/guiltty/</code></.pp_table_cell>
+                  <.pp_table_cell>the release</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>~/.local/bin/guiltty</code></.pp_table_cell>
+                  <.pp_table_cell>the command</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>
+                    <code>~/.local/share/applications/guiltty.desktop</code>
+                  </.pp_table_cell>
+                  <.pp_table_cell>the menu entry</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>
+                    <code>~/.local/share/icons/hicolor/*/apps/guiltty.png</code>
+                  </.pp_table_cell>
+                  <.pp_table_cell>the icon</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
 
-              <h3>3. Run it</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">3. Run it</.pp_typography>
               <p>
                 Run <code>guiltty</code>, or find it in your applications menu. If your shell says <code>guiltty: command not found</code>, add
                 <code>~/.local/bin</code>
@@ -503,34 +518,40 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 (or <.keys keys="Ctrl+Shift+N" />) opens another window, and closing one never
                 touches the others. guiltty stops after its last window.
               </p>
-              <h3>Locked tabs</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Locked tabs</.pp_typography>
               <p>
                 Closing a window ends its tabs, except the ones you lock with
                 <.keys keys="Ctrl+Shift+L" />. They show a 🔒 and keep running, and the next
                 <code>guiltty</code>
                 brings that window back with them, where you left them.
               </p>
-              <h3>Closing a busy tab</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Closing a busy tab
+              </.pp_typography>
               <p>
                 <.keys keys="Ctrl+Shift+W" />
                 on a tab that's running a program (vim, ssh, a build) asks first: the tab bar says
                 what's running, and pressing it again closes the tab. A tab waiting at its prompt
                 closes at once.
               </p>
-              <h3>Marks</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Marks</.pp_typography>
               <p>
                 A tab you're not looking at shows ● when it prints something and 🔔 when it rings
                 the bell (a build that ends with <code>; printf '\a'</code>, say), until you switch
                 to it.
               </p>
-              <h3>Names and order</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Names and order
+              </.pp_typography>
               <p>
                 <.keys keys="Ctrl+Shift+R" />
                 renames the tab: type a name, Enter. The name stays even when the program changes its
                 title; an empty name gives the title back. <.keys keys="Ctrl+Shift+PgUp" /> and
                 <.keys keys="Ctrl+Shift+PgDn" /> move the tab left and right.
               </p>
-              <h3>Where a new tab starts</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Where a new tab starts
+              </.pp_typography>
               <p>
                 A new window's first tab starts in the folder you ran <code>guiltty</code>
                 in. Other new tabs follow <code>working_directory</code>: by default, where the
@@ -547,13 +568,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.keys keys="Shift+End" /> jump to the oldest row and back to the prompt.
                 <.keys keys="Ctrl+Shift+K" /> clears the scrollback; the screen stays.
               </p>
-              <h3>Search</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Search</.pp_typography>
               <p>
                 <.keys keys="Ctrl+Shift+F" />
                 searches the scrollback. Enter finds the next older match, Shift+Enter the next newer
                 one, and Escape ends the search.
               </p>
-              <h3>Selection and the clipboard</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Selection and the clipboard
+              </.pp_typography>
               <ul>
                 <li>
                   Selecting with the mouse copies to the primary selection; a middle click pastes it.
@@ -605,22 +628,22 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.keys keys="Ctrl+Shift+/" /> shows them as you bound them.
               </p>
               <.doc_table id="keys-table" head={["Action", "Keys", "What it does"]} stacked>
-                <tr :for={{action, keys, what} <- @bindings}>
-                  <td><code>{action}</code></td>
-                  <td>
+                <.pp_table_row :for={{action, keys, what} <- @bindings}>
+                  <.pp_table_cell><code>{action}</code></.pp_table_cell>
+                  <.pp_table_cell>
                     <span class="flex flex-col items-start gap-1">
                       <.keys :for={key <- keys} keys={key_label(key)} />
                     </span>
-                  </td>
-                  <td>{what}</td>
-                </tr>
+                  </.pp_table_cell>
+                  <.pp_table_cell>{what}</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
-              <h3>Fixed keys</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Fixed keys</.pp_typography>
               <p>
                 Paste (<.keys keys="Ctrl+Shift+V" />, <.keys keys="Shift+Insert" />), middle-click
                 paste and Shift-to-select aren't in <code>keys</code> and can't be rebound.
               </p>
-              <h3>Rebinding</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Rebinding</.pp_typography>
               <p>
                 Each action takes a list of keys. Names are letters, digits, <code>f1</code>
                 to <code>f12</code>, <code>tab</code>, <code>enter</code>, <code>page_up</code>, <code>page_down</code>, <code>home</code>, <code>end</code>, <code>insert</code>, <code>delete</code>, or a punctuation character like
@@ -662,21 +685,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             <.doc_section id="settings" title="Settings">
               <.doc_table id="settings-table" head={["Setting", "Default", "Accepts"]} stacked>
                 <%= for {name, default, accepts, notes} <- @settings do %>
-                  <tr>
-                    <td><code>{name}</code></td>
-                    <td>
+                  <.pp_table_row>
+                    <.pp_table_cell><code>{name}</code></.pp_table_cell>
+                    <.pp_table_cell>
                       <%= case default do %>
                         <% {:text, text} -> %>
                           {text}
                         <% value -> %>
                           <code>{value}</code>
                       <% end %>
-                    </td>
-                    <td>
+                    </.pp_table_cell>
+                    <.pp_table_cell>
                       {accepts}
                       <span :if={notes} class="doc-cell-note">{notes}</span>
-                    </td>
-                  </tr>
+                    </.pp_table_cell>
+                  </.pp_table_row>
                 <% end %>
               </.doc_table>
             </.doc_section>
@@ -704,31 +727,33 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 single colors.
               </p>
               <.code_block id="docs-theme-example" label="config.exs" code={@custom_theme} />
-              <h3>Tab bar colors</h3>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Tab bar colors
+              </.pp_typography>
               <.doc_table id="tab-colors-table" head={["Color", "What it colors"]}>
-                <tr>
-                  <td><code>tab_bar</code></td>
-                  <td>the bar behind the tabs</td>
-                </tr>
-                <tr>
-                  <td><code>tab_text</code></td>
-                  <td>the other tabs' titles</td>
-                </tr>
-                <tr>
-                  <td><code>tab_active</code></td>
-                  <td>the active tab's background</td>
-                </tr>
-                <tr>
-                  <td><code>tab_active_text</code></td>
-                  <td>the active tab's title</td>
-                </tr>
-                <tr>
-                  <td><code>tab_accent</code></td>
-                  <td>
+                <.pp_table_row>
+                  <.pp_table_cell><code>tab_bar</code></.pp_table_cell>
+                  <.pp_table_cell>the bar behind the tabs</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>tab_text</code></.pp_table_cell>
+                  <.pp_table_cell>the other tabs' titles</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>tab_active</code></.pp_table_cell>
+                  <.pp_table_cell>the active tab's background</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>tab_active_text</code></.pp_table_cell>
+                  <.pp_table_cell>the active tab's title</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>tab_accent</code></.pp_table_cell>
+                  <.pp_table_cell>
                     the line along the active tab (flat, minimal), or the filled tab's color (the
                     other styles)
-                  </td>
-                </tr>
+                  </.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
               <p>Any you leave out are worked out from the theme, to suit the tab style.</p>
             </.doc_section>
@@ -809,25 +834,27 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 like <code>emacsclient</code>. If guiltty isn't running, it starts it.
               </p>
               <.doc_table id="command-table" head={["Command", "What it does"]}>
-                <tr>
-                  <td><code>guiltty</code></td>
-                  <td>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty</code></.pp_table_cell>
+                  <.pp_table_cell>
                     Opens a window, or brings back a closed one that kept locked tabs. Its first tab
                     starts in the folder you ran it in.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>guiltty stop</code></td>
-                  <td>Stops guiltty: every window and every tab, locked ones too.</td>
-                </tr>
-                <tr>
-                  <td><code>guiltty pid</code></td>
-                  <td>Prints the running guiltty's process id.</td>
-                </tr>
-                <tr>
-                  <td><code>guiltty remote</code></td>
-                  <td>An IEx shell inside the running guiltty.</td>
-                </tr>
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty stop</code></.pp_table_cell>
+                  <.pp_table_cell>
+                    Stops guiltty: every window and every tab, locked ones too.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty pid</code></.pp_table_cell>
+                  <.pp_table_cell>Prints the running guiltty's process id.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty remote</code></.pp_table_cell>
+                  <.pp_table_cell>An IEx shell inside the running guiltty.</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
               <p>
                 guiltty's Erlang node listens on 127.0.0.1 only, is named <code>guiltty@127.0.0.1</code>, and takes its cookie from <code>~/.erlang.cookie</code>.
@@ -838,26 +865,26 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
             <.doc_section id="environment" title="Environment variables">
               <.doc_table id="environment-table" head={["Variable", "What it does"]}>
-                <tr>
-                  <td><code>GUILTTY_CONFIG</code></td>
-                  <td>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_CONFIG</code></.pp_table_cell>
+                  <.pp_table_cell>
                     The config file to use instead of <code>~/.config/guiltty/config.exs</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>GUILTTY_RENDERER</code></td>
-                  <td>
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_RENDERER</code></.pp_table_cell>
+                  <.pp_table_cell>
                     <code>gl</code>
                     or <code>vulkan</code>, for a whole run, whatever the config says. Read when
                     guiltty starts.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>PREFIX</code></td>
-                  <td>
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>PREFIX</code></.pp_table_cell>
+                  <.pp_table_cell>
                     For <code>install.sh</code>: where to install instead of <code>~/.local</code>.
-                  </td>
-                </tr>
+                  </.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
             </.doc_section>
 
@@ -950,6 +977,16 @@ defmodule GuilttyWebsiteWeb.DocsLive do
         </div>
       </div>
 
+      <.pp_fab
+        id="docs-top"
+        icon="hero-arrow-up"
+        label="Back to top"
+        size="default"
+        position="fixed"
+        class="right-4 bottom-4 z-30 sm:right-6 sm:bottom-6"
+        phx-click={JS.dispatch("guiltty:scroll-top")}
+      />
+
       <script :type={Phoenix.LiveView.ColocatedHook} name=".DocsToc">
         export default {
           mounted() {
@@ -981,14 +1018,16 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
   attr :id, :string, required: true
   attr :title, :string, required: true
+  attr :divider, :boolean, default: true, doc: "a divider above the section"
   slot :inner_block, required: true
 
   defp doc_section(assigns) do
     ~H"""
+    <.pp_divider :if={@divider} class="my-14" />
     <section id={@id} class="doc-section">
-      <h2>
+      <.pp_typography variant="headline-small" tag="h2">
         <a href={"##{@id}"} class="doc-anchor">{@title}</a>
-      </h2>
+      </.pp_typography>
       {render_slot(@inner_block)}
     </section>
     """
@@ -1005,16 +1044,16 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
   defp doc_table(assigns) do
     ~H"""
-    <div class="doc-table-wrap">
-      <table id={@id} class={["doc-table", @stacked && "is-stacked"]}>
-        <thead>
-          <tr>
-            <th :for={h <- @head}>{h}</th>
-          </tr>
-        </thead>
-        <tbody>{render_slot(@inner_block)}</tbody>
-      </table>
-    </div>
+    <.pp_table_container class="mt-5">
+      <.pp_table id={@id} class={[@stacked && "is-stacked"]}>
+        <.pp_table_head>
+          <.pp_table_row>
+            <.pp_table_cell :for={h <- @head} variant="head">{h}</.pp_table_cell>
+          </.pp_table_row>
+        </.pp_table_head>
+        <.pp_table_body>{render_slot(@inner_block)}</.pp_table_body>
+      </.pp_table>
+    </.pp_table_container>
     """
   end
 

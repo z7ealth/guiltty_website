@@ -636,26 +636,9 @@
 
 /* ───────────────────────── Keys ───────────────────────── */
 
-.key-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-}
+/* PhoenixPaper's list, in two columns from md up */
 @media (min-width: 768px) {
-  .key-grid { grid-template-columns: repeat(2, 1fr); }
-}
-.key-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--color-pp-outline-variant);
-  transition: background-color 150ms ease;
-}
-.key-row:hover { background: var(--color-pp-surface-container); }
-@media (min-width: 768px) {
-  .key-row:nth-child(odd) { border-right: 1px solid var(--color-pp-outline-variant); }
-  .key-row:nth-last-child(-n + 2) { border-bottom: 0; }
+  .key-list { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 1px; }
 }
 
 /* ───────────────────────── Install ───────────────────────── */
@@ -703,15 +686,6 @@
   color: var(--color-pp-on-primary);
   font-size: 0.85rem;
 }
-.mini-card {
-  padding: 1rem;
-  border-radius: var(--radius-pp-md);
-  border: 1px solid var(--color-pp-outline-variant);
-  background: var(--color-pp-surface);
-  transition: border-color 200ms ease;
-}
-.mini-card:hover { border-color: var(--color-pp-primary); }
-
 /* (Not .timeline/.hero: those are daisyUI component classes.)
    ───────────────────────── Timeline ───────────────────────── */
 
@@ -827,19 +801,11 @@
 }
 
 .doc { color: var(--color-pp-on-surface); }
+/* The type roles are PhoenixPaper's (pp-body-large on the article,
+   pp_typography for headings); this is only the flow between them. */
 .doc-section { scroll-margin-top: 5.5rem; }
-.doc-section + .doc-section {
-  margin-top: 3.5rem;
-  padding-top: 3.5rem;
-  border-top: 1px solid var(--color-pp-outline-variant);
-}
-.doc h2 { font: 500 1.75rem/1.25 var(--font-pp-plain); letter-spacing: -0.01em; }
-.doc h3 { margin-top: 2rem; font: 500 1.125rem/1.4 var(--font-pp-plain); }
 .doc p, .doc ul, .doc dl { margin-top: 1rem; }
-.doc p, .doc li, .doc dd {
-  font: 400 1rem/1.7 var(--font-pp-plain);
-  color: var(--color-pp-on-surface-variant);
-}
+.doc p, .doc li, .doc dd { color: var(--color-pp-on-surface-variant); }
 .doc ul { padding-left: 1.25rem; list-style: disc; }
 .doc li + li { margin-top: 0.5rem; }
 .doc li::marker { color: var(--color-pp-primary); }
@@ -864,30 +830,8 @@
 }
 .doc-link:hover { text-decoration-color: currentColor; }
 
-.doc-table-wrap {
-  margin-top: 1.25rem;
-  overflow-x: auto;
-  border: 1px solid var(--color-pp-outline-variant);
-  border-radius: var(--radius-pp-md);
-}
-.doc-table { width: 100%; border-collapse: collapse; font: 400 0.9375rem/1.55 var(--font-pp-plain); }
-.doc-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font: 500 0.8125rem/1.4 var(--font-pp-plain);
-  color: var(--color-pp-on-surface-variant);
-  background: var(--color-pp-surface-container-low);
-}
-.doc-table td {
-  padding: 0.75rem 1rem;
-  vertical-align: top;
-  border-top: 1px solid var(--color-pp-outline-variant);
-  color: var(--color-pp-on-surface);
-}
-.doc-table tbody tr { transition: background-color 150ms ease; }
-.doc-table tbody tr:hover { background: color-mix(in srgb, var(--color-pp-on-surface) 4%, transparent); }
 /* setting and action names stay whole */
-.doc-table td:first-child code { white-space: nowrap; overflow-wrap: normal; }
+.doc td:first-child code { white-space: nowrap; overflow-wrap: normal; }
 .doc-cell-note {
   display: block;
   margin-top: 0.25rem;
@@ -971,38 +915,6 @@
 
 /* ───────────────────────── Phones ───────────────────────── */
 
-/* The menu under the top bar */
-.mobile-nav {
-  position: fixed;
-  inset: 4rem 0 auto 0;
-  z-index: 30;
-  padding: 0.5rem 1rem 1rem;
-  background: var(--color-pp-surface);
-  border-bottom: 1px solid var(--color-pp-outline-variant);
-  box-shadow: 0 16px 32px -16px rgb(0 0 0 / 0.25);
-}
-.mobile-nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 3rem;
-  padding: 0 0.75rem;
-  border-radius: var(--radius-pp-md);
-  font: 500 1rem/1.4 var(--font-pp-plain);
-  color: var(--color-pp-on-surface);
-  transition: background-color 150ms ease;
-}
-.mobile-nav-link:active,
-.mobile-nav-link:hover { background: color-mix(in srgb, var(--color-pp-on-surface) 8%, transparent); }
-.mobile-nav-theme {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-  padding: 0.75rem 0.75rem 0;
-  border-top: 1px solid var(--color-pp-outline-variant);
-}
-
 @media (max-width: 639px) {
   /* The hero terminal sits flat (the tilt clips it at this width), with
      two tabs at a smaller size so they fit. */
@@ -1019,20 +931,20 @@
 
   /* Docs tables with three columns: name and value on a line, the
      description under them */
-  .doc-table.is-stacked thead { display: none; }
-  .doc-table.is-stacked tr {
+  .is-stacked thead { display: none; }
+  .is-stacked tr {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.375rem 1rem;
     padding: 0.875rem 1rem;
     border-top: 1px solid var(--color-pp-outline-variant);
   }
-  .doc-table.is-stacked tbody tr:first-child { border-top: 0; }
-  .doc-table.is-stacked td { padding: 0; border: 0; }
-  .doc-table.is-stacked td:nth-child(2) { text-align: right; }
-  .doc-table.is-stacked td:nth-child(2) > span { align-items: flex-end; }
-  .doc-table.is-stacked td:nth-child(2) code { white-space: normal; overflow-wrap: anywhere; }
-  .doc-table.is-stacked td:nth-child(3) {
+  .is-stacked tbody tr:first-child { border-top: 0; }
+  .is-stacked td { padding: 0; border: 0; }
+  .is-stacked td:nth-child(2) { text-align: right; }
+  .is-stacked td:nth-child(2) > span { align-items: flex-end; }
+  .is-stacked td:nth-child(2) code { white-space: normal; overflow-wrap: anywhere; }
+  .is-stacked td:nth-child(3) {
     grid-column: 1 / -1;
     color: var(--color-pp-on-surface-variant);
   }
@@ -1043,22 +955,6 @@
 
 /* ───────────────────────── Book ───────────────────────── */
 
-.chapter {
-  position: relative;
-  display: flex;
-  height: 100%;
-  gap: 0.85rem;
-  align-items: flex-start;
-  padding: 1rem;
-  border-radius: var(--radius-pp-md);
-  border: 1px solid var(--color-pp-outline-variant);
-  background: var(--color-pp-surface-container-low);
-  transition: border-color 200ms ease, transform 250ms ease;
-}
-.chapter:hover {
-  border-color: var(--color-pp-primary);
-  transform: translateY(-2px);
-}
 .chapter-num {
   font: 600 0.8125rem/1.6 var(--font-mono);
   color: var(--color-pp-primary);

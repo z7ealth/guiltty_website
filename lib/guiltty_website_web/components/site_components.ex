@@ -6,6 +6,7 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
   section headings. Everything else on the page is PhoenixPaper.
   """
   use Phoenix.Component
+  use PhoenixPaper.Components
 
   @doc "The guiltty mark (`|>_`), drawn in `currentColor`."
   attr :class, :any, default: "size-8"
@@ -72,10 +73,10 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
         <.logo_mark class="term-app-icon" />
         <span class="term-title">{@title}</span>
         <span class="term-controls" aria-hidden="true">
-          <span class="hero-chevron-up-micro size-3.5"></span>
-          <span class="hero-minus-micro size-3.5"></span>
-          <span class="hero-stop-micro size-3"></span>
-          <span class="hero-x-mark-micro size-3.5"></span>
+          <.pp_icon name="hero-chevron-up-micro" size="none" class="size-3.5" />
+          <.pp_icon name="hero-minus-micro" size="none" class="size-3.5" />
+          <.pp_icon name="hero-stop-micro" size="none" class="size-3" />
+          <.pp_icon name="hero-x-mark-micro" size="none" class="size-3.5" />
         </span>
       </div>
       <div class={["term-body", @body_class]}>
@@ -106,19 +107,20 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
     <div class={["code-block group/code", @class]}>
       <div class="flex items-center justify-between px-4 pt-2.5">
         <span class="pp-label-small uppercase tracking-widest text-white/45">{@label}</span>
-        <button
-          type="button"
-          id={"#{@id}-copy"}
-          phx-hook=".Copy"
-          data-copy={"##{@id}"}
-          class="copy-btn"
-          aria-label="Copy to clipboard"
-          title="Copy"
-        >
-          <span class="hero-clipboard-document size-4 copy-idle"></span>
-          <span class="hero-check size-4 copy-done"></span>
-          <span class="copy-done pp-label-medium">Copied</span>
-        </button>
+        <.pp_tooltip title="Copy" placement="left">
+          <button
+            type="button"
+            id={"#{@id}-copy"}
+            phx-hook=".Copy"
+            data-copy={"##{@id}"}
+            class="copy-btn"
+            aria-label="Copy to clipboard"
+          >
+            <.pp_icon name="hero-clipboard-document" size="none" class="size-4 copy-idle" />
+            <.pp_icon name="hero-check" size="none" class="size-4 copy-done" />
+            <span class="copy-done pp-label-medium">Copied</span>
+          </button>
+        </.pp_tooltip>
       </div>
       <pre class="overflow-x-auto px-4 pt-1 pb-4"><code id={@id}>{@code}</code></pre>
     </div>
@@ -150,11 +152,25 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
   def section_header(assigns) do
     ~H"""
     <div class={["max-w-2xl", @class]}>
-      <p class="pp-label-large uppercase tracking-[0.2em] text-pp-primary">{@eyebrow}</p>
-      <h2 class="pp-display-small-emphasized mt-3 text-balance">{@title}</h2>
-      <p :if={@inner_block != []} class="pp-body-large mt-4 text-pp-on-surface-variant text-pretty">
+      <.pp_typography
+        variant="label-large"
+        color="primary"
+        tag="p"
+        class="uppercase tracking-[0.2em]"
+      >
+        {@eyebrow}
+      </.pp_typography>
+      <.pp_typography variant="display-small" emphasized tag="h2" class="mt-3 text-balance">
+        {@title}
+      </.pp_typography>
+      <.pp_typography
+        :if={@inner_block != []}
+        variant="body-large"
+        color="on-surface-variant"
+        class="mt-4 text-pretty"
+      >
         {render_slot(@inner_block)}
-      </p>
+      </.pp_typography>
     </div>
     """
   end

@@ -58,38 +58,51 @@ defmodule GuilttyWebsiteWeb.Layouts do
             {label}
           </.pp_button>
         </nav>
-        <.pp_icon_button href={github_url()} label="guiltty on GitHub" target="_blank" rel="noopener">
-          <.github_mark />
-        </.pp_icon_button>
+        <.pp_tooltip title="guiltty on GitHub" placement="bottom">
+          <.pp_icon_button
+            href={github_url()}
+            label="guiltty on GitHub"
+            title={false}
+            target="_blank"
+            rel="noopener"
+          >
+            <.github_mark />
+          </.pp_icon_button>
+        </.pp_tooltip>
         <.pp_theme_toggle class="hidden sm:inline-flex" />
         <.pp_icon_button
           id="mobile-nav-button"
           label="Menu"
           class="md:hidden"
           aria-controls="mobile-nav"
-          aria-expanded="false"
-          phx-click={toggle_mobile_nav()}
+          phx-click={PhoenixPaper.SideSheet.show("mobile-nav")}
         >
-          <span class="hero-bars-3 size-6"></span>
+          <.pp_icon name="hero-bars-3" size="none" class="size-6" />
         </.pp_icon_button>
       </:actions>
     </.pp_top_app_bar>
 
-    <%!-- Phones and small tablets: the section links in a panel under the bar --%>
-    <nav id="mobile-nav" class="mobile-nav md:hidden" aria-label="Sections" style="display: none">
-      <ul>
-        <li :for={{label, href} <- nav_links()}>
-          <a href={href} class="mobile-nav-link" phx-click={hide_mobile_nav()}>
-            {label}
-            <span class="hero-chevron-right-micro size-4 opacity-50"></span>
-          </a>
-        </li>
-      </ul>
-      <div class="mobile-nav-theme">
-        <span class="pp-body-medium text-pp-on-surface-variant">Theme</span>
+    <%!-- Phones and small tablets: the section links in a side sheet --%>
+    <.pp_side_sheet id="mobile-nav">
+      <:title>guiltty</:title>
+      <.pp_list aria-label="Sections">
+        <.pp_list_item
+          :for={{label, href} <- nav_links()}
+          href={href}
+          phx-click={PhoenixPaper.SideSheet.hide("mobile-nav")}
+        >
+          {label}
+          <:trailing><.pp_icon name="hero-chevron-right" size="sm" /></:trailing>
+        </.pp_list_item>
+      </.pp_list>
+      <.pp_divider class="my-2" />
+      <div class="flex items-center justify-between px-4 py-2">
+        <.pp_typography variant="body-large" color="on-surface-variant" tag="span">
+          Theme
+        </.pp_typography>
         <.pp_theme_toggle />
       </div>
-    </nav>
+    </.pp_side_sheet>
 
     <main id="top">
       {render_slot(@inner_block)}
@@ -142,27 +155,6 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   @doc "The GitHub repository."
   def github_url, do: "https://github.com/z7ealth/guiltty"
-
-  defp toggle_mobile_nav do
-    JS.toggle(
-      to: "#mobile-nav",
-      in:
-        {"transition ease-out duration-200", "opacity-0 -translate-y-2",
-         "opacity-100 translate-y-0"},
-      out:
-        {"transition ease-in duration-150", "opacity-100 translate-y-0",
-         "opacity-0 -translate-y-2"}
-    )
-    |> JS.toggle_attribute({"aria-expanded", "true", "false"}, to: "#mobile-nav-button")
-  end
-
-  defp hide_mobile_nav do
-    JS.hide(
-      to: "#mobile-nav",
-      transition: {"transition ease-in duration-150", "opacity-100", "opacity-0"}
-    )
-    |> JS.set_attribute({"aria-expanded", "false"}, to: "#mobile-nav-button")
-  end
 
   defp nav_links do
     [
