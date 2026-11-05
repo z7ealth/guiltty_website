@@ -126,7 +126,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.15.3", "Client and server", "Oct 31",
      "guiltty is a small client that asks the running guiltty for a window, like emacsclient: 0.1 s."},
     {"0.16.1", "Tab comforts and styles", "Nov 1",
-     "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."}
+     "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."},
+    {"0.17", "Faster text", "Nov 2",
+     "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."}
   ]
 
   @chapters [
@@ -299,7 +301,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
                 v0.17.0
               </span>
-              <span> Faster text rendering: printed text to cells in C</span>
+              <span>Faster text rendering: printed text to cells in C</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -370,7 +372,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             <div
               :for={
                 {value, label} <- [
-                  {"16", "milestones implemented"},
+                  {"17", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
                   {"26", "book chapters on how it works"}
@@ -392,7 +394,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             title="Elixir does the thinking. C draws the pixels."
           >
             Your shell writes bytes into a pseudoterminal. A NIF hands them to the BEAM, where a
-            parser and a screen, plain Elixir processes, turn them into cells. The renderer is a
+            parser and a screen, Elixir processes with a small C helper for printed text, turn them
+            into cells. The renderer is a
             separate program that only draws: if it dies, guiltty starts a new one and your tabs are
             still there.
           </.section_header>
@@ -563,7 +566,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <h3 class="pp-title-large mt-5">Measured, then faster</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                   Floods of short lines (<code class="inline-code">seq</code>, logs) land about 3x faster
-                  than in v0.13, laid down together and scrolled once.
+                  than in v0.13, laid down together and scrolled once. Since v0.17, text with accents,
+                  CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster.
                   <code class="inline-code">make bench</code>
                   measures it.
                 </p>

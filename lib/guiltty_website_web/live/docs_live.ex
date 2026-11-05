@@ -345,9 +345,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             <.doc_section id="overview" title="Overview" divider={false}>
               <p>
                 guiltty is a GPU-accelerated terminal emulator in Elixir and C. Elixir holds the
-                behavior: the parser, the screen, tabs, windows, config. C does the syscalls and the
-                pixels: a PTY NIF, a renderer (Vulkan, or OpenGL) that runs as its own process, and
-                the small <code>guiltty</code> command.
+                behavior: the parser, the screen, tabs, windows, config. C does the syscalls, the hot
+                path and the pixels: two NIFs (the PTY, and printed text into screen cells), a
+                renderer (Vulkan, or OpenGL) that runs as its own process, and the small
+                <code>guiltty</code>
+                command.
               </p>
               <p>
                 It runs on Linux only. It's been tried on openSUSE Tumbleweed, X11 and an AMD GPU;
@@ -997,7 +999,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               />
               <p>
                 <code>mix compile</code>
-                also builds the C: the NIF and both renderers, each in a normal and a debug build.
+                also builds the C: the two NIFs and both renderers, each in a normal and a debug build.
                 <code>make bench</code>
                 measures throughput, and <code>AGENTS.md</code>
                 lists every other command.
