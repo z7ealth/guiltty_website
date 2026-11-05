@@ -29,6 +29,22 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     assert has_element?(view, "#tab-style-powerline")
   end
 
+  # The formatter can turn code={"a\nb"} into code="a\nb", which HEEx
+  # renders as a literal backslash-n: snippets live in heredocs instead.
+  test "code blocks have real line breaks", %{conn: conn} do
+    for path <- [~p"/docs", ~p"/"] do
+      {:ok, view, _html} = live(conn, path)
+
+      for code <-
+            view |> render() |> LazyHTML.from_fragment() |> LazyHTML.query(".code-block code") do
+        refute LazyHTML.text(code) =~ "\\n"
+      end
+    end
+
+    {:ok, view, _html} = live(conn, ~p"/docs")
+    assert view |> element("#docs-hack-cmd") |> render() =~ "mix deps.get\nmix guiltty"
+  end
+
   test "the top bar links to the docs", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/")
 

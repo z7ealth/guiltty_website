@@ -142,6 +142,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"separators", "Titles between thin bars, the active one filled."}
   ]
 
+  # Makes ssh give up on a dead connection within about 45 seconds (book
+  # chapter 18, "A frozen connection isn't a lost one").
+  @ssh_alive ~S"""
+  Host *
+    ServerAliveInterval 15
+    ServerAliveCountMax 3
+  """
+
+  @hack_commands ~S"""
+  mix deps.get
+  mix guiltty        # a window from the source tree
+  mix test
+  iex -S mix         # the same, with an iex shell alongside
+  """
+
   @keys_example ~S"""
   keys: [
     new_tab: ["ctrl+t"],
@@ -276,6 +291,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
+     |> assign(:ssh_alive, String.trim(@ssh_alive))
+     |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))}
   end
 
@@ -613,14 +630,43 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </li>
                 <li>
                   If a connection drops, typing goes nowhere until that tab leaves the group, and the
-                  tab bar shows which tab was lost. A command meant for your servers doesn't land on
-                  your own machine.
+                  tab bar shows <code>⚠ broadcast paused</code>
+                  with the tab that was lost. A command meant for your servers doesn't land on your
+                  own machine.
                 </li>
                 <li>
                   A local tab (your own shell) joins on purpose with a second
                   <.keys keys="Ctrl+Shift+B" />. It's marked 🏠 and isn't checked.
                 </li>
               </ul>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                Keys go out, not commands
+              </.pp_typography>
+              <p>
+                Broadcast sends the keys you press, the same bytes to every tab, and each server's
+                shell decides what they do. Anything a shell writes for you can come out different on
+                every server: Tab completes against each server's own files, a suggestion accepted
+                with → comes from each server's own history, and ↑ or Ctrl+R bring back each
+                server's own last commands. In a broadcast group, type the whole command or paste
+                it, and look at one other tab before pressing Enter if it matters. tmux's
+                <code>synchronize-panes</code>
+                and ClusterSSH work the same way.
+              </p>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                A frozen connection isn't a lost one
+              </.pp_typography>
+              <p>
+                guiltty notices an <code>ssh</code>
+                that exited. One that's still running but whose connection stopped (the laptop
+                slept, the Wi-Fi or VPN changed) still looks fine: keys wait in its buffers and that
+                tab shows nothing until ssh gives up, which can take minutes. To make ssh give up
+                within about 45 seconds, so the group pauses, add to <code>~/.ssh/config</code>:
+              </p>
+              <.code_block
+                id="docs-ssh-alive"
+                label="~/.ssh/config"
+                code={@ssh_alive}
+              />
             </.doc_section>
 
             <.doc_section id="keys" title="Keys">
@@ -977,6 +1023,14 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     Install fonts that have them: a Nerd Font, Noto Color Emoji and Noto Sans CJK.
                   </p>
                 </dd>
+                <dt>Broadcast types nothing</dt>
+                <dd>
+                  <p>
+                    If the tab bar says <code>⚠ broadcast paused</code>, a tab in the group lost its
+                    connection: take it out with <.keys keys="Ctrl+Shift+B" />. If one tab just shows
+                    nothing, its ssh may be frozen; see <a class="doc-link" href="#broadcast">Broadcast</a>.
+                  </p>
+                </dd>
                 <dt>I can't select text in vim or htop</dt>
                 <dd>
                   <p>They use the mouse; hold Shift to select.</p>
@@ -995,7 +1049,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <p>To work on guiltty itself, from a clone:</p>
               <.code_block
                 id="docs-hack-cmd"
-                code="mix deps.get\nmix guiltty        # a window from the source tree\nmix test\niex -S mix         # the same, with an iex shell alongside"
+                code={@hack_commands}
               />
               <p>
                 <code>mix compile</code>

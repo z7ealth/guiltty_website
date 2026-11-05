@@ -127,7 +127,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "guiltty is a small client that asks the running guiltty for a window, like emacsclient: 0.1 s."},
     {"0.16.1", "Tab comforts and styles", "Nov 1",
      "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."},
-    {"0.17", "Faster text", "Nov 2",
+    {"0.17.1", "Faster text", "Nov 2",
      "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."}
   ]
 
@@ -299,7 +299,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.17.0
+                v0.17.1
               </span>
               <span>Faster text rendering: printed text to cells in C</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
