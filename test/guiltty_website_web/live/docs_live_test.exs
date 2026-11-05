@@ -8,7 +8,7 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
 
     sections =
       ~w(overview requirements install update windows-and-tabs scrollback broadcast keys
-         config-file settings themes tab-styles fonts renderer example-config command environment
+         images config-file settings themes tab-styles fonts renderer example-config command environment
          troubleshooting hacking learn-more)
 
     for id <- sections do

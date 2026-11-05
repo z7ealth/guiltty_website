@@ -19,16 +19,16 @@ defmodule GuilttyWebsite.Guiltty do
   # {slug, name, command, note}
   @distros [
     {"opensuse", "openSUSE Tumbleweed",
-     "sudo zypper install gcc make pkg-config SDL3-devel freetype2-devel \\\n  fontconfig-devel harfbuzz-devel vulkan-devel shaderc elixir erlang-epmd",
+     "sudo zypper install gcc make pkg-config SDL3-devel freetype2-devel \\\n  fontconfig-devel harfbuzz-devel libpng16-devel vulkan-devel shaderc elixir erlang-epmd",
      "The one guiltty is developed on."},
     {"fedora", "Fedora 45+",
-     "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel vulkan-loader-devel vulkan-headers glslc elixir",
+     "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel libpng-devel vulkan-loader-devel vulkan-headers glslc elixir",
      "If Fedora's Elixir is older than 1.18 (elixir --version), leave out elixir and get Elixir and Erlang from asdf."},
     {"ubuntu", "Ubuntu 26.04+",
-     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libvulkan-dev glslc elixir erlang-dev",
+     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libpng-dev libvulkan-dev glslc elixir erlang-dev",
      "Older Ubuntus have neither SDL3 nor GCC 15."},
     {"arch", "Arch Linux",
-     "sudo pacman -S --needed base-devel sdl3 freetype2 fontconfig harfbuzz \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
+     "sudo pacman -S --needed base-devel sdl3 freetype2 fontconfig harfbuzz libpng \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
      "Everything is in the official repositories."}
   ]
 

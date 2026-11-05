@@ -634,6 +634,9 @@
   background: linear-gradient(90deg, #ff0040, #ff8a00, #ffe600, #2ee66b, #00c8ff, #6a5cff, #ff00c8);
 }
 
+/* An image drawn in a terminal: cells, so square corners, no shadow */
+.images-demo { display: block; width: 8rem; height: 8rem; image-rendering: auto; }
+
 /* ───────────────────────── Keys ───────────────────────── */
 
 /* PhoenixPaper's list, in two columns from md up */

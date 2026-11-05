@@ -22,6 +22,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      [
        {"windows-and-tabs", "Windows and tabs"},
        {"scrollback", "Scrollback, search, selection"},
+       {"images", "Images"},
        {"broadcast", "Broadcast"},
        {"keys", "Keys"}
      ]},
@@ -70,7 +71,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"zoom_out", ["ctrl+-"], "Smaller text."},
     {"zoom_reset", ["ctrl+0"], "The configured size again."},
     {"open_config", ["ctrl+,"],
-     "Open the config file in your editor, creating it from the example first."},
+     "Open the config file, creating it from the example first: in a new tab running $VISUAL or $EDITOR if one is set, otherwise in your desktop's app."},
     {"cheatsheet", ["ctrl+shift+/"], "Every key, as you bound it, on one page."},
     {"lock_tab", ["ctrl+shift+l"], "Lock the tab, so it outlives its window."},
     {"broadcast", ["ctrl+shift+b"], "Put the tab in the broadcast group, or take it out."}
@@ -155,6 +156,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   mix guiltty        # a window from the source tree
   mix test
   iex -S mix         # the same, with an iex shell alongside
+  """
+
+  @icat_example ~S"""
+  kitten icat ~/Pictures/photo.png
+  chafa --format kitty photo.jpg
   """
 
   @keys_example ~S"""
@@ -291,6 +297,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
+     |> assign(:icat_example, String.trim(@icat_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))}
@@ -404,6 +411,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.pp_table_row>
                   <.pp_table_cell>glslc (from shaderc)</.pp_table_cell>
                   <.pp_table_cell>compiles the Vulkan shaders to SPIR-V</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>libpng (development files)</.pp_table_cell>
+                  <.pp_table_cell>decoding PNG images</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
               <p>
@@ -615,6 +626,30 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               </ul>
             </.doc_section>
 
+            <.doc_section id="images" title="Images">
+              <p>
+                Programs that use the Kitty graphics protocol show pictures in guiltty: yazi previews
+                images, and <code>kitten icat</code>, <code>chafa</code>
+                and <code>timg</code>
+                work. Images scroll with the text, and you can scroll back to them.
+              </p>
+              <.code_block id="docs-icat" code={@icat_example} />
+              <ul>
+                <li>Raw RGB, RGBA and PNG, zlib-compressed or not, sent in chunks.</li>
+                <li>
+                  Not supported: sixel, animation, Unicode placeholders, and images read from a file
+                  path (<code>t=f</code>), which a remote program could use to read your files.
+                </li>
+                <li>
+                  Programs can ask how big a cell is in pixels: guiltty sets the pixel size on the
+                  terminal (<code>TIOCGWINSZ</code>) and answers <code>CSI 14 t</code>,
+                  <code>CSI 16 t</code>
+                  and <code>CSI 18 t</code>. It answers <code>CSI &gt; q</code>
+                  (XTVERSION) with its name and version.
+                </li>
+              </ul>
+            </.doc_section>
+
             <.doc_section id="broadcast" title="Broadcast">
               <p>
                 Broadcast types into every tab in a group at once: the same change on five servers,
@@ -733,8 +768,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <p>
                 The config file is <code>~/.config/guiltty/config.exs</code>
                 (or the path in <code>GUILTTY_CONFIG</code>). <.keys keys="Ctrl+," />
-                creates it from the example config, which documents every setting, and opens it in
-                your editor.
+                creates it from the example config, which documents every setting, and opens it: in a
+                new tab running <code>$VISUAL</code>
+                (or <code>$EDITOR</code>) if one is set, and that tab closes when you quit the
+                editor; otherwise in your desktop's app for the file.
+              </p>
+              <p>
+                guiltty reads the variable from its own environment, so set it where your session
+                starts (<code>~/.profile</code>, or <code>~/.config/environment.d/</code>), not only
+                in your shell's rc file.
               </p>
               <p>
                 It's plain Elixir: the last expression is the config, a keyword list. Settings you
@@ -980,6 +1022,13 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   </.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
+                  <.pp_table_cell><code>VISUAL</code>, <code>EDITOR</code></.pp_table_cell>
+                  <.pp_table_cell>
+                    The editor <.keys keys="Ctrl+," />
+                    opens the config in, in a new tab. Set it where your session starts.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
                   <.pp_table_cell><code>PREFIX</code></.pp_table_cell>
                   <.pp_table_cell>
                     For <code>install.sh</code>: where to install instead of <code>~/.local</code>.
@@ -1023,6 +1072,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     Install fonts that have them: a Nerd Font, Noto Color Emoji and Noto Sans CJK.
                   </p>
                 </dd>
+                <dt>An image doesn't show</dt>
+                <dd>
+                  <p>
+                    The program has to use the Kitty graphics protocol (for chafa, <code>--format kitty</code>). Sixel and animated images aren't supported, and
+                    images sent as a file path are refused.
+                  </p>
+                </dd>
+                <dt><.keys keys="Ctrl+," /> opens the config in the wrong app</dt>
+                <dd>
+                  <p>
+                    Set <code>VISUAL</code>
+                    or <code>EDITOR</code>
+                    where your session starts (<code>~/.profile</code>, or <code>~/.config/environment.d/</code>), then restart guiltty: <code>guiltty stop</code>, then <code>guiltty</code>.
+                  </p>
+                </dd>
                 <dt>Broadcast types nothing</dt>
                 <dd>
                   <p>
@@ -1064,7 +1128,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <ul>
                 <li>
                   <a class="doc-link" href={"#{@github}/tree/master/book"}>The book</a>
-                  explains every part, with diagrams, from pseudoterminals to tab styles.
+                  explains every part, with diagrams, from pseudoterminals to images.
                 </li>
                 <li>
                   <a class="doc-link" href={Guiltty.github_path("CHANGELOG.md")}>CHANGELOG.md</a>

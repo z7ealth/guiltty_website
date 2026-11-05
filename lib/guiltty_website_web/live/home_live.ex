@@ -70,6 +70,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-language", "Unicode & emoji"},
     {"hero-code-bracket", "Ligatures"},
     {"hero-bell", "Activity marks"},
+    {"hero-photo", "Images"},
     {"hero-swatch", "Built-in themes"}
   ]
 
@@ -128,7 +129,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.16.1", "Tab comforts and styles", "Nov 1",
      "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."},
     {"0.17.1", "Faster text", "Nov 2",
-     "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."}
+     "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."},
+    {"0.18", "Images", "Nov 5",
+     "Kitty graphics: yazi previews, kitten icat, chafa and timg show pictures that scroll with the text. Ctrl+, opens the config in your $EDITOR."}
   ]
 
   @chapters [
@@ -157,7 +160,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"22-performance", "Performance: measure, then fix what the numbers say"},
     {"23-client-server", "Client and server: the guiltty command"},
     {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"},
-    {"25-tab-styles", "Tab styles: five ways to draw one row"}
+    {"25-tab-styles", "Tab styles: five ways to draw one row"},
+    {"26-images", "Images: pictures in a grid of characters"}
   ]
 
   @impl true
@@ -299,9 +303,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.17.1
+                v0.18.0
               </span>
-              <span>Faster text rendering: printed text to cells in C</span>
+              <span>Images: yazi previews, kitten icat, chafa</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -327,7 +331,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </.pp_button>
             </.pp_button_group>
 
-            <div class="mx-auto mt-6 flex max-w-4xl flex-wrap justify-center gap-2">
+            <div class="mx-auto mt-6 flex max-w-5xl flex-wrap justify-center gap-2">
               <.pp_chip :for={{icon, label} <- @hero_features}>
                 <:icon><.icon name={icon} class="size-4.5" /></:icon>
                 {label}
@@ -372,10 +376,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             <div
               :for={
                 {value, label} <- [
-                  {"17", "milestones implemented"},
+                  {"18", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
-                  {"26", "book chapters on how it works"}
+                  {"27", "book chapters on how it works"}
                 ]
               }
               class="py-8 text-center"
@@ -487,6 +491,37 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <div class="mt-4"><.keys keys="Ctrl+Shift+L" /></div>
               </.pp_card>
 
+              <.pp_card variant="filled" class="bento-wide feature-card" id="feature-images">
+                <div class="grid gap-6 md:grid-cols-2 md:items-center">
+                  <div>
+                    <div class="feature-icon">
+                      <.pp_icon name="hero-photo" size="none" class="size-6" />
+                    </div>
+                    <h3 class="pp-headline-small mt-5">Pictures, in the terminal</h3>
+                    <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
+                      Programs that speak the Kitty graphics protocol show images: yazi previews, <code class="inline-code">kitten icat</code>, chafa and timg. PNG or raw RGB(A),
+                      scrolling with the text and into the scrollback. Images read from a file path
+                      are refused, so a remote program can't read your files with them.
+                    </p>
+                  </div>
+                  <.terminal id="images-terminal" title="kitten icat" body_class="text-[13px]!">
+                    <div>
+                      <span class="t-magenta">❯</span> kitten icat ~/Pictures/guiltty.png
+                    </div>
+                    <img
+                      src={~p"/images/guiltty-icon.png"}
+                      alt="guiltty's icon, drawn in the terminal"
+                      class="images-demo mt-2"
+                      width="128"
+                      height="128"
+                    />
+                    <div class="mt-2">
+                      <span class="t-magenta">❯</span> <span class="t-cursor"></span>
+                    </div>
+                  </.terminal>
+                </div>
+              </.pp_card>
+
               <.pp_card variant="filled" class="feature-card" id="feature-broadcast">
                 <div class="feature-icon">
                   <.pp_icon name="hero-signal" size="none" class="size-6" />
@@ -499,7 +534,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <div class="mt-4"><.keys keys="Ctrl+Shift+B" /></div>
               </.pp_card>
 
-              <.pp_card variant="filled" class="feature-card" id="feature-unicode">
+              <.pp_card variant="filled" class="bento-wide feature-card" id="feature-unicode">
                 <div class="feature-icon">
                   <.pp_icon name="hero-language" size="none" class="size-6" />
                 </div>
@@ -958,8 +993,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               eyebrow="The book"
               title="Learn how a terminal works, from the kernel up."
             >
-              guiltty comes with a book: twenty-six chapters with diagrams, one for every part, from
-              pseudoterminals to tab styles.
+              guiltty comes with a book: twenty-seven chapters with diagrams, one for every part, from
+              pseudoterminals to images.
             </.section_header>
             <ol
               id="chapters"
