@@ -158,11 +158,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   iex -S mix         # the same, with an iex shell alongside
   """
 
-  @icat_example ~S"""
-  kitten icat ~/Pictures/photo.png
-  chafa --format kitty photo.jpg
-  """
-
   @keys_example ~S"""
   keys: [
     new_tab: ["ctrl+t"],
@@ -297,7 +292,6 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
-     |> assign(:icat_example, String.trim(@icat_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))}
@@ -628,12 +622,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
             <.doc_section id="images" title="Images">
               <p>
-                Programs that use the Kitty graphics protocol show pictures in guiltty: yazi previews
-                images, and <code>kitten icat</code>, <code>chafa</code>
-                and <code>timg</code>
-                work. Images scroll with the text, and you can scroll back to them.
+                guiltty supports the Kitty graphics protocol: programs that use it show pictures in
+                the terminal. Images scroll with the text, and you can scroll back to them.
               </p>
-              <.code_block id="docs-icat" code={@icat_example} />
               <ul>
                 <li>Raw RGB, RGBA and PNG, zlib-compressed or not, sent in chunks.</li>
                 <li>
@@ -1075,8 +1066,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <dt>An image doesn't show</dt>
                 <dd>
                   <p>
-                    The program has to use the Kitty graphics protocol (for chafa, <code>--format kitty</code>). Sixel and animated images aren't supported, and
-                    images sent as a file path are refused.
+                    The program has to use the Kitty graphics protocol. Sixel and animated images
+                    aren't supported, and images sent as a file path are refused.
                   </p>
                 </dd>
                 <dt><.keys keys="Ctrl+," /> opens the config in the wrong app</dt>

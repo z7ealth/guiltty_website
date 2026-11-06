@@ -130,8 +130,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."},
     {"0.17.1", "Faster text", "Nov 2",
      "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."},
-    {"0.18", "Images", "Nov 5",
-     "Kitty graphics: yazi previews, kitten icat, chafa and timg show pictures that scroll with the text. Ctrl+, opens the config in your $EDITOR."}
+    {"0.18.1", "Images", "Nov 5",
+     "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR."}
   ]
 
   @chapters [
@@ -303,9 +303,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.18.0
+                v0.18.1
               </span>
-              <span>Images: yazi previews, kitten icat, chafa</span>
+              <span>Images: the Kitty graphics protocol, PNG and raw RGB(A)</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -499,19 +499,17 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                     </div>
                     <h3 class="pp-headline-small mt-5">Pictures, in the terminal</h3>
                     <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
-                      Programs that speak the Kitty graphics protocol show images: yazi previews, <code class="inline-code">kitten icat</code>, chafa and timg. PNG or raw RGB(A),
-                      scrolling with the text and into the scrollback. Images read from a file path
-                      are refused, so a remote program can't read your files with them.
+                      guiltty speaks the Kitty graphics protocol, so programs that use it show
+                      pictures: PNG or raw RGB(A), sent in chunks, scrolling with the text and into
+                      the scrollback. Images read from a file path are refused, so a remote program
+                      can't read your files with them.
                     </p>
                   </div>
-                  <.terminal id="images-terminal" title="kitten icat" body_class="text-[13px]!">
-                    <div>
-                      <span class="t-magenta">❯</span> kitten icat ~/Pictures/guiltty.png
-                    </div>
+                  <.terminal id="images-terminal" title="Kitty graphics" body_class="text-[13px]!">
                     <img
                       src={~p"/images/guiltty-icon.png"}
                       alt="guiltty's icon, drawn in the terminal"
-                      class="images-demo mt-2"
+                      class="images-demo"
                       width="128"
                       height="128"
                     />
