@@ -289,6 +289,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:tested_versions, Guiltty.tested_versions())
      |> assign(:themes, Guiltty.themes())
      |> assign(:install_command, Guiltty.install_command())
+     |> assign(:one_line_install, Guiltty.one_line_install())
+     |> assign(
+       :one_line_dry_run,
+       String.replace_suffix(Guiltty.one_line_install(), "| sh", "| sh -s -- --dry-run")
+     )
+     |> assign(:get_sh_url, Guiltty.get_sh_url())
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
@@ -408,7 +414,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </.pp_table_row>
                 <.pp_table_row>
                   <.pp_table_cell>libpng (development files)</.pp_table_cell>
-                  <.pp_table_cell>decoding PNG images</.pp_table_cell>
+                  <.pp_table_cell>pictures programs show (Kitty graphics)</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
               <p>
@@ -444,12 +450,57 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             </.doc_section>
 
             <.doc_section id="install" title="Install">
-              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">One line</.pp_typography>
+              <p>
+                On openSUSE, Fedora, Ubuntu/Debian, Arch and the distributions based on them:
+              </p>
+              <.code_block id="docs-one-line-cmd" code={@one_line_install} />
+              <p>
+                <a class="doc-link" href={@get_sh_url}>get.sh</a>
+                finds out your distribution, shows the packages that are missing and the
+                <code>sudo</code>
+                command that installs them, and asks before running it. Then it downloads the latest
+                release's source into <code>~/.local/src</code>, builds it and installs it into <code>~/.local</code>; it needs no root for that. Run it again to update. It only
+                warns about Elixir: if yours is older than 1.18 (on OTP 26), it stops and says how to
+                get a newer one with asdf. It's a short script: read it first, if you like.
+              </p>
+              <.doc_table id="get-sh-options-table" head={["Option", "What it does"]}>
+                <.pp_table_row>
+                  <.pp_table_cell><code>--dry-run</code></.pp_table_cell>
+                  <.pp_table_cell>Says what it would do, and does nothing.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>--yes</code></.pp_table_cell>
+                  <.pp_table_cell>
+                    Installs the missing packages and stops a running guiltty without asking.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_VERSION=v0.18.1</code></.pp_table_cell>
+                  <.pp_table_cell>A release other than the latest.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>PREFIX=/somewhere</code></.pp_table_cell>
+                  <.pp_table_cell>Where to install, instead of <code>~/.local</code>.</.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
+              <p>
+                Piped into <code>sh</code>, options go after <code>sh -s --</code>:
+              </p>
+              <.code_block id="docs-one-line-dry-run" code={@one_line_dry_run} />
+
+              <.pp_typography variant="title-large" tag="h3" class="mt-10">
+                Or by hand
+              </.pp_typography>
+              <p>The same thing, step by step.</p>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">
                 1. What to install first
               </.pp_typography>
               <p>
-                On these distributions, one command installs it all. Only openSUSE has been tried;
-                the other package names come from each distribution's package listings.
+                On these distributions, one command installs it all (it's what get.sh runs).
+                openSUSE Tumbleweed has been tried all the way to a running guiltty; on the others,
+                get.sh found these package names in fresh containers of each, but the build itself
+                hasn't been tried.
               </p>
               <.pp_card variant="outlined" class="mt-4 overflow-hidden" content_class="p-0!">
                 <.pp_tabs id="docs-distro" layout="scrollable" aria-label="Distribution">
@@ -474,7 +525,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </.pp_tab_panel>
               </.pp_card>
 
-              <.pp_typography variant="title-large" tag="h3" class="mt-8">2. guiltty</.pp_typography>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">2. guiltty</.pp_typography>
               <.code_block id="docs-install-cmd" code={@install_command} />
               <p>
                 <code>install.sh</code>
@@ -503,7 +554,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </.pp_table_row>
               </.doc_table>
 
-              <.pp_typography variant="title-large" tag="h3" class="mt-8">3. Run it</.pp_typography>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">3. Run it</.pp_typography>
               <p>
                 Run <code>guiltty</code>, or find it in your applications menu. If your shell says <code>guiltty: command not found</code>, add
                 <code>~/.local/bin</code>
@@ -515,6 +566,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <dl class="doc-defs">
                 <dt>Update</dt>
                 <dd>
+                  <p>Run the one line again, or, from a clone:</p>
                   <.code_block id="docs-update-cmd" code="git pull && ./install.sh" />
                   <p>
                     If guiltty is running, the script asks before stopping it, since that closes its
@@ -1022,7 +1074,14 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.pp_table_row>
                   <.pp_table_cell><code>PREFIX</code></.pp_table_cell>
                   <.pp_table_cell>
-                    For <code>install.sh</code>: where to install instead of <code>~/.local</code>.
+                    For <code>get.sh</code>
+                    and <code>install.sh</code>: where to install instead of <code>~/.local</code>.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_VERSION</code></.pp_table_cell>
+                  <.pp_table_cell>
+                    For <code>get.sh</code>: a release other than the latest, like <code>v0.18.1</code>.
                   </.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
@@ -1061,6 +1120,13 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <dd>
                   <p>
                     Install fonts that have them: a Nerd Font, Noto Color Emoji and Noto Sans CJK.
+                  </p>
+                </dd>
+                <dt>The one line stops about Elixir</dt>
+                <dd>
+                  <p>
+                    The build needs Elixir 1.18 or newer on Erlang/OTP 26 or newer, and get.sh says how
+                    to get one with asdf. Then run the line again.
                   </p>
                 </dd>
                 <dt>An image doesn't show</dt>

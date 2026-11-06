@@ -23,6 +23,8 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     assert has_element?(view, "#keys-table code", "rename_tab")
     assert has_element?(view, "#settings-table code", "broadcast_programs")
     assert has_element?(view, "#docs-deps-opensuse")
+    assert has_element?(view, "#docs-one-line-cmd", "get.sh | sh")
+    assert has_element?(view, "#get-sh-options-table")
     assert has_element?(view, "#docs-versions-table")
     assert has_element?(view, "#docs-example-config")
     assert has_element?(view, "#settings-table code", "tab_style")

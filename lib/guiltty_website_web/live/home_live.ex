@@ -130,8 +130,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "Busy tabs ask before closing, ● and 🔔 mark tabs you're not looking at, tabs can be renamed and reordered, and drawn flat, powerline, rounded, minimal or with separators."},
     {"0.17.1", "Faster text", "Nov 2",
      "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."},
-    {"0.18.1", "Images", "Nov 5",
-     "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR."}
+    {"0.18.2", "Images and a one-line install", "Nov 6",
+     "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR. One line now installs it all."}
   ]
 
   @chapters [
@@ -303,9 +303,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.18.1
+                v0.18.2
               </span>
-              <span>Images: the Kitty graphics protocol, PNG and raw RGB(A)</span>
+              <span>One-line install: finds your distribution, asks, builds</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -832,7 +832,33 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               once. The installed copy carries its own Erlang runtime and needs no root.
             </.section_header>
 
-            <div class="mt-12 space-y-10">
+            <div id="install-one-line" class="mt-12">
+              <p class="step-label">
+                <span class="step-num"><.pp_icon name="hero-bolt-micro" size="xs" /></span> One line
+              </p>
+              <.code_block id="one-line-cmd" class="mt-4" code={Guiltty.one_line_install()} />
+              <p class="pp-body-small mt-3 text-pp-on-surface-variant">
+                On openSUSE, Fedora, Ubuntu/Debian, Arch and the distributions based on them. It shows
+                the packages that are missing and the <code class="inline-code">sudo</code>
+                command that installs them, and asks before running it. Then it builds the latest
+                release into <code class="inline-code">~/.local</code>. Run it again to update.
+                <a href={Guiltty.get_sh_url()} class="text-pp-primary underline underline-offset-2">
+                  Read the script
+                </a>
+                first, if you like;
+                <.link
+                  navigate={~p"/docs#install"}
+                  class="text-pp-primary underline underline-offset-2"
+                >the docs</.link>
+                have its options.
+              </p>
+            </div>
+
+            <.pp_typography variant="title-medium" tag="h3" class="mt-14 mb-6">
+              Or by hand
+            </.pp_typography>
+
+            <div class="space-y-10">
               <div>
                 <p class="step-label"><span class="step-num">1</span> What to install first</p>
                 <.pp_card variant="outlined" class="mt-4 overflow-hidden" content_class="p-0!">
@@ -864,8 +890,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   </.pp_tab_panel>
                 </.pp_card>
                 <p class="pp-body-small mt-3 text-pp-on-surface-variant">
-                  Only openSUSE has been tried; the other package names come from each distribution's
-                  package listings.
+                  openSUSE Tumbleweed has been tried all the way to a running guiltty. On the others,
+                  these package names were found in fresh containers of each, but the build itself
+                  hasn't been tried.
                 </p>
 
                 <div id="versions" class="mt-8">

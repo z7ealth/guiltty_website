@@ -55,6 +55,13 @@ defmodule GuilttyWebsite.Guiltty do
   @doc "Tested Elixir and Erlang/OTP versions: `{elixir, otp, status}`."
   def tested_versions, do: @tested_versions
 
+  @doc "The one-line install (get.sh): finds the distribution, asks, builds the latest release."
+  def one_line_install,
+    do: "curl -fsSL https://raw.githubusercontent.com/z7ealth/guiltty/master/get.sh | sh"
+
+  @doc "get.sh on GitHub, to read before piping it into a shell."
+  def get_sh_url, do: github_path("get.sh")
+
   @doc "The clone-and-install commands."
   def install_command, do: "git clone #{@github}.git\ncd guiltty\n./install.sh"
 end
