@@ -7,7 +7,7 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/docs")
 
     sections =
-      ~w(overview requirements install update windows-and-tabs scrollback broadcast keys
+      ~w(overview requirements install update windows-and-tabs split-panes scrollback broadcast keys
          images config-file settings themes tab-styles fonts renderer example-config command environment
          troubleshooting hacking learn-more)
 
@@ -28,6 +28,7 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     assert has_element?(view, "#docs-versions-table")
     assert has_element?(view, "#docs-example-config")
     assert has_element?(view, "#settings-table code", "tab_style")
+    assert has_element?(view, "#settings-table code", "pane_border")
     assert has_element?(view, "#tab-style-powerline")
   end
 

@@ -21,6 +21,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"Using guiltty",
      [
        {"windows-and-tabs", "Windows and tabs"},
+       {"split-panes", "Split panes"},
        {"scrollback", "Scrollback, search, selection"},
        {"images", "Images"},
        {"broadcast", "Broadcast"},
@@ -52,7 +53,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"new_window", ["ctrl+shift+n"], "A new window, with its own tabs."},
     {"new_tab", ["ctrl+shift+t"], "A new tab."},
     {"close_tab", ["ctrl+shift+w"],
-     "Close the tab. If it's running a program, the tab bar says what, and pressing it again closes it."},
+     "Close the focused pane, or the tab with its last pane. If it's running a program, the tab bar says what, and pressing it again closes it."},
     {"next_tab", ["ctrl+page_down", "ctrl+tab"], "The next tab."},
     {"prev_tab", ["ctrl+page_up", "ctrl+shift+tab"], "The previous tab."},
     {"move_tab_left", ["ctrl+shift+page_up"], "Move the tab left."},
@@ -67,14 +68,25 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"search", ["ctrl+shift+f"],
      "Search the scrollback: Enter finds older, Shift+Enter newer, Escape ends."},
     {"copy", ["ctrl+shift+c"], "Copy the selection to the clipboard."},
-    {"zoom_in", ["ctrl+=", "ctrl+shift+="], "Bigger text."},
+    {"zoom_in", ["ctrl+=", "ctrl+shift+=", "ctrl+plus"], "Bigger text."},
     {"zoom_out", ["ctrl+-"], "Smaller text."},
     {"zoom_reset", ["ctrl+0"], "The configured size again."},
     {"open_config", ["ctrl+,"],
      "Open the config file, creating it from the example first: in a new tab running $VISUAL or $EDITOR if one is set, otherwise in your desktop's app."},
-    {"cheatsheet", ["ctrl+shift+/"], "Every key, as you bound it, on one page."},
+    {"cheatsheet", ["ctrl+shift+h", "ctrl+shift+/"], "Every key, as you bound it, on one page."},
     {"lock_tab", ["ctrl+shift+l"], "Lock the tab, so it outlives its window."},
-    {"broadcast", ["ctrl+shift+b"], "Put the tab in the broadcast group, or take it out."}
+    {"broadcast", ["ctrl+shift+b"],
+     "Put the tab, every pane of it, in the broadcast group, or take it out."},
+    {"split_right", ["ctrl+shift+o"], "A new pane right of the focused one, with half its room."},
+    {"split_down", ["ctrl+shift+e"], "A new pane below the focused one, with half its room."},
+    {"focus_left", ["ctrl+shift+left"], "Focus the pane to the left (a click works too)."},
+    {"focus_right", ["ctrl+shift+right"], "Focus the pane to the right."},
+    {"focus_up", ["ctrl+shift+up"], "Focus the pane above."},
+    {"focus_down", ["ctrl+shift+down"], "Focus the pane below."},
+    {"resize_left", ["alt+shift+left"], "Move the separator nearest the focused pane left."},
+    {"resize_right", ["alt+shift+right"], "Move it right."},
+    {"resize_up", ["alt+shift+up"], "Move it up."},
+    {"resize_down", ["alt+shift+down"], "Move it down."}
   ]
 
   # Every setting, from defaults/0 and the checks in lib/guiltty/config.ex:
@@ -103,6 +115,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"broadcast_programs", ~s(["ssh", "mosh-client"]), "a list of program names",
      "What a tab must be running to join the broadcast group."},
     {"tab_bar", ":bottom", ":bottom or :top", nil},
+    {"pane_border", "[style: :solid, thickness: :thin]",
+     "style: :solid, :dashed, :double or :none; thickness: :thin or :thick",
+     "The line between split panes. Its colors are in the theme."},
     {"tab_style", ":flat", ":flat, :powerline, :rounded, :minimal or :separators",
      "How the tabs look. Their colors are in the theme."},
     {"ligatures", "true", "true or false",
@@ -130,7 +145,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     tab_text: "#6272a4",
     tab_active: "#ff79c6",
     tab_active_text: "#282a36",
-    tab_accent: "#ff79c6"
+    tab_accent: "#ff79c6",
+    # The border between split panes, and along the focused one. Left
+    # out: the palette's bright black and blue.
+    pane_border: "#44475a",
+    pane_border_active: "#bd93f9"
   ]
   """
 
@@ -156,6 +175,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   mix guiltty        # a window from the source tree
   mix test
   iex -S mix         # the same, with an iex shell alongside
+  """
+
+  @pane_border_example ~S"""
+  pane_border: [style: :dashed, thickness: :thick]
   """
 
   @keys_example ~S"""
@@ -229,6 +252,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # Their colors are in theme: (tab_bar, tab_active, ... above).
     tab_style: :flat,
 
+    # The border between split panes (Ctrl+Shift+O / E): one cell wide, a
+    # line of style :solid, :dashed, :double or :none (blank), :thin or
+    # :thick. Its colors are in theme: (pane_border, pane_border_active).
+    pane_border: [style: :solid, thickness: :thin],
+
     # Join ->, !=, |>, => and the like into one symbol, when the font has
     # ligatures (JetBrains Mono and Fira Code do; Source Code Pro doesn't).
     ligatures: true,
@@ -245,12 +273,19 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     scrollback: 10_000,
 
     # Each action takes a list of keys. Names: letters, digits, f1-f12,
-    # tab, enter, page_up, page_down, home, end, insert, delete, or a
-    # punctuation character like = or -, with any of the ctrl+, shift+ and
-    # alt+ modifiers.
+    # tab, enter, page_up, page_down, home, end, insert, delete, up, down,
+    # left, right, plus (the + key), or a punctuation character like = or -,
+    # with any of the ctrl+, shift+ and alt+ modifiers.
+    #
+    # A punctuation key is named by what it types *without* Shift on your
+    # layout. "ctrl+shift+/" is the / ? key on a US keyboard; on a Latin
+    # American one / is Shift+7, so no key matches it there, and the ' ?
+    # key is "ctrl+shift+'". Letters are the same on every layout.
     keys: [
       new_window: ["ctrl+shift+n"],
       new_tab: ["ctrl+shift+t"],
+      # Closes the focused pane (the tab, when it's the last one). Asks first
+      # when it's running a program (vim, ssh, a build).
       close_tab: ["ctrl+shift+w"],
       next_tab: ["ctrl+page_down", "ctrl+tab"],
       prev_tab: ["ctrl+page_up", "ctrl+shift+tab"],
@@ -264,13 +299,30 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       clear_scrollback: ["ctrl+shift+k"],
       search: ["ctrl+shift+f"],
       copy: ["ctrl+shift+c"],
-      zoom_in: ["ctrl+=", "ctrl+shift+="],
+      # Ctrl and the + key: "plus" names the key that types + without Shift
+      # (Latin American, Spanish, German layouts).
+      zoom_in: ["ctrl+=", "ctrl+shift+=", "ctrl+plus"],
       zoom_out: ["ctrl+-"],
       zoom_reset: ["ctrl+0"],
       open_config: ["ctrl+,"],
-      cheatsheet: ["ctrl+shift+/"],
+      cheatsheet: ["ctrl+shift+h", "ctrl+shift+/"],
       lock_tab: ["ctrl+shift+l"],
-      broadcast: ["ctrl+shift+b"]
+      # Puts the tab in the broadcast group, or takes it out: all its panes.
+      broadcast: ["ctrl+shift+b"],
+      # Split panes: a new pane right of the focused one, or below it, with
+      # half its room.
+      split_right: ["ctrl+shift+o"],
+      split_down: ["ctrl+shift+e"],
+      # The focus to the pane in that direction (a click works too).
+      focus_left: ["ctrl+shift+left"],
+      focus_right: ["ctrl+shift+right"],
+      focus_up: ["ctrl+shift+up"],
+      focus_down: ["ctrl+shift+down"],
+      # Moves the separator nearest the focused pane, that way.
+      resize_left: ["alt+shift+left"],
+      resize_right: ["alt+shift+right"],
+      resize_up: ["alt+shift+up"],
+      resize_down: ["alt+shift+down"]
     ]
   ]
   """
@@ -298,6 +350,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
+     |> assign(:pane_border_example, String.trim(@pane_border_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))}
@@ -605,9 +658,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               </.pp_typography>
               <p>
                 <.keys keys="Ctrl+Shift+W" />
-                on a tab that's running a program (vim, ssh, a build) asks first: the tab bar says
-                what's running, and pressing it again closes the tab. A tab waiting at its prompt
-                closes at once.
+                closes the focused pane, and the tab with its last pane. On one that's running a
+                program (vim, ssh, a build) it asks first: the tab bar says what's running, and
+                pressing it again closes it. One waiting at its prompt closes at once.
               </p>
               <.pp_typography variant="title-large" tag="h3" class="mt-8">Marks</.pp_typography>
               <p>
@@ -633,6 +686,53 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 current tab's shell is. A tab's shell gets its window's display (<code>DISPLAY</code>
                 and the like), so GUI programs started from it open where that window is.
               </p>
+            </.doc_section>
+
+            <.doc_section id="split-panes" title="Split panes">
+              <p>
+                A tab can hold several shells, side by side or stacked. Each pane is a whole
+                terminal, with its own scrollback, search, selection and images.
+              </p>
+              <.doc_table id="panes-table" head={["Keys", "What they do"]}>
+                <.pp_table_row>
+                  <.pp_table_cell>
+                    <.keys keys="Ctrl+Shift+O" /> <.keys keys="Ctrl+Shift+E" />
+                  </.pp_table_cell>
+                  <.pp_table_cell>
+                    Split the focused pane right, or down: the new pane takes half its room.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><.keys keys="Ctrl+Shift+Arrows" /></.pp_table_cell>
+                  <.pp_table_cell>Focus the pane that way. A click works too.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><.keys keys="Alt+Shift+Arrows" /></.pp_table_cell>
+                  <.pp_table_cell>
+                    Move the separator nearest the focused pane, that way.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><.keys keys="Ctrl+Shift+W" /></.pp_table_cell>
+                  <.pp_table_cell>
+                    Close the focused pane. The tab closes with its last one; in a tab of one pane,
+                    nothing changes.
+                  </.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
+              <p>
+                Every key is rebindable (<code>split_right</code>, <code>split_down</code>, <code>focus_left</code>…, <code>resize_left</code>…), and the cheatsheet has a
+                Panes card.
+              </p>
+              <p>
+                The border between panes is a <code>:solid</code>
+                line by default; <code>pane_border</code>
+                makes it <code>:dashed</code>, <code>:double</code>
+                or <code>:none</code>, <code>:thin</code>
+                or <code>:thick</code>. Its colors, and the color along the focused pane, are in the
+                theme.
+              </p>
+              <.code_block id="docs-pane-border" label="config.exs" code={@pane_border_example} />
             </.doc_section>
 
             <.doc_section id="scrollback" title="Scrollback, search, selection">
@@ -700,6 +800,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 in each, and press <.keys keys="Ctrl+Shift+B" /> in each to put it in the group.
                 What you type in one goes to all of them. Each window has its own group.
               </p>
+              <p>
+                <.keys keys="Ctrl+Shift+B" />
+                takes every pane of the tab at once, so you can also split one tab, ssh in each
+                pane, and type into all of them.
+              </p>
               <ul>
                 <li>
                   A tab can join only while it's running one of <code>broadcast_programs</code>
@@ -750,7 +855,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             <.doc_section id="keys" title="Keys">
               <p>
                 These are the defaults, as they ship. Every one can be rebound in the config's <code>keys</code>, and
-                <.keys keys="Ctrl+Shift+/" /> shows them as you bound them.
+                <.keys keys="Ctrl+Shift+H" /> shows them as you bound them.
               </p>
               <.pp_card variant="outlined" class="doc-compact mt-5 min-[600px]:hidden">
                 <.pp_list id="keys-list" aria-label="Default keys">
@@ -797,11 +902,23 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <.pp_typography variant="title-large" tag="h3" class="mt-8">Rebinding</.pp_typography>
               <p>
                 Each action takes a list of keys. Names are letters, digits, <code>f1</code>
-                to <code>f12</code>, <code>tab</code>, <code>enter</code>, <code>page_up</code>, <code>page_down</code>, <code>home</code>, <code>end</code>, <code>insert</code>, <code>delete</code>, or a punctuation character like
-                <code>=</code>
+                to <code>f12</code>, <code>tab</code>, <code>enter</code>, <code>page_up</code>, <code>page_down</code>, <code>home</code>, <code>end</code>, <code>insert</code>, <code>delete</code>, <code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>,
+                <code>plus</code>
+                (the + key), or a punctuation character like <code>=</code>
                 or <code>-</code>, with any of the <code>ctrl+</code>, <code>shift+</code>
                 and <code>alt+</code>
                 modifiers. Actions you leave out keep their defaults.
+              </p>
+              <p>
+                A punctuation key is named by what it types without Shift on your layout, so the
+                same name can be a different key, or none, on another one. On a US keyboard
+                <code>ctrl+shift+/</code>
+                is the / ? key; on a Latin American one / is Shift+7, so nothing matches it, and
+                that key is <code>ctrl+shift+'</code>. Letters are the same on every layout, which
+                is why the defaults lean on them (<.keys keys="Ctrl+Shift+H" />
+                for the cheatsheet) and on <code>plus</code>
+                (<code>ctrl+plus</code>
+                zooms in where + has a key of its own).
               </p>
               <.code_block id="docs-keys-example" label="config.exs" code={@keys_example} />
             </.doc_section>
@@ -913,7 +1030,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               </p>
               <.code_block id="docs-theme-example" label="config.exs" code={@custom_theme} />
               <.pp_typography variant="title-large" tag="h3" class="mt-8">
-                Tab bar colors
+                Tab bar and pane border colors
               </.pp_typography>
               <.doc_table id="tab-colors-table" head={["Color", "What it colors"]}>
                 <.pp_table_row>
@@ -939,8 +1056,19 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     other styles)
                   </.pp_table_cell>
                 </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>pane_border</code></.pp_table_cell>
+                  <.pp_table_cell>the border between split panes</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>pane_border_active</code></.pp_table_cell>
+                  <.pp_table_cell>the border along the focused pane</.pp_table_cell>
+                </.pp_table_row>
               </.doc_table>
-              <p>Any you leave out are worked out from the theme, to suit the tab style.</p>
+              <p>
+                Any you leave out are worked out from the theme: the tab colors to suit the tab
+                style, the pane borders from the palette's bright black and blue.
+              </p>
             </.doc_section>
 
             <.doc_section id="tab-styles" title="Tab styles">

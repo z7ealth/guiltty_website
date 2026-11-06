@@ -71,30 +71,37 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-code-bracket", "Ligatures"},
     {"hero-bell", "Activity marks"},
     {"hero-photo", "Images"},
+    {"hero-view-columns", "Split panes"},
     {"hero-swatch", "Built-in themes"}
   ]
 
+  # Every default key of each action, from @default_keys in guiltty's
+  # lib/guiltty/config.ex (paste is the fixed one): {[keys], action}.
   @keys [
-    {"Ctrl+Shift+N", "New window"},
-    {"Ctrl+Shift+T", "New tab"},
-    {"Ctrl+Shift+W", "Close tab (asks if busy)"},
-    {"Ctrl+PgUp", "Previous tab"},
-    {"Ctrl+PgDn", "Next tab"},
-    {"Ctrl+Shift+PgUp", "Move tab left"},
-    {"Ctrl+Shift+PgDn", "Move tab right"},
-    {"Ctrl+Shift+R", "Rename the tab"},
-    {"Shift+PgUp", "Scroll back"},
-    {"Ctrl+Shift+K", "Clear the scrollback"},
-    {"Ctrl+Shift+F", "Search the scrollback"},
-    {"Ctrl+Shift+C", "Copy"},
-    {"Ctrl+Shift+V", "Paste"},
-    {"Ctrl+=", "Zoom in"},
-    {"Ctrl+-", "Zoom out"},
-    {"Ctrl+0", "Reset zoom"},
-    {"Ctrl+,", "Open the config file"},
-    {"Ctrl+Shift+/", "The cheatsheet: every key"},
-    {"Ctrl+Shift+L", "Lock the tab 🔒"},
-    {"Ctrl+Shift+B", "Broadcast tabs"}
+    {["Ctrl+Shift+N"], "New window"},
+    {["Ctrl+Shift+T"], "New tab"},
+    {["Ctrl+Shift+W"], "Close the pane or tab (asks if busy)"},
+    {["Ctrl+PgUp", "Ctrl+Shift+Tab"], "Previous tab"},
+    {["Ctrl+PgDn", "Ctrl+Tab"], "Next tab"},
+    {["Ctrl+Shift+PgUp"], "Move tab left"},
+    {["Ctrl+Shift+PgDn"], "Move tab right"},
+    {["Ctrl+Shift+R"], "Rename the tab"},
+    {["Shift+PgUp"], "Scroll back"},
+    {["Ctrl+Shift+K"], "Clear the scrollback"},
+    {["Ctrl+Shift+F"], "Search the scrollback"},
+    {["Ctrl+Shift+C"], "Copy"},
+    {["Ctrl+Shift+V", "Shift+Insert"], "Paste"},
+    {["Ctrl+=", "Ctrl+Shift+=", "Ctrl++"], "Zoom in"},
+    {["Ctrl+-"], "Zoom out"},
+    {["Ctrl+0"], "Reset zoom"},
+    {["Ctrl+,"], "Open the config file"},
+    {["Ctrl+Shift+H", "Ctrl+Shift+/"], "The cheatsheet: every key"},
+    {["Ctrl+Shift+L"], "Lock the tab 🔒"},
+    {["Ctrl+Shift+B"], "Broadcast tabs"},
+    {["Ctrl+Shift+O"], "Split the pane right"},
+    {["Ctrl+Shift+E"], "Split the pane down"},
+    {["Ctrl+Shift+Arrows"], "Focus the pane that way"},
+    {["Alt+Shift+Arrows"], "Move the separator"}
   ]
 
   @milestones [
@@ -131,7 +138,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.17.1", "Faster text", "Nov 2",
      "A small C NIF turns printed text into cells: text with accents, CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster."},
     {"0.18.2", "Images and a one-line install", "Nov 6",
-     "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR. One line now installs it all."}
+     "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR. One line now installs it all."},
+    {"0.19.1", "Split panes", "Nov 6",
+     "Several shells in one tab, side by side or stacked, each a whole terminal, with a border you can style. Broadcast takes every pane of a tab."}
   ]
 
   @chapters [
@@ -161,7 +170,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"23-client-server", "Client and server: the guiltty command"},
     {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"},
     {"25-tab-styles", "Tab styles: five ways to draw one row"},
-    {"26-images", "Images: pictures in a grid of characters"}
+    {"26-images", "Images: pictures in a grid of characters"},
+    {"27-split-panes", "Split panes: one tab, several shells"}
   ]
 
   @impl true
@@ -303,9 +313,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.18.2
+                v0.19.1
               </span>
-              <span>One-line install: finds your distribution, asks, builds</span>
+              <span>Split panes: several shells in one tab</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -376,10 +386,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             <div
               :for={
                 {value, label} <- [
-                  {"18", "milestones implemented"},
+                  {"19", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
-                  {"27", "book chapters on how it works"}
+                  {"28", "book chapters on how it works"}
                 ]
               }
               class="py-8 text-center"
@@ -526,10 +536,61 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 </div>
                 <h3 class="pp-title-large mt-5">Safe broadcast</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
-                  Type once into every tab in the group. If a connection drops, typing goes nowhere, so a command
+                  Type once into every tab in the group, every pane of each. If a connection drops, typing goes nowhere, so a command
                   meant for your servers doesn't land on your own machine.
                 </p>
                 <div class="mt-4"><.keys keys="Ctrl+Shift+B" /></div>
+              </.pp_card>
+
+              <.pp_card variant="filled" class="bento-wide feature-card" id="feature-panes">
+                <div class="feature-icon">
+                  <.pp_icon name="hero-view-columns" size="none" class="size-6" />
+                </div>
+                <h3 class="pp-headline-small mt-5">Split panes</h3>
+                <p class="pp-body-medium mt-2 text-pp-on-surface-variant max-w-xl">
+                  Several shells in one tab, side by side or stacked. Each pane is a whole terminal,
+                  with its own scrollback, search, selection and images. Move the focus with the keys
+                  or a click, and the separator with the keys.
+                </p>
+                <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                  <.keys keys="Ctrl+Shift+O" />
+                  <.keys keys="Ctrl+Shift+E" />
+                </div>
+                <%!-- As guiltty draws it: a thin separator, the focused pane is the one
+                      with the cursor, the title follows it --%>
+                <.terminal
+                  id="panes-terminal"
+                  title="mix phx.server"
+                  tabs={[{"mix phx.server", true}]}
+                  class="mt-6"
+                  body_class="panes-body"
+                >
+                  <div class="pane">
+                    <.p10k_prompt />
+                    <div><span class="p10k-frame">╰─</span></div>
+                  </div>
+                  <div class="pane">
+                    <.p10k_prompt />
+                    <div><span class="p10k-frame">╰─</span> mix phx.server</div>
+                    <div>[info] Running Endpoint at 127.0.0.1:4000</div>
+                    <div>[info] Access it at http://localhost:4000</div>
+                    <div>[watch] build finished, watching for changes...</div>
+                    <div class="t-cyan">[debug] Replied in 136µs</div>
+                    <div><span class="t-cursor"></span></div>
+                  </div>
+                </.terminal>
+              </.pp_card>
+
+              <.pp_card variant="filled" class="feature-card" id="feature-windows">
+                <div class="feature-icon">
+                  <.pp_icon name="hero-square-2-stack" size="none" class="size-6" />
+                </div>
+                <h3 class="pp-title-large mt-5">Many windows, one guiltty</h3>
+                <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
+                  Each window has its own tabs, locked tabs and broadcast group. Closing one never
+                  touches the others; guiltty stops after the last.
+                </p>
+                <div class="mt-4"><.keys keys="Ctrl+Shift+N" /></div>
               </.pp_card>
 
               <.pp_card variant="filled" class="bento-wide feature-card" id="feature-unicode">
@@ -567,16 +628,18 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 </p>
               </.pp_card>
 
-              <.pp_card variant="filled" class="feature-card" id="feature-windows">
+              <.pp_card variant="filled" class="bento-wide feature-card" id="feature-performance">
                 <div class="feature-icon">
-                  <.pp_icon name="hero-square-2-stack" size="none" class="size-6" />
+                  <.pp_icon name="hero-chart-bar" size="none" class="size-6" />
                 </div>
-                <h3 class="pp-title-large mt-5">Many windows, one guiltty</h3>
+                <h3 class="pp-title-large mt-5">Measured, then faster</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
-                  Each window has its own tabs, locked tabs and broadcast group. Closing one never
-                  touches the others; guiltty stops after the last.
+                  Floods of short lines (<code class="inline-code">seq</code>, logs) land about 3x faster
+                  than in v0.13, laid down together and scrolled once. Since v0.17, text with accents,
+                  CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster.
+                  <code class="inline-code">make bench</code>
+                  measures it.
                 </p>
-                <div class="mt-4"><.keys keys="Ctrl+Shift+N" /></div>
               </.pp_card>
 
               <.pp_card variant="filled" class="feature-card" id="feature-client">
@@ -589,20 +652,6 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   is a small client that asks the running guiltty for a window over a private socket,
                   like <code class="inline-code">emacsclient</code>. About 0.1 s with guiltty running, 0.7 s from
                   cold, on the developer's machine.
-                </p>
-              </.pp_card>
-
-              <.pp_card variant="filled" class="feature-card" id="feature-performance">
-                <div class="feature-icon">
-                  <.pp_icon name="hero-chart-bar" size="none" class="size-6" />
-                </div>
-                <h3 class="pp-title-large mt-5">Measured, then faster</h3>
-                <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
-                  Floods of short lines (<code class="inline-code">seq</code>, logs) land about 3x faster
-                  than in v0.13, laid down together and scrolled once. Since v0.17, text with accents,
-                  CJK or emoji prints about twice as fast, and full-screen redraws about 50% faster.
-                  <code class="inline-code">make bench</code>
-                  measures it.
                 </p>
               </.pp_card>
 
@@ -801,7 +850,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
           <div class="flex flex-wrap items-end justify-between gap-6">
             <.section_header eyebrow="Keys" title="Rebind any of them.">
               The defaults, as they ship; paste (Ctrl+Shift+V) is the one fixed key. Forgot one?
-              <.keys keys="Ctrl+Shift+/" /> opens the cheatsheet, built from your own config.
+              <.keys keys="Ctrl+Shift+H" /> opens the cheatsheet, built from your own config.
             </.section_header>
           </div>
           <.pp_card variant="outlined" class="mt-12" content_class="py-2!">
@@ -809,12 +858,16 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               <%!-- three_line so a long label wraps on phones; the rows stay
                     one-line height and centered (PhoenixPaper's ! overrides) --%>
               <.pp_list_item
-                :for={{combo, action} <- @keys}
+                :for={{combos, action} <- @keys}
                 three_line
                 class="min-h-14! items-center! py-2!"
               >
                 {action}
-                <:trailing><.keys keys={combo} /></:trailing>
+                <:trailing>
+                  <span class="flex flex-col items-end gap-1">
+                    <.keys :for={combo <- combos} keys={combo} />
+                  </span>
+                </:trailing>
               </.pp_list_item>
             </.pp_list>
           </.pp_card>
@@ -838,19 +891,15 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </p>
               <.code_block id="one-line-cmd" class="mt-4" code={Guiltty.one_line_install()} />
               <p class="pp-body-small mt-3 text-pp-on-surface-variant">
-                On openSUSE, Fedora, Ubuntu/Debian, Arch and the distributions based on them. It shows
-                the packages that are missing and the <code class="inline-code">sudo</code>
-                command that installs them, and asks before running it. Then it builds the latest
-                release into <code class="inline-code">~/.local</code>. Run it again to update.
+                For openSUSE, Fedora, Ubuntu/Debian and Arch. Asks before using <code class="inline-code">sudo</code>; run it again to update.
                 <a href={Guiltty.get_sh_url()} class="text-pp-primary underline underline-offset-2">
                   Read the script
                 </a>
-                first, if you like;
+                ·
                 <.link
                   navigate={~p"/docs#install"}
                   class="text-pp-primary underline underline-offset-2"
-                >the docs</.link>
-                have its options.
+                >Options</.link>
               </p>
             </div>
 
@@ -1018,8 +1067,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               eyebrow="The book"
               title="Learn how a terminal works, from the kernel up."
             >
-              guiltty comes with a book: twenty-seven chapters with diagrams, one for every part, from
-              pseudoterminals to images.
+              guiltty comes with a book: twenty-eight chapters with diagrams, one for every part, from
+              pseudoterminals to split panes.
             </.section_header>
             <ol
               id="chapters"

@@ -637,6 +637,20 @@
 /* An image drawn in a terminal: cells, so square corners, no shadow */
 .images-demo { display: block; width: 8rem; height: 8rem; image-rendering: auto; }
 
+/* Two panes in one terminal, as guiltty splits a tab: a thin separator the
+   whole height; the focused pane is the one with the cursor */
+.panes-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 13rem;
+  padding: 0 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.4;
+}
+.pane { padding: 0.5rem 0.625rem; min-width: 0; overflow: hidden; white-space: nowrap; }
+.pane + .pane { border-left: 1px solid color-mix(in srgb, var(--t-fg) 45%, var(--t-bg)); }
+.pane .p10k-seg { height: 1.4em; }
+
 /* ───────────────────────── Keys ───────────────────────── */
 
 /* PhoenixPaper's list, in two columns from md up */
