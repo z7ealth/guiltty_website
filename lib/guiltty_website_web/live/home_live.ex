@@ -94,6 +94,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {["Ctrl+Shift+Z"], "Previous prompt"},
     {["Ctrl+Shift+X"], "Next prompt"},
     {["Ctrl+Shift+C"], "Copy"},
+    {["Ctrl+Shift+A"], "Select all"},
     {["Ctrl+Shift+V", "Shift+Insert"], "Paste"},
     {["Ctrl+=", "Ctrl+Shift+=", "Ctrl++"], "Zoom in"},
     {["Ctrl+-"], "Zoom out"},
@@ -102,7 +103,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {["Ctrl+Shift+H", "Ctrl+Shift+/"], "The cheatsheet: every key"},
     {["Ctrl+Shift+L"], "Lock the tab 🔒"},
     {["Ctrl+Shift+B"], "Broadcast tabs"},
-    {["Ctrl+Shift+A"], "Open the AI tool, and back"},
+    {["Ctrl+Shift+Space"], "Open the AI tool, and back"},
     {["Ctrl+Shift+O"], "Split the pane right"},
     {["Ctrl+Shift+E"], "Split the pane down"},
     {["Ctrl+Shift+Arrows"], "Focus the pane that way"},
@@ -149,9 +150,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.20.1", "A terminal you can rely on", "Nov 9",
      "xterm conformance: 449 esctest2 checks pass, up from 112. Long lines rewrap on resize, the Kitty keyboard protocol, hyperlinks, OSC 52 copy over ssh, jumps between prompts. Right click copies and pastes."},
     {"0.21.0", "The AI key", "Nov 9",
-     "Ctrl+Shift+A opens the command-line AI tool you choose in a pane beside you, and back. Only what you select goes to it, and nothing runs until you press Enter."},
-    {"0.22.0", "Clickable URLs", "Nov 9",
-     "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined."}
+     "One key opens the command-line AI tool you choose in a pane beside you, and back. Only what you select goes to it, and nothing runs until you press Enter."},
+    {"0.22.1", "Clickable URLs and select all", "Nov 9",
+     "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined. Ctrl+Shift+A selects all; the AI key moves to Ctrl+Shift+Space."}
   ]
 
   @chapters [
@@ -325,9 +326,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.22.0
+                v0.22.1
               </span>
-              <span>Clickable URLs: Ctrl+click any address on the screen</span>
+              <span>Select all with Ctrl+Shift+A; the AI key is Ctrl+Shift+Space</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -615,7 +616,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   go back. Only what you select goes to its prompt, without Enter. guiltty just starts
                   the program: no API keys, no accounts, any command-line tool.
                 </p>
-                <div class="mt-4"><.keys keys="Ctrl+Shift+A" /></div>
+                <div class="mt-4"><.keys keys="Ctrl+Shift+Space" /></div>
                 <%!-- The shell on the left with an error selected; the AI tool on
                       the right, focused, the selection pasted at its prompt --%>
                 <.terminal

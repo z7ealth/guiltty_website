@@ -73,6 +73,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      "Jump to the prompt before the view, in shells that mark them (OSC 133)."},
     {"next_prompt", ["ctrl+shift+x"], "Jump to the prompt after the view."},
     {"copy", ["ctrl+shift+c"], "Copy the selection to the clipboard."},
+    {"select_all", ["ctrl+shift+a"],
+     "Select everything, the scrollback and the screen, as in an editor. Ctrl+Shift+C copies it."},
     {"zoom_in", ["ctrl+=", "ctrl+shift+=", "ctrl+plus"], "Bigger text."},
     {"zoom_out", ["ctrl+-"], "Smaller text."},
     {"zoom_reset", ["ctrl+0"], "The configured size again."},
@@ -82,7 +84,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"lock_tab", ["ctrl+shift+l"], "Lock the tab, so it outlives its window."},
     {"broadcast", ["ctrl+shift+b"],
      "Put the tab, every pane of it, in the broadcast group, or take it out."},
-    {"ai", ["ctrl+shift+a"],
+    {"ai", ["ctrl+shift+space"],
      "Open the AI tool set in ai:, with the selection at its prompt, and go back. Without a command, it only says so."},
     {"split_right", ["ctrl+shift+o"], "A new pane right of the focused one, with half its room."},
     {"split_down", ["ctrl+shift+e"], "A new pane below the focused one, with half its room."},
@@ -131,7 +133,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      "Join ->, !=, |> and the like into one symbol, when the font has ligatures."},
     {"ai", "[command: nil, position: :right]",
      ~s(command: a program, like "your-ai-tool"; position: :right, :down or :tab),
-     "What the AI key (Ctrl+Shift+A) opens, and where. No command by default: guiltty doesn't pick one for you."},
+     "What the AI key (Ctrl+Shift+Space) opens, and where. No command by default: guiltty doesn't pick one for you."},
     {"clipboard_write", "true", "true or false",
      "Programs can put text on the clipboard (OSC 52), from the focused pane. They can never read it."},
     {"link_url", "true", "true or false",
@@ -290,7 +292,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
     # Each action takes a list of keys. Names: letters, digits, f1-f12,
     # tab, enter, page_up, page_down, home, end, insert, delete, up, down,
-    # left, right, plus (the + key), or a punctuation character like = or -,
+    # left, right, space, plus (the + key), or a punctuation character like = or -,
     # with any of the ctrl+, shift+ and alt+ modifiers.
     #
     # A punctuation key is named by what it types *without* Shift on your
@@ -315,6 +317,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       clear_scrollback: ["ctrl+shift+k"],
       search: ["ctrl+shift+f"],
       copy: ["ctrl+shift+c"],
+      # Selects everything: the scrollback and the screen, as in an editor.
+      select_all: ["ctrl+shift+a"],
       # Ctrl and the + key: "plus" names the key that types + without Shift
       # (Latin American, Spanish, German layouts).
       zoom_in: ["ctrl+=", "ctrl+shift+=", "ctrl+plus"],
@@ -326,7 +330,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       # Puts the tab in the broadcast group, or takes it out: all its panes.
       broadcast: ["ctrl+shift+b"],
       # Opens the AI tool set below, and goes back.
-      ai: ["ctrl+shift+a"],
+      ai: ["ctrl+shift+space"],
       # Split panes: a new pane right of the focused one, or below it, with
       # half its room.
       split_right: ["ctrl+shift+o"],
@@ -784,7 +788,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             <.doc_section id="ai" title="The AI key">
               <p>
                 A pane runs any program, so an AI tool is just one more. Set the command in <code>ai</code>, and
-                <.keys keys="Ctrl+Shift+A" />
+                <.keys keys="Ctrl+Shift+Space" />
                 opens it beside you, in the folder you were in. Press it again and you go back to
                 where you were; again, and you return to it. <code>position</code>
                 puts it to the <code>:right</code>
@@ -837,6 +841,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <ul>
                 <li>
                   Selecting with the mouse copies to the primary selection; a middle click pastes it.
+                </li>
+                <li>
+                  <.keys keys="Ctrl+Shift+A" />
+                  selects everything, as Select All does in an editor: the scrollback and the
+                  screen, down to the last row with text (in vim or htop, that screen alone). Like a
+                  mouse selection it goes to the primary selection.
                 </li>
                 <li>
                   <.keys keys="Ctrl+Shift+C" /> copies the selection to the clipboard, and
