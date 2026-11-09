@@ -72,6 +72,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-bell", "Activity marks"},
     {"hero-photo", "Images"},
     {"hero-view-columns", "Split panes"},
+    {"hero-chat-bubble-left-right", "AI key"},
+    {"hero-link", "Hyperlinks"},
     {"hero-swatch", "Built-in themes"}
   ]
 
@@ -89,6 +91,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {["Shift+PgUp"], "Scroll back"},
     {["Ctrl+Shift+K"], "Clear the scrollback"},
     {["Ctrl+Shift+F"], "Search the scrollback"},
+    {["Ctrl+Shift+Z"], "Previous prompt"},
+    {["Ctrl+Shift+X"], "Next prompt"},
     {["Ctrl+Shift+C"], "Copy"},
     {["Ctrl+Shift+V", "Shift+Insert"], "Paste"},
     {["Ctrl+=", "Ctrl+Shift+=", "Ctrl++"], "Zoom in"},
@@ -98,6 +102,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {["Ctrl+Shift+H", "Ctrl+Shift+/"], "The cheatsheet: every key"},
     {["Ctrl+Shift+L"], "Lock the tab 🔒"},
     {["Ctrl+Shift+B"], "Broadcast tabs"},
+    {["Ctrl+Shift+A"], "Open the AI tool, and back"},
     {["Ctrl+Shift+O"], "Split the pane right"},
     {["Ctrl+Shift+E"], "Split the pane down"},
     {["Ctrl+Shift+Arrows"], "Focus the pane that way"},
@@ -140,7 +145,13 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.18.2", "Images and a one-line install", "Nov 6",
      "The Kitty graphics protocol: PNG and raw RGB(A) images that scroll with the text and into the scrollback. Ctrl+, opens the config in your $EDITOR. One line now installs it all."},
     {"0.19.1", "Split panes", "Nov 6",
-     "Several shells in one tab, side by side or stacked, each a whole terminal, with a border you can style. Broadcast takes every pane of a tab."}
+     "Several shells in one tab, side by side or stacked, each a whole terminal, with a border you can style. Broadcast takes every pane of a tab."},
+    {"0.20.1", "A terminal you can rely on", "Nov 9",
+     "xterm conformance: 449 esctest2 checks pass, up from 112. Long lines rewrap on resize, the Kitty keyboard protocol, hyperlinks, OSC 52 copy over ssh, jumps between prompts. Right click copies and pastes."},
+    {"0.21.0", "The AI key", "Nov 9",
+     "Ctrl+Shift+A opens the command-line AI tool you choose in a pane beside you, and back. Only what you select goes to it, and nothing runs until you press Enter."},
+    {"0.22.0", "Clickable URLs", "Nov 9",
+     "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined."}
   ]
 
   @chapters [
@@ -171,7 +182,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"24-tab-comforts", "Tab comforts: busy tabs, marks, names, order"},
     {"25-tab-styles", "Tab styles: five ways to draw one row"},
     {"26-images", "Images: pictures in a grid of characters"},
-    {"27-split-panes", "Split panes: one tab, several shells"}
+    {"27-split-panes", "Split panes: one tab, several shells"},
+    {"28-conversation", "The conversation: what programs say to a terminal, and what it answers"}
   ]
 
   @impl true
@@ -301,21 +313,21 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     <Layouts.app flash={@flash}>
       <div id="site" data-term-theme="catppuccin-mocha">
         <%!-- ───────────────────────── Hero ───────────────────────── --%>
-        <section id="hero" class="hero-section relative overflow-hidden">
+        <section id="hero" class="hero-section relative flex flex-col justify-center overflow-hidden">
           <div class="hero-grid" aria-hidden="true"></div>
           <div class="hero-glow hero-glow-1" aria-hidden="true"></div>
           <div class="hero-glow hero-glow-2" aria-hidden="true"></div>
 
-          <div class="relative mx-auto max-w-6xl px-6 pt-16 pb-24 sm:pt-24 text-center">
+          <div class="relative mx-auto w-full max-w-6xl px-6 pt-16 pb-24 sm:pt-24 text-center">
             <a
               href={"#{@github}/blob/master/CHANGELOG.md"}
               class="hero-pill pp-label-large"
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.19.1
+                v0.22.0
               </span>
-              <span>Split panes: several shells in one tab</span>
+              <span>Clickable URLs: Ctrl+click any address on the screen</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -325,9 +337,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             </h1>
 
             <p class="pp-body-large sm:text-xl! sm:leading-8! mx-auto mt-6 max-w-2xl text-pp-on-surface-variant text-pretty">
-              guiltty is a Linux-only, GPU-accelerated terminal emulator written in Elixir and C. Every tab is a supervised
-              process tree and the renderer is its own OS process, so when a part crashes, its
-              supervisor restarts it and your tabs stay.
+              guiltty is a GPU-accelerated Linux terminal with the power of the BEAM and the speed of
+              C, made to be rock solid while maintaining good performance.
             </p>
 
             <.pp_button_group size="md" class="mt-10 flex-wrap justify-center">
@@ -386,10 +397,10 @@ defmodule GuilttyWebsiteWeb.HomeLive do
             <div
               :for={
                 {value, label} <- [
-                  {"19", "milestones implemented"},
+                  {"22", "milestones implemented"},
                   {"2", "renderers, the same pixels"},
                   {"10,000", "rows of scrollback"},
-                  {"28", "book chapters on how it works"}
+                  {"29", "book chapters on how it works"}
                 ]
               }
               class="py-8 text-center"
@@ -593,6 +604,56 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <div class="mt-4"><.keys keys="Ctrl+Shift+N" /></div>
               </.pp_card>
 
+              <.pp_card variant="filled" class="bento-wide feature-card" id="feature-ai">
+                <div class="feature-icon">
+                  <.pp_icon name="hero-chat-bubble-left-right" size="none" class="size-6" />
+                </div>
+                <h3 class="pp-headline-small mt-5">The AI key</h3>
+                <p class="pp-body-medium mt-2 text-pp-on-surface-variant max-w-xl">
+                  Set <code class="inline-code">ai: [command: "your-ai-tool"]</code>
+                  and one key opens it in a pane beside you, in the folder you're in; press it again to
+                  go back. Only what you select goes to its prompt, without Enter. guiltty just starts
+                  the program: no API keys, no accounts, any command-line tool.
+                </p>
+                <div class="mt-4"><.keys keys="Ctrl+Shift+A" /></div>
+                <%!-- The shell on the left with an error selected; the AI tool on
+                      the right, focused, the selection pasted at its prompt --%>
+                <.terminal
+                  id="ai-terminal"
+                  title="your-ai-tool"
+                  tabs={[{"your-ai-tool", true}]}
+                  class="mt-6"
+                  body_class="panes-body"
+                >
+                  <div class="pane">
+                    <.p10k_prompt />
+                    <div><span class="p10k-frame">╰─</span> mix test</div>
+                    <div class="t-red">1) test login (AuthTest)</div>
+                    <div><span class="search-hit">** (KeyError) key :email not found</span></div>
+                    <div class="t-dim">test/auth_test.exs:14</div>
+                  </div>
+                  <div class="pane">
+                    <div class="t-dim">your-ai-tool</div>
+                    <div class="mt-2">
+                      <span class="t-magenta">&gt;</span>
+                      ** (KeyError) key :email not found<span class="t-cursor"></span>
+                    </div>
+                  </div>
+                </.terminal>
+              </.pp_card>
+
+              <.pp_card variant="filled" class="feature-card" id="feature-conformance">
+                <div class="feature-icon">
+                  <.pp_icon name="hero-check-badge" size="none" class="size-6" />
+                </div>
+                <h3 class="pp-title-large mt-5">Speaks xterm</h3>
+                <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
+                  449 esctest2 checks pass. Long lines rewrap on resize, Alt works as Meta, the Kitty
+                  keyboard protocol tells Ctrl+I from Tab, Ctrl+click opens links and plain URLs, and copying
+                  over ssh reaches your clipboard. Programs can never read it.
+                </p>
+              </.pp_card>
+
               <.pp_card variant="filled" class="bento-wide feature-card" id="feature-unicode">
                 <div class="feature-icon">
                   <.pp_icon name="hero-language" size="none" class="size-6" />
@@ -623,8 +684,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 </div>
                 <h3 class="pp-title-large mt-5">Full-screen programs</h3>
                 <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
-                  Alternate screen, scroll regions, mouse reporting, bracketed paste, cursor shapes.
-                  Tested with vim, less, htop, btop and tmux.
+                  Alternate screen, scroll regions, mouse reporting, bracketed paste, cursor shapes,
+                  focus events, synchronized output. Tested in real sessions of vim, less, htop, btop,
+                  mc and tmux.
                 </p>
               </.pp_card>
 
@@ -664,7 +726,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                     <h3 class="pp-headline-small mt-5">Scrollback, search, selection</h3>
                     <p class="pp-body-medium mt-2 text-pp-on-surface-variant">
                       10,000 rows per tab, searched with Enter and Shift+Enter. Select to copy to the
-                      primary selection, middle click to paste. Backpressure from the shell to the screen
+                      primary selection, middle click to paste; a right click copies it and pastes it at the
+                      prompt under the pointer. Backpressure from the shell to the screen
                       means a flood of output can't outrun the screen.
                     </p>
                   </div>
@@ -1067,8 +1130,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               eyebrow="The book"
               title="Learn how a terminal works, from the kernel up."
             >
-              guiltty comes with a book: twenty-eight chapters with diagrams, one for every part, from
-              pseudoterminals to split panes.
+              guiltty comes with a book: twenty-nine chapters with diagrams, one for every part, from
+              pseudoterminals to the escape sequences programs send.
             </.section_header>
             <ol
               id="chapters"
@@ -1105,8 +1168,8 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               Go on, try to break it.
             </h2>
             <p class="pp-body-large mt-4 text-pp-on-primary-container/80 max-w-xl mx-auto">
-              Linux. Tried on openSUSE Tumbleweed, X11 and an AMD GPU; Wayland, Intel and NVIDIA
-              should work but haven't been tried. Open source, MIT licensed.
+              Linux. Tried on openSUSE Tumbleweed, on X11 and Wayland (GNOME), with an AMD GPU;
+              Intel and NVIDIA should work but haven't been tried. Open source, MIT licensed.
             </p>
             <.pp_button_group size="md" class="mt-8 flex-wrap justify-center">
               <.pp_button href="#install" size="md">Install guiltty</.pp_button>

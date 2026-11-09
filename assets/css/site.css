@@ -253,6 +253,10 @@
 
 /* ───────────────────────── Hero ───────────────────────── */
 
+/* The top bar (4rem) plus the hero, terminal included, fill at least one
+   screen. svh, so mobile browser bars showing or hiding don't make it jump. */
+.hero-section { min-height: calc(100svh - 4rem); }
+
 .hero-grid {
   position: absolute;
   inset: 0;

@@ -22,8 +22,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      [
        {"windows-and-tabs", "Windows and tabs"},
        {"split-panes", "Split panes"},
+       {"ai", "The AI key"},
        {"scrollback", "Scrollback, search, selection"},
        {"images", "Images"},
+       {"programs", "What programs can do"},
        {"broadcast", "Broadcast"},
        {"keys", "Keys"}
      ]},
@@ -67,6 +69,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"clear_scrollback", ["ctrl+shift+k"], "Drop the tab's scrollback; the screen stays."},
     {"search", ["ctrl+shift+f"],
      "Search the scrollback: Enter finds older, Shift+Enter newer, Escape ends."},
+    {"prev_prompt", ["ctrl+shift+z"],
+     "Jump to the prompt before the view, in shells that mark them (OSC 133)."},
+    {"next_prompt", ["ctrl+shift+x"], "Jump to the prompt after the view."},
     {"copy", ["ctrl+shift+c"], "Copy the selection to the clipboard."},
     {"zoom_in", ["ctrl+=", "ctrl+shift+=", "ctrl+plus"], "Bigger text."},
     {"zoom_out", ["ctrl+-"], "Smaller text."},
@@ -77,6 +82,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"lock_tab", ["ctrl+shift+l"], "Lock the tab, so it outlives its window."},
     {"broadcast", ["ctrl+shift+b"],
      "Put the tab, every pane of it, in the broadcast group, or take it out."},
+    {"ai", ["ctrl+shift+a"],
+     "Open the AI tool set in ai:, with the selection at its prompt, and go back. Without a command, it only says so."},
     {"split_right", ["ctrl+shift+o"], "A new pane right of the focused one, with half its room."},
     {"split_down", ["ctrl+shift+e"], "A new pane below the focused one, with half its room."},
     {"focus_left", ["ctrl+shift+left"], "Focus the pane to the left (a click works too)."},
@@ -122,6 +129,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      "How the tabs look. Their colors are in the theme."},
     {"ligatures", "true", "true or false",
      "Join ->, !=, |> and the like into one symbol, when the font has ligatures."},
+    {"ai", "[command: nil, position: :right]",
+     ~s(command: a program, like "your-ai-tool"; position: :right, :down or :tab),
+     "What the AI key (Ctrl+Shift+A) opens, and where. No command by default: guiltty doesn't pick one for you."},
+    {"clipboard_write", "true", "true or false",
+     "Programs can put text on the clipboard (OSC 52), from the focused pane. They can never read it."},
+    {"link_url", "true", "true or false",
+     "Ctrl+click opens URLs in plain text (http, https, mailto, file), and holding Ctrl underlines them. Links a program marks (OSC 8) open either way."},
+    {"screen_reports", "false", "true or false",
+     "Answer DECRQCRA and the title reports, for terminal test suites. Leave it off: they let a program read your screen, even over ssh. For tabs opened after a change."},
     {"renderer", ":vulkan", ":vulkan or :gl",
      "Applies to windows opened after a change. GUILTTY_RENDERER wins over it."},
     {"scrollback", "10_000", "0 to 1,000,000",
@@ -309,6 +325,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       lock_tab: ["ctrl+shift+l"],
       # Puts the tab in the broadcast group, or takes it out: all its panes.
       broadcast: ["ctrl+shift+b"],
+      # Opens the AI tool set below, and goes back.
+      ai: ["ctrl+shift+a"],
       # Split panes: a new pane right of the focused one, or below it, with
       # half its room.
       split_right: ["ctrl+shift+o"],
@@ -318,13 +336,39 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       focus_right: ["ctrl+shift+right"],
       focus_up: ["ctrl+shift+up"],
       focus_down: ["ctrl+shift+down"],
+      # Jumps to the prompt before or after the view (a shell must mark them:
+      # OSC 133).
+      prev_prompt: ["ctrl+shift+z"],
+      next_prompt: ["ctrl+shift+x"],
       # Moves the separator nearest the focused pane, that way.
       resize_left: ["alt+shift+left"],
       resize_right: ["alt+shift+right"],
       resize_up: ["alt+shift+up"],
       resize_down: ["alt+shift+down"]
-    ]
+    ],
+
+    # The AI tool the `ai` key opens, beside you (:right, :down) or in a tab of its
+    # own (:tab). It's a program in a pane: what's selected goes to its prompt, and
+    # nothing else on your screen does. Without a command, the key only says so.
+    # ai: [command: "", position: :right],
+
+    # Programs can put text on the clipboard (OSC 52), from the focused pane.
+    # They can never read it.
+    # clipboard_write: true,
+
+    # Ctrl+click opens URLs in plain text (http, https, mailto, file), like the
+    # one a server prints when it starts. Hold Ctrl to see them underlined.
+    # Links a program marks (OSC 8) open either way.
+    # link_url: true,
+
+    # Answer DECRQCRA and the title reports, for terminal test suites. Leave it
+    # off: these let a program read your screen, even from the far end of ssh.
+    # screen_reports: false
   ]
+  """
+
+  @ai_example ~S"""
+  ai: [command: "your-ai-tool", position: :right]    # or :down, or :tab
   """
 
   @impl true
@@ -351,6 +395,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
      |> assign(:pane_border_example, String.trim(@pane_border_example))
+     |> assign(:ai_example, String.trim(@ai_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))}
@@ -429,8 +474,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 command.
               </p>
               <p>
-                It runs on Linux only. It's been tried on openSUSE Tumbleweed, X11 and an AMD GPU;
-                Wayland, Intel, NVIDIA and other distributions should work but haven't been tried.
+                It runs on Linux only. It's been tried on openSUSE Tumbleweed, on X11 and on Wayland
+                (GNOME), with an AMD GPU; Intel, NVIDIA and other distributions should work but
+                haven't been tried.
               </p>
             </.doc_section>
 
@@ -735,6 +781,35 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <.code_block id="docs-pane-border" label="config.exs" code={@pane_border_example} />
             </.doc_section>
 
+            <.doc_section id="ai" title="The AI key">
+              <p>
+                A pane runs any program, so an AI tool is just one more. Set the command in <code>ai</code>, and
+                <.keys keys="Ctrl+Shift+A" />
+                opens it beside you, in the folder you were in. Press it again and you go back to
+                where you were; again, and you return to it. <code>position</code>
+                puts it to the <code>:right</code>
+                (the default), <code>:down</code>, or in a <code>:tab</code>
+                of its own.
+              </p>
+              <.code_block id="docs-ai-example" label="config.exs" code={@ai_example} />
+              <ul>
+                <li>
+                  guiltty only starts the program and talks to no one: no API keys, no accounts, and
+                  any tool that runs in a terminal works. No command is set by default, so the key
+                  only says so until you pick one.
+                </li>
+                <li>
+                  Only what you select goes to it. With text selected, the key pastes it at the
+                  tool's prompt, without Enter: nothing is sent until you press it. Nothing else on
+                  your screen leaves, and guiltty never runs what the answers suggest.
+                </li>
+                <li>
+                  A tool that's still starting gets the text once it turns on bracketed paste, or
+                  after 5 seconds with its line breaks turned into spaces, so they can't act as Enter.
+                </li>
+              </ul>
+            </.doc_section>
+
             <.doc_section id="scrollback" title="Scrollback, search, selection">
               <p>
                 Each tab keeps 10,000 rows of scrollback by default (<code>scrollback</code>).
@@ -749,6 +824,13 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 searches the scrollback. Enter finds the next older match, Shift+Enter the next newer
                 one, and Escape ends the search.
               </p>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">Prompts</.pp_typography>
+              <p>
+                In a shell set up to mark its prompts (OSC 133), <.keys keys="Ctrl+Shift+Z" /> and
+                <.keys keys="Ctrl+Shift+X" />
+                jump to the previous and next prompt, so you can step through long output one
+                command at a time.
+              </p>
               <.pp_typography variant="title-large" tag="h3" class="mt-8">
                 Selection and the clipboard
               </.pp_typography>
@@ -761,7 +843,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <.keys keys="Ctrl+Shift+V" /> or <.keys keys="Shift+Insert" /> paste it.
                 </li>
                 <li>
-                  In programs that use the mouse (vim, htop), hold Shift to select.
+                  With text selected, a right click copies it to the clipboard and pastes it at the
+                  prompt of the pane under the pointer: a quick way to take a path from one shell's
+                  output to another's prompt.
+                </li>
+                <li>
+                  In programs that use the mouse (vim, htop), hold Shift to select and to right click.
                 </li>
                 <li>
                   <code>copy_on_select</code>
@@ -791,6 +878,103 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   (XTVERSION) with its name and version.
                 </li>
               </ul>
+            </.doc_section>
+
+            <.doc_section id="programs" title="What programs can do">
+              <p>
+                Programs see <code>TERM=xterm-256color</code>
+                and expect what xterm does. guiltty passes 449 of esctest2's checks (the 79 left are
+                explained in the book's chapter 10), and is tested in real sessions of tmux, htop and
+                mc. It reports itself as a VT520.
+              </p>
+              <ul>
+                <li>
+                  <strong>Reflow.</strong>
+                  Long lines rewrap when the window or a pane changes width, in the scrollback too,
+                  and the cursor stays on the same character.
+                </li>
+                <li>
+                  <strong>Keys.</strong>
+                  Left Alt works as Meta (Alt+B is <code>ESC b</code>, so readline and Emacs move by
+                  words); right Alt stays AltGr. Ctrl+Space, Ctrl+[, Ctrl+\, Ctrl+], Ctrl+^, Ctrl+_
+                  and the Ctrl+digit row send what they do in xterm.
+                </li>
+                <li>
+                  <strong>The Kitty keyboard protocol.</strong>
+                  Neovim, Helix and the like can tell Ctrl+I from Tab and Shift+Enter from Enter, and
+                  see key releases (flags 1, 2 and 8).
+                </li>
+                <li>
+                  <strong>Hyperlinks (OSC 8).</strong>
+                  <code>ls --hyperlink</code>
+                  and the like. Ctrl+click opens http, https, mailto and file links, and the status
+                  says where it went.
+                </li>
+                <li>
+                  <strong>URLs in plain text.</strong>
+                  Ctrl+click also opens a URL nobody marked, like the address
+                  <code>mix phx.server</code>
+                  prints; hold Ctrl and move the mouse over one to see it underlined. It finds URLs
+                  that wrap onto the next row and leaves out the punctuation that ends a sentence.
+                  <code>link_url: false</code>
+                  turns it off.
+                </li>
+                <li>
+                  <strong>The clipboard (OSC 52).</strong>
+                  Copying in a program over ssh reaches your clipboard, from the focused pane.
+                  <code>clipboard_write: false</code>
+                  turns it off.
+                </li>
+                <li>
+                  <strong>The working directory (OSC 7).</strong>
+                  A new tab starts where a program says it is, when that's on this machine.
+                </li>
+                <li>
+                  <strong>Colors, focus, frames.</strong>
+                  Programs can set and ask for colors (OSC 4, 10, 11, 12), per pane, so vim can tell
+                  a dark background from a light one. Focus events (mode 1004) and synchronized output
+                  (mode 2026), so nothing shows half-drawn.
+                </li>
+                <li>
+                  <strong>Memory.</strong>
+                  A tab that runs out of memory (2 GB) is restarted alone, instead of taking every
+                  tab with it.
+                </li>
+              </ul>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                What a program can't do
+              </.pp_typography>
+              <p>
+                A program's output may come from a server at the far end of ssh, or a file you <code>cat</code>, so guiltty answers with numbers and fixed strings, never words a
+                program chose.
+              </p>
+              <.doc_table id="programs-cant-table" head={["A program can't", "Because"]}>
+                <.pp_table_row>
+                  <.pp_table_cell>read the clipboard</.pp_table_cell>
+                  <.pp_table_cell>it would get whatever you copied last</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>read the title or the screen</.pp_table_cell>
+                  <.pp_table_cell>
+                    it chose the title, and could read any screen. <code>screen_reports: true</code>
+                    turns these on, for test suites.
+                  </.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>resize, move or iconify the window</.pp_table_cell>
+                  <.pp_table_cell>it isn't its window</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>set the clipboard from the background</.pp_table_cell>
+                  <.pp_table_cell>only the pane with the keyboard can</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>open a link by itself</.pp_table_cell>
+                  <.pp_table_cell>
+                    you Ctrl+click it; http, https, mailto and file only
+                  </.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
             </.doc_section>
 
             <.doc_section id="broadcast" title="Broadcast">

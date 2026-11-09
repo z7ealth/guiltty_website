@@ -7,8 +7,8 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/docs")
 
     sections =
-      ~w(overview requirements install update windows-and-tabs split-panes scrollback broadcast keys
-         images config-file settings themes tab-styles fonts renderer example-config command environment
+      ~w(overview requirements install update windows-and-tabs split-panes ai scrollback broadcast keys
+         images programs config-file settings themes tab-styles fonts renderer example-config command environment
          troubleshooting hacking learn-more)
 
     for id <- sections do
@@ -29,6 +29,10 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     assert has_element?(view, "#docs-example-config")
     assert has_element?(view, "#settings-table code", "tab_style")
     assert has_element?(view, "#settings-table code", "pane_border")
+    assert has_element?(view, "#settings-table code", "clipboard_write")
+    assert has_element?(view, "#settings-table code", "link_url")
+    assert has_element?(view, "#keys-table code", "prev_prompt")
+    assert has_element?(view, "#docs-ai-example")
     assert has_element?(view, "#tab-style-powerline")
   end
 
