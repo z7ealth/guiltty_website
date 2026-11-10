@@ -103,7 +103,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {["Ctrl+Shift+H", "Ctrl+Shift+/"], "The cheatsheet: every key"},
     {["Ctrl+Shift+L"], "Lock the tab 🔒"},
     {["Ctrl+Shift+B"], "Broadcast tabs"},
-    {["Ctrl+Shift+Space"], "Open the AI tool, and back"},
+    {["Ctrl+Shift+Space", "AI key"], "Open the AI tool, and back"},
     {["Ctrl+Shift+O"], "Split the pane right"},
     {["Ctrl+Shift+E"], "Split the pane down"},
     {["Ctrl+Shift+Arrows"], "Focus the pane that way"},
@@ -152,7 +152,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.21.0", "The AI key", "Nov 9",
      "One key opens the command-line AI tool you choose in a pane beside you, and back. Only what you select goes to it, and nothing runs until you press Enter."},
     {"0.22.1", "Clickable URLs and select all", "Nov 9",
-     "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined. Ctrl+Shift+A selects all; the AI key moves to Ctrl+Shift+Space."}
+     "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined. Ctrl+Shift+A selects all; the AI key moves to Ctrl+Shift+Space."},
+    {"0.22.2", "The laptop AI key and ten themes", "Nov 10",
+     "The AI key on newer laptops opens the AI tool too. Five more themes, Nord, Tokyo Night, One Dark, Catppuccin Latte and guiltty's own lavender on near-black, which is now the default."}
   ]
 
   @chapters [
@@ -312,7 +314,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div id="site" data-term-theme="catppuccin-mocha">
+      <div id="site" data-term-theme="guiltty">
         <%!-- ───────────────────────── Hero ───────────────────────── --%>
         <section id="hero" class="hero-section relative flex flex-col justify-center overflow-hidden">
           <div class="hero-grid" aria-hidden="true"></div>
@@ -326,9 +328,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.22.1
+                v0.22.2
               </span>
-              <span>Select all with Ctrl+Shift+A; the AI key is Ctrl+Shift+Space</span>
+              <span>The laptop AI key works, and guiltty has a theme of its own</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -616,7 +618,11 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   go back. Only what you select goes to its prompt, without Enter. guiltty just starts
                   the program: no API keys, no accounts, any command-line tool.
                 </p>
-                <div class="mt-4"><.keys keys="Ctrl+Shift+Space" /></div>
+                <div class="mt-4 flex flex-wrap items-center gap-2">
+                  <.keys keys="Ctrl+Shift+Space" />
+                  <span class="pp-body-small text-pp-on-surface-variant">or the laptop's</span>
+                  <.keys keys="AI key" />
+                </div>
                 <%!-- The shell on the left with an error selected; the AI tool on
                       the right, focused, the selection pasted at its prompt --%>
                 <.terminal
@@ -867,14 +873,14 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                     id={"theme-#{slug}"}
                     variant="filter"
                     group="term-theme"
-                    selected={slug == "catppuccin-mocha"}
+                    selected={slug == "guiltty"}
                     on_toggle={JS.set_attribute({"data-term-theme", slug}, to: "#site")}
                   >
                     {name}
                   </.pp_chip>
                 </div>
                 <p class="pp-body-small mt-4 text-pp-on-surface-variant">
-                  Tomorrow Night is what guiltty uses without a config.
+                  guiltty's own, the icon's lavender on near-black, is what it uses without a config.
                 </p>
               </div>
 

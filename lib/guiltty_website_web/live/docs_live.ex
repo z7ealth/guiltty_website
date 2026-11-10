@@ -84,8 +84,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"lock_tab", ["ctrl+shift+l"], "Lock the tab, so it outlives its window."},
     {"broadcast", ["ctrl+shift+b"],
      "Put the tab, every pane of it, in the broadcast group, or take it out."},
-    {"ai", ["ctrl+shift+space"],
-     "Open the AI tool set in ai:, with the selection at its prompt, and go back. Without a command, it only says so."},
+    {"ai", ["ctrl+shift+space", "super+shift+f23"],
+     "Open the AI tool set in ai:, with the selection at its prompt, and go back. Without a command, it only says so. super+shift+f23 is the AI key on newer laptops."},
     {"split_right", ["ctrl+shift+o"], "A new pane right of the focused one, with half its room."},
     {"split_down", ["ctrl+shift+e"], "A new pane below the focused one, with half its room."},
     {"focus_left", ["ctrl+shift+left"], "Focus the pane to the left (a click works too)."},
@@ -104,7 +104,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   @settings [
     {"font", ~s([family: "monospace", size: 18]), "family: any fontconfig name; size: 6 to 96",
      nil},
-    {"theme", ~s("tomorrow-night"), "a built-in name, or your own colors", "See Themes."},
+    {"theme", ~s("guiltty"), "a built-in name, or your own colors", "See Themes."},
     {"cursor", "[style: :block, blink: false]", "style: :block, :bar or :underline",
      "Programs can change the style while they run (vim shows a bar in insert mode); it comes back when they're done."},
     {"window: padding", "6", "0 to 100", "Pixels around the text; more on a HiDPI screen."},
@@ -211,10 +211,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   [
     font: [family: "monospace", size: 18],
 
-    # A built-in theme by name: "catppuccin-mocha", "tomorrow-night" (what
-    # guiltty uses without a config), "dracula", "gruvbox-dark" or
-    # "solarized-dark".
-    theme: "catppuccin-mocha",
+    # A built-in theme by name: "guiltty" (the icon's lavender on
+    # near-black, what guiltty uses without a config), "tomorrow-night",
+    # "catppuccin-mocha", "dracula", "gruvbox-dark", "solarized-dark",
+    # "nord", "tokyo-night", "one-dark" or "catppuccin-latte" (light).
+    theme: "guiltty",
 
     # :block, :bar or :underline. Programs can change it while they run (vim
     # shows a bar in insert mode); it comes back when they're done.
@@ -329,8 +330,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       lock_tab: ["ctrl+shift+l"],
       # Puts the tab in the broadcast group, or takes it out: all its panes.
       broadcast: ["ctrl+shift+b"],
-      # Opens the AI tool set below, and goes back.
-      ai: ["ctrl+shift+space"],
+      # Opens the AI tool set below, and goes back. Many newer laptops have
+      # an AI key, usually right of the space bar: it sends Super+Shift+F23, so it
+      # works here too.
+      ai: ["ctrl+shift+space", "super+shift+f23"],
       # Split panes: a new pane right of the focused one, or below it, with
       # half its room.
       split_right: ["ctrl+shift+o"],
@@ -795,6 +798,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 (the default), <code>:down</code>, or in a <code>:tab</code>
                 of its own.
               </p>
+              <p>
+                Many newer laptops have an AI key, usually right of the space bar, and it works too.
+                It isn't a new key: the keyboard presses Left Shift, Left Super and F23 for you, a
+                chord nothing else sends, so <code>"super+shift+f23"</code>
+                is the second default for <code>ai</code>. To see what your own key sends, run
+                <code>wev</code>
+                (Wayland) or <code>xev</code>
+                (X11) and press it.
+              </p>
               <.code_block id="docs-ai-example" label="config.exs" code={@ai_example} />
               <ul>
                 <li>
@@ -1096,12 +1108,14 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <.pp_typography variant="title-large" tag="h3" class="mt-8">Rebinding</.pp_typography>
               <p>
                 Each action takes a list of keys. Names are letters, digits, <code>f1</code>
-                to <code>f12</code>, <code>tab</code>, <code>enter</code>, <code>page_up</code>, <code>page_down</code>, <code>home</code>, <code>end</code>, <code>insert</code>, <code>delete</code>, <code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>,
+                to <code>f24</code>, <code>tab</code>, <code>enter</code>, <code>page_up</code>, <code>page_down</code>, <code>home</code>, <code>end</code>, <code>insert</code>, <code>delete</code>, <code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>,
                 <code>plus</code>
                 (the + key), or a punctuation character like <code>=</code>
-                or <code>-</code>, with any of the <code>ctrl+</code>, <code>shift+</code>
-                and <code>alt+</code>
-                modifiers. Actions you leave out keep their defaults.
+                or <code>-</code>, with any of the <code>ctrl+</code>, <code>shift+</code>,
+                <code>alt+</code>
+                and <code>super+</code>
+                (the Windows key) modifiers. A binding matches only with exactly those held:
+                Super+Ctrl+Shift+T doesn't open a tab. Actions you leave out keep their defaults.
               </p>
               <p>
                 A punctuation key is named by what it types without Shift on your layout, so the
@@ -1210,7 +1224,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <code>{slug}</code>
                   <span class="text-pp-on-surface-variant">{name}</span>
                   <span
-                    :if={slug == "tomorrow-night"}
+                    :if={slug == "guiltty"}
                     class="pp-label-small text-pp-on-surface-variant"
                   >
                     (the default)
@@ -1219,7 +1233,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               </ul>
               <p>
                 Or bring your own colors. Any you leave out come from <code>name:</code>
-                (or from tomorrow-night without one), so you can start from a theme and change
+                (or from guiltty without one), so you can start from a theme and change
                 single colors.
               </p>
               <.code_block id="docs-theme-example" label="config.exs" code={@custom_theme} />
@@ -1328,7 +1342,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
             <.doc_section id="example-config" title="Example config">
               <p>
-                The example config as it ships, with every setting at its default except the theme.
+                The example config as it ships, with every setting at its default.
               </p>
               <.code_block id="docs-example-config" label="config.exs" code={@example_config} />
             </.doc_section>

@@ -9,11 +9,16 @@ defmodule GuilttyWebsite.Guiltty do
   @github "https://github.com/z7ealth/guiltty"
 
   @themes [
+    {"guiltty", "guiltty"},
     {"tomorrow-night", "Tomorrow Night"},
     {"catppuccin-mocha", "Catppuccin Mocha"},
+    {"catppuccin-latte", "Catppuccin Latte"},
     {"dracula", "Dracula"},
     {"gruvbox-dark", "Gruvbox Dark"},
-    {"solarized-dark", "Solarized Dark"}
+    {"solarized-dark", "Solarized Dark"},
+    {"nord", "Nord"},
+    {"tokyo-night", "Tokyo Night"},
+    {"one-dark", "One Dark"}
   ]
 
   # {slug, name, command, note}
