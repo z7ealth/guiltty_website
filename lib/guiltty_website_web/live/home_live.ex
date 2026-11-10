@@ -155,7 +155,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      "Ctrl+click opens URLs in plain text, like the address a server prints when it starts, not only links a program marked. Hold Ctrl to see them underlined. Ctrl+Shift+A selects all; the AI key moves to Ctrl+Shift+Space."},
     {"0.22.2", "The laptop AI key and ten themes", "Nov 10",
      "The AI key on newer laptops opens the AI tool too. Five more themes, Nord, Tokyo Night, One Dark, Catppuccin Latte and guiltty's own lavender on near-black, which is now the default."},
-    {"0.23.0", "The password lock", "Nov 10",
+    {"0.23.1", "The password lock", "Nov 10",
      "While sudo, ssh or anything else reads a password, a lock shows in place of the cursor, so you can tell guiltty is listening even though nothing you type appears."}
   ]
 
@@ -330,7 +330,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.23.0
+                v0.23.1
               </span>
               <span>A lock in place of the cursor while you type a password</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
