@@ -29,6 +29,15 @@ defmodule GuilttyWebsiteWeb.Layouts do
   def canonical_url(%Plug.Conn{request_path: path}), do: site_url() <> path
   def canonical_url(_), do: site_url() <> "/"
 
+  @doc """
+  The share image's absolute URL. In prod it's the digested path
+  (`og-image-<hash>.png`), so a new image gets a new URL and LinkedIn & co.
+  can't keep showing a cached old one.
+  """
+  def og_image_url do
+    site_url() <> GuilttyWebsiteWeb.Endpoint.static_path("/images/og-image.png")
+  end
+
   @doc "JSON-LD describing the site and the app, for search engines' rich results."
   def structured_data do
     url = site_url() <> "/"
@@ -49,7 +58,7 @@ defmodule GuilttyWebsiteWeb.Layouts do
             "description" => @site_description,
             "applicationCategory" => "DeveloperApplication",
             "operatingSystem" => "Linux",
-            "image" => site_url() <> "/images/og-image.png",
+            "image" => og_image_url(),
             "codeRepository" => "https://github.com/z7ealth/guiltty",
             "offers" => %{"@type" => "Offer", "price" => "0", "priceCurrency" => "USD"}
           }

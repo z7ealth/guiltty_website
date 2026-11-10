@@ -12,7 +12,7 @@ defmodule GuilttyWebsiteWeb.SeoTest do
     assert [image] =
              doc |> LazyHTML.query("meta[property='og:image']") |> LazyHTML.attribute("content")
 
-    assert String.ends_with?(image, "/images/og-image.png")
+    assert image =~ ~r{/images/og-image.*\.png}
 
     assert [json] =
              doc
