@@ -11,6 +11,54 @@ defmodule GuilttyWebsiteWeb.Layouts do
   # and other static content.
   embed_templates "layouts/*"
 
+  @site_description "guiltty: a Linux GPU-accelerated terminal emulator written in Elixir and C. Self-healing tabs, Vulkan rendering, live config."
+
+  @doc "The site-wide description, used by the description, Open Graph and Twitter tags."
+  def site_description, do: @site_description
+
+  @doc """
+  The site's base URL with any `www.` dropped, so the canonical address is
+  always the bare domain (CanonicalHost redirects www there).
+  """
+  def site_url do
+    GuilttyWebsiteWeb.Endpoint.url()
+    |> String.replace("://www.", "://")
+  end
+
+  @doc "The canonical URL of the current page: the bare domain plus the path, without query."
+  def canonical_url(%Plug.Conn{request_path: path}), do: site_url() <> path
+  def canonical_url(_), do: site_url() <> "/"
+
+  @doc "JSON-LD describing the site and the app, for search engines' rich results."
+  def structured_data do
+    url = site_url() <> "/"
+
+    Jason.encode!(
+      %{
+        "@context" => "https://schema.org",
+        "@graph" => [
+          %{
+            "@type" => "WebSite",
+            "name" => "guiltty",
+            "url" => url
+          },
+          %{
+            "@type" => "SoftwareApplication",
+            "name" => "guiltty",
+            "url" => url,
+            "description" => @site_description,
+            "applicationCategory" => "DeveloperApplication",
+            "operatingSystem" => "Linux",
+            "image" => site_url() <> "/images/og-image.png",
+            "codeRepository" => "https://github.com/z7ealth/guiltty",
+            "offers" => %{"@type" => "Offer", "price" => "0", "priceCurrency" => "USD"}
+          }
+        ]
+      },
+      escape: :html_safe
+    )
+  end
+
   @doc """
   Renders your app layout.
 

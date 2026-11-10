@@ -20,6 +20,9 @@ config :guiltty_website, GuilttyWebsiteWeb.Endpoint,
     ]
   ]
 
+# Send www.guiltty.dev to guiltty.dev (GuilttyWebsiteWeb.Plugs.CanonicalHost).
+config :guiltty_website, redirect_www: true
+
 # Do not print debug messages in production
 config :logger, level: :info
 

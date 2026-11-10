@@ -4,17 +4,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <meta
-      name="description"
-      content="guiltty: a Linux GPU-accelerated terminal emulator written in Elixir and C. Self-healing tabs, Vulkan rendering, live config."
-    />
+    <meta name="description" content={site_description()} />
     <meta name="theme-color" content="#1d1f21" />
     <.live_title
       default="guiltty · a GPU-accelerated terminal emulator in Elixir and C"
       phx-no-format
     >{assigns[:page_title]}</.live_title>
+    <link rel="canonical" href={canonical_url(assigns[:conn])} />
+    <%!-- Link previews (LinkedIn, Slack, Discord, X, …) --%>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="guiltty" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content={canonical_url(assigns[:conn])} />
+    <meta
+      property="og:title"
+      content={
+        assigns[:page_title] || "guiltty · a GPU-accelerated terminal emulator in Elixir and C"
+      }
+    />
+    <meta property="og:description" content={site_description()} />
+    <meta property="og:image" content={site_url() <> "/images/og-image.png"} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The guiltty logo beside the words: GPU-accelerated Linux terminal, Elixir + C, Vulkan, self-healing tabs"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href={~p"/images/favicon.svg"} />
     <link rel="icon" href={~p"/favicon.ico"} sizes="any" />
+    <link rel="apple-touch-icon" href={~p"/images/apple-touch-icon.png"} />
+    <script type="application/ld+json">
+      <%= Phoenix.HTML.raw(structured_data()) %>
+    </script>
     <link
       rel="preload"
       href={~p"/fonts/roboto-flex/roboto-flex-latin-opsz-normal.woff2"}
