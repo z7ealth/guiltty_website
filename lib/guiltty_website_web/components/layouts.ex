@@ -13,6 +13,16 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   @site_description "guiltty: a Linux GPU-accelerated terminal emulator written in Elixir and C. Self-healing tabs, Vulkan rendering, live config."
 
+  @author "Héctor Salinas"
+  # The site's first commit; LinkedIn and others show it as the publish date.
+  @published "2026-10-30T12:07:50-06:00"
+
+  @doc "The site's author, for the author meta tag and structured data."
+  def author, do: @author
+
+  @doc "When the site was first published, ISO 8601."
+  def published_at, do: @published
+
   @doc "The site-wide description, used by the description, Open Graph and Twitter tags."
   def site_description, do: @site_description
 
@@ -58,6 +68,12 @@ defmodule GuilttyWebsiteWeb.Layouts do
             "description" => @site_description,
             "applicationCategory" => "DeveloperApplication",
             "operatingSystem" => "Linux",
+            "author" => %{
+              "@type" => "Person",
+              "name" => @author,
+              "url" => "https://github.com/z7ealth"
+            },
+            "datePublished" => @published,
             "image" => og_image_url(),
             "codeRepository" => "https://github.com/z7ealth/guiltty",
             "offers" => %{"@type" => "Offer", "price" => "0", "priceCurrency" => "USD"}
