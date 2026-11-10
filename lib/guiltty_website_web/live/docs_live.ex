@@ -105,8 +105,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"font", ~s([family: "monospace", size: 18]), "family: any fontconfig name; size: 6 to 96",
      nil},
     {"theme", ~s("guiltty"), "a built-in name, or your own colors", "See Themes."},
-    {"cursor", "[style: :block, blink: false]", "style: :block, :bar or :underline",
-     "Programs can change the style while they run (vim shows a bar in insert mode); it comes back when they're done."},
+    {"cursor", "[style: :block, blink: false, password_lock: true]",
+     "style: :block, :bar or :underline",
+     "Programs can change the style while they run (vim shows a bar in insert mode); it comes back when they're done. password_lock: a lock in place of the cursor while a program (sudo, ssh) reads a password."},
     {"window: padding", "6", "0 to 100", "Pixels around the text; more on a HiDPI screen."},
     {"window: columns, rows", "80, 24", "10 to 1000, 3 to 1000",
      "The size of a new window, in cells."},
@@ -219,7 +220,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
     # :block, :bar or :underline. Programs can change it while they run (vim
     # shows a bar in insert mode); it comes back when they're done.
-    cursor: [style: :block, blink: false],
+    # password_lock: a lock in place of the cursor while a program (sudo,
+    # ssh) reads a password with echo off.
+    cursor: [style: :block, blink: false, password_lock: true],
 
     window: [
       # Pixels around the text (more on a HiDPI screen).
@@ -705,6 +708,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.keys keys="Ctrl+Shift+L" />. They show a 🔒 and keep running, and the next
                 <code>guiltty</code>
                 brings that window back with them, where you left them.
+              </p>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                The password lock
+              </.pp_typography>
+              <p>
+                While a program reads a password (<code>sudo</code>, <code>ssh</code>, <code>passwd</code>, <code>read -s</code>), a lock shows in place of the cursor: nothing you type
+                appears, but guiltty is listening. Nobody tells a terminal "this is a password", so
+                guiltty works it out the way Ghostty does: the program has turned echo off but kept
+                line editing on. Turn it off with <code>cursor: [password_lock: false]</code>.
               </p>
               <.pp_typography variant="title-large" tag="h3" class="mt-8">
                 Closing a busy tab
