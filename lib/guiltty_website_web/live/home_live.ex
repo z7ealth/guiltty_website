@@ -156,7 +156,11 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.22.2", "The laptop AI key and ten themes", "Nov 10",
      "The AI key on newer laptops opens the AI tool too. Five more themes, Nord, Tokyo Night, One Dark, Catppuccin Latte and guiltty's own lavender on near-black, which is now the default."},
     {"0.23.3", "The password lock", "Nov 10",
-     "While sudo, ssh or anything else reads a password, a lock shows in place of the cursor, so you can tell guiltty is listening even though nothing you type appears."}
+     "While sudo, ssh or anything else reads a password, a lock shows in place of the cursor, so you can tell guiltty is listening even though nothing you type appears."},
+    {"0.24.0", "Copy the last output", "Nov 11",
+     "Ctrl+Shift+G copies what the last command printed. Ctrl+Shift+J labels every link on screen; type a label to open it. Tabs you're not looking at show ✓ or ✗ when a command finishes, and come back as they were if the part that keeps them crashes."},
+    {"0.25.0", "A long command calls you back", "Nov 11",
+     "When a command that ran 10 seconds or more finishes while you're in another window, guiltty asks the desktop for attention. With Ctrl held, the pointer is a hand over a link. Observer can attach to a running guiltty and show its tabs' processes and memory."}
   ]
 
   @chapters [
@@ -330,9 +334,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.23.3
+                v0.25.0
               </span>
-              <span>A lock in place of the cursor while you type a password</span>
+              <span>A long command calls you back when it finishes</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
