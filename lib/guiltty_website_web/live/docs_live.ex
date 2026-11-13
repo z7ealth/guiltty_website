@@ -189,6 +189,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     ServerAliveCountMax 3
   """
 
+  @manual_install ~S"""
+  v=0.26.2
+  curl -fLO https://github.com/z7ealth/guiltty/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz
+  curl -fLO https://github.com/z7ealth/guiltty/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz.sha256
+  sha256sum -c guiltty-$v-x86_64-linux.tar.gz.sha256      # should say: OK
+  tar xzf guiltty-$v-x86_64-linux.tar.gz
+  ./guiltty-$v-x86_64-linux/install.sh                    # --uninstall, --yes work here too
+  """
+
   @hack_commands ~S"""
   mix deps.get
   mix guiltty        # a window from the source tree
@@ -395,12 +404,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:tested_versions, Guiltty.tested_versions())
      |> assign(:themes, Guiltty.themes())
      |> assign(:install_command, Guiltty.install_command())
-     |> assign(:one_line_install, Guiltty.one_line_install())
      |> assign(
-       :one_line_dry_run,
-       String.replace_suffix(Guiltty.one_line_install(), "| sh", "| sh -s -- --dry-run")
+       :one_line_options,
+       String.replace_suffix(Guiltty.one_line_install(), "| bash", "| bash -s -- --yes")
      )
-     |> assign(:get_sh_url, Guiltty.get_sh_url())
+     |> assign(
+       :one_line_uninstall,
+       String.replace_suffix(Guiltty.one_line_install(), "| bash", "| bash -s -- --uninstall")
+     )
+     |> assign(
+       :one_line_prefix,
+       String.replace_suffix(Guiltty.one_line_install(), "| bash", "| PREFIX=/opt/guiltty bash")
+     )
+     |> assign(:install_sh_url, Guiltty.install_sh_url())
+     |> assign(:releases_url, Guiltty.releases_url())
+     |> assign(:manual_install, String.trim(@manual_install))
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
@@ -492,9 +510,21 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
             <.doc_section id="requirements" title="Requirements">
               <p>
-                guiltty is built from source on your machine, so installing it needs Elixir and a C
-                toolchain. The installed copy carries its own Erlang runtime: once it's installed, it
-                runs without Elixir.
+                The precompiled release runs on x86_64 Linux with glibc 2.36 or newer: Ubuntu 24.04
+                and 26.04 LTS, Debian 12 or newer, and any current Fedora, Arch, Manjaro or openSUSE.
+                It carries its own Erlang and SDL3, so it needs no Elixir and no compiler. Ubuntu
+                22.04 and Debian 11 are too old for it.
+              </p>
+              <p>
+                It uses a few libraries every desktop normally has: fontconfig, FreeType, HarfBuzz and
+                libpng. If one is missing, the installer shows the command that installs it.
+              </p>
+              <.pp_typography variant="title-large" tag="h3" class="mt-8">
+                To build from source
+              </.pp_typography>
+              <p>
+                Only for working on guiltty, or on a machine the release doesn't run on. The installed
+                copy still carries its own Erlang runtime.
               </p>
               <.doc_table id="requirements-table" head={["What", "Why"]}>
                 <.pp_table_row>
@@ -532,10 +562,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 gets you exact versions. <code>elixir --version</code>
                 should say Elixir 1.18 or newer, compiled with Erlang/OTP 26 or newer.
               </p>
-              <.pp_typography variant="title-large" tag="h3" class="mt-8">
-                Tested Elixir and Erlang/OTP
-              </.pp_typography>
-              <.doc_table id="docs-versions-table" head={["Elixir", "Erlang/OTP", "Status"]}>
+              <.doc_table id="docs-versions-table" head={["Elixir", "Erlang/OTP", "Tested"]}>
                 <.pp_table_row :for={{elixir, otp, status} <- @tested_versions}>
                   <.pp_table_cell class="font-mono">{elixir}</.pp_table_cell>
                   <.pp_table_cell class="font-mono">{otp}</.pp_table_cell>
@@ -549,7 +576,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <p>
                 guiltty needs a GPU driver with OpenGL 3.3, which almost any desktop from the last
                 decade has. For Vulkan it needs a Vulkan 1.3 driver (for AMD and Intel GPUs, Mesa's;
-                only AMD has been tried). Without one, it draws with OpenGL.
+                only AMD has been tried). Without one, as in most virtual machines, it draws with
+                OpenGL, silently: that's a normal way to run.
               </p>
               <p>
                 Fonts come from fontconfig. guiltty looks best with a Nerd Font (for prompt icons),
@@ -561,31 +589,54 @@ defmodule GuilttyWebsiteWeb.DocsLive do
             <.doc_section id="install" title="Install">
               <.pp_typography variant="title-large" tag="h3" class="mt-8">One line</.pp_typography>
               <p>
-                On openSUSE, Fedora, Ubuntu/Debian, Arch and the distributions based on them:
+                With curl, or with wget if you don't have curl (Ubuntu's desktop doesn't): both do
+                the same.
               </p>
-              <.code_block id="docs-one-line-cmd" code={@one_line_install} />
+              <.one_line_tabs id="docs-one-line" />
               <p>
-                <a class="doc-link" href={@get_sh_url}>get.sh</a>
-                finds out your distribution, shows the packages that are missing and the
-                <code>sudo</code>
-                command that installs them, and asks before running it. Then it downloads the latest
-                release's source into <code>~/.local/src</code>, builds it and installs it into <code>~/.local</code>; it needs no root for that. Run it again to update. It only
-                warns about Elixir: if yours is older than 1.18 (on OTP 26), it stops and says how to
-                get a newer one with asdf. It's a short script: read it first, if you like.
+                <a class="doc-link" href={@install_sh_url}>install.sh</a>
+                downloads the latest precompiled release (about 10 MB, with its own Erlang inside)
+                and installs it into <code>~/.local</code>; it needs no root for that. If a library
+                guiltty needs is missing, it shows the <code>sudo</code>
+                command that installs it and asks before running it. On a system too old for the
+                release, it says so and installs nothing. It's a short script: read it first, if you
+                like.
               </p>
-              <.doc_table id="get-sh-options-table" head={["Option", "What it does"]}>
+              <.doc_table id="install-paths-table" head={["Where", "What"]}>
                 <.pp_table_row>
-                  <.pp_table_cell><code>--dry-run</code></.pp_table_cell>
-                  <.pp_table_cell>Says what it would do, and does nothing.</.pp_table_cell>
+                  <.pp_table_cell><code>~/.local/lib/guiltty/</code></.pp_table_cell>
+                  <.pp_table_cell>the release</.pp_table_cell>
                 </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>~/.local/bin/guiltty</code></.pp_table_cell>
+                  <.pp_table_cell>the command</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>
+                    <code>~/.local/share/applications/guiltty.desktop</code>
+                  </.pp_table_cell>
+                  <.pp_table_cell>the menu entry</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>
+                    <code>~/.local/share/icons/hicolor/*/apps/guiltty.png</code>
+                  </.pp_table_cell>
+                  <.pp_table_cell>the icon</.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
+              <.doc_table id="install-options-table" head={["Option", "What it does"]}>
                 <.pp_table_row>
                   <.pp_table_cell><code>--yes</code></.pp_table_cell>
                   <.pp_table_cell>
-                    Installs the missing packages and stops a running guiltty without asking.
+                    Installs missing libraries and stops a running guiltty without asking.
                   </.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
-                  <.pp_table_cell><code>GUILTTY_VERSION=v0.18.1</code></.pp_table_cell>
+                  <.pp_table_cell><code>--uninstall</code></.pp_table_cell>
+                  <.pp_table_cell>Removes guiltty. Your config stays.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_VERSION=v0.26.2</code></.pp_table_cell>
                   <.pp_table_cell>A release other than the latest.</.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
@@ -594,22 +645,40 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </.pp_table_row>
               </.doc_table>
               <p>
-                Piped into <code>sh</code>, options go after <code>sh -s --</code>:
+                Options go after <code>bash -s --</code>, settings before <code>bash</code>. With
+                wget, write <code>wget -qO-</code> where these say <code>curl -fsSL</code>.
               </p>
-              <.code_block id="docs-one-line-dry-run" code={@one_line_dry_run} />
+              <.code_block id="docs-one-line-options" code={@one_line_options} />
 
               <.pp_typography variant="title-large" tag="h3" class="mt-10">
-                Or by hand
+                Without piping a script
               </.pp_typography>
-              <p>The same thing, step by step.</p>
+              <p>
+                Download the release from the <a class="doc-link" href={@releases_url}>releases page</a>, check it and run the
+                <code>install.sh</code>
+                inside it. It's the same script, and it installs that tarball instead of downloading
+                one. With wget, write <code>wget</code>
+                where this says <code>curl -fLO</code>.
+              </p>
+              <.code_block id="docs-manual-install" code={@manual_install} />
+
+              <.pp_typography variant="title-large" tag="h3" class="mt-10">
+                Or build it from source
+              </.pp_typography>
+              <p>
+                The same <code>install.sh</code>, run in a git checkout, builds guiltty there and
+                installs it the same way. It needs the tools in <a
+                  class="doc-link"
+                  href="#requirements"
+                >Requirements</a>.
+              </p>
               <.pp_typography variant="title-medium" tag="h4" class="mt-6">
                 1. What to install first
               </.pp_typography>
               <p>
-                On these distributions, one command installs it all (it's what get.sh runs).
-                openSUSE Tumbleweed has been tried all the way to a running guiltty; on the others,
-                get.sh found these package names in fresh containers of each, but the build itself
-                hasn't been tried.
+                On these distributions, one command installs it all. openSUSE Tumbleweed has been
+                tried all the way to a running guiltty; on the others, these package names were found
+                in fresh containers of each, but the build itself hasn't been tried.
               </p>
               <.pp_card variant="outlined" class="mt-4 overflow-hidden" content_class="p-0!">
                 <.pp_tabs id="docs-distro" layout="scrollable" aria-label="Distribution">
@@ -638,36 +707,16 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <.code_block id="docs-install-cmd" code={@install_command} />
               <p>
                 <code>install.sh</code>
-                checks for the tools above, builds a release and installs it into <code>~/.local</code>; it needs no root.
+                checks for the tools above, builds a release and installs it where the one line
+                does.
               </p>
-              <.doc_table id="install-paths-table" head={["Where", "What"]}>
-                <.pp_table_row>
-                  <.pp_table_cell><code>~/.local/lib/guiltty/</code></.pp_table_cell>
-                  <.pp_table_cell>the release</.pp_table_cell>
-                </.pp_table_row>
-                <.pp_table_row>
-                  <.pp_table_cell><code>~/.local/bin/guiltty</code></.pp_table_cell>
-                  <.pp_table_cell>the command</.pp_table_cell>
-                </.pp_table_row>
-                <.pp_table_row>
-                  <.pp_table_cell>
-                    <code>~/.local/share/applications/guiltty.desktop</code>
-                  </.pp_table_cell>
-                  <.pp_table_cell>the menu entry</.pp_table_cell>
-                </.pp_table_row>
-                <.pp_table_row>
-                  <.pp_table_cell>
-                    <code>~/.local/share/icons/hicolor/*/apps/guiltty.png</code>
-                  </.pp_table_cell>
-                  <.pp_table_cell>the icon</.pp_table_cell>
-                </.pp_table_row>
-              </.doc_table>
 
-              <.pp_typography variant="title-medium" tag="h4" class="mt-6">3. Run it</.pp_typography>
+              <.pp_typography variant="title-large" tag="h3" class="mt-10">Run it</.pp_typography>
               <p>
-                Run <code>guiltty</code>, or find it in your applications menu. If your shell says <code>guiltty: command not found</code>, add
+                Run <code>guiltty</code>, or find it in your applications menu. If your shell says <code>guiltty: command not found</code>, log in again (Ubuntu and Fedora add
                 <code>~/.local/bin</code>
-                to your <code>PATH</code>.
+                to your <code>PATH</code>
+                at login once it exists) or add it yourself.
               </p>
             </.doc_section>
 
@@ -685,12 +734,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 </dd>
                 <dt>Uninstall</dt>
                 <dd>
-                  <.code_block id="docs-uninstall-cmd" code="./install.sh --uninstall" />
-                  <p>Your config stays.</p>
+                  <.code_block id="docs-uninstall-cmd" code={@one_line_uninstall} />
+                  <p>Or <code>./install.sh --uninstall</code> from a clone. Your config stays.</p>
                 </dd>
                 <dt>Install somewhere else</dt>
                 <dd>
-                  <.code_block id="docs-prefix-cmd" code="PREFIX=/opt/guiltty ./install.sh" />
+                  <.code_block id="docs-prefix-cmd" code={@one_line_prefix} />
                 </dd>
               </dl>
             </.doc_section>
@@ -1422,14 +1471,13 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.pp_table_row>
                   <.pp_table_cell><code>PREFIX</code></.pp_table_cell>
                   <.pp_table_cell>
-                    For <code>get.sh</code>
-                    and <code>install.sh</code>: where to install instead of <code>~/.local</code>.
+                    For <code>install.sh</code>: where to install instead of <code>~/.local</code>.
                   </.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
                   <.pp_table_cell><code>GUILTTY_VERSION</code></.pp_table_cell>
                   <.pp_table_cell>
-                    For <code>get.sh</code>: a release other than the latest, like <code>v0.18.1</code>.
+                    For <code>install.sh</code>: a release other than the latest, like <code>v0.26.2</code>.
                   </.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
@@ -1439,13 +1487,19 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <dl class="doc-defs">
                 <dt><code>guiltty: command not found</code></dt>
                 <dd>
-                  <p>Add <code>~/.local/bin</code> to your <code>PATH</code>.</p>
+                  <p>
+                    Log in again: Ubuntu and Fedora add <code>~/.local/bin</code>
+                    to your <code>PATH</code>
+                    at login once it exists. Or add it yourself.
+                  </p>
                 </dd>
-                <dt>The tab bar says guiltty is drawing with OpenGL</dt>
+                <dt>guiltty draws with OpenGL, not Vulkan</dt>
                 <dd>
                   <p>
-                    Vulkan couldn't start: there's no Vulkan 1.3 driver, or no GPU that can show the
-                    window. guiltty works the same with OpenGL. To stop it trying Vulkan, set <code>renderer: :gl</code>.
+                    There's no Vulkan 1.3 driver (most virtual machines have none), or no GPU that can
+                    show the window. That's a normal way to run, so guiltty doesn't say so in the tab
+                    bar; the log (<code>~/.local/lib/guiltty/tmp/log/erlang.log.1</code>) has a line
+                    about it. To stop it trying Vulkan, set <code>renderer: :gl</code>.
                   </p>
                 </dd>
                 <dt>The tab bar shows an error in red</dt>
@@ -1470,11 +1524,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                     Install fonts that have them: a Nerd Font, Noto Color Emoji and Noto Sans CJK.
                   </p>
                 </dd>
-                <dt>The one line stops about Elixir</dt>
+                <dt>The one line says glibc is too old</dt>
                 <dd>
                   <p>
-                    The build needs Elixir 1.18 or newer on Erlang/OTP 26 or newer, and get.sh says how
-                    to get one with asdf. Then run the line again.
+                    The precompiled release needs glibc 2.36 or newer; Ubuntu 22.04 and Debian 11 are
+                    older, so it installs nothing there. A newer release of your distribution runs it.
                   </p>
                 </dd>
                 <dt>An image doesn't show</dt>

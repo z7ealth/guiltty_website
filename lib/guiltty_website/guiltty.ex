@@ -33,7 +33,7 @@ defmodule GuilttyWebsite.Guiltty do
      "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libpng-dev libvulkan-dev glslc elixir erlang-dev",
      "Older Ubuntus have neither SDL3 nor GCC 15."},
     {"arch", "Arch Linux",
-     "sudo pacman -S --needed base-devel sdl3 freetype2 fontconfig harfbuzz libpng \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
+     "sudo pacman -Syu --needed base-devel sdl3 freetype2 fontconfig harfbuzz libpng \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
      "Everything is in the official repositories."}
   ]
 
@@ -60,13 +60,28 @@ defmodule GuilttyWebsite.Guiltty do
   @doc "Tested Elixir and Erlang/OTP versions: `{elixir, otp, status}`."
   def tested_versions, do: @tested_versions
 
-  @doc "The one-line install (get.sh): finds the distribution, asks, builds the latest release."
-  def one_line_install,
-    do: "curl -fsSL https://raw.githubusercontent.com/z7ealth/guiltty/master/get.sh | sh"
+  @raw "https://raw.githubusercontent.com/z7ealth/guiltty/master"
 
-  @doc "get.sh on GitHub, to read before piping it into a shell."
-  def get_sh_url, do: github_path("get.sh")
+  @doc """
+  The one-line install, with each downloader: `{slug, name, command}`.
+  install.sh downloads the latest precompiled release (it uses wget itself
+  when there's no curl) and asks before installing a missing library.
+  """
+  def one_line_installs,
+    do: [
+      {"curl", "curl", "curl -fsSL #{@raw}/install.sh | bash"},
+      {"wget", "wget", "wget -qO- #{@raw}/install.sh | bash"}
+    ]
 
-  @doc "The clone-and-install commands."
+  @doc "The curl one-line install."
+  def one_line_install, do: "curl -fsSL #{@raw}/install.sh | bash"
+
+  @doc "install.sh on GitHub, to read before piping it into a shell."
+  def install_sh_url, do: github_path("install.sh")
+
+  @doc "The releases page, with the precompiled tarballs."
+  def releases_url, do: "#{@github}/releases"
+
+  @doc "Building from source: the clone-and-install commands."
   def install_command, do: "git clone #{@github}.git\ncd guiltty\n./install.sh"
 end

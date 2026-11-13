@@ -12,6 +12,8 @@ defmodule GuilttyWebsiteWeb.HomeLiveTest do
     end
 
     assert has_element?(view, "#deps-opensuse")
+    assert has_element?(view, "#one-line-curl", "curl -fsSL")
+    assert has_element?(view, "#one-line-wget", "wget -qO-")
     assert has_element?(view, "#theme-dracula")
     assert has_element?(view, "#versions-table")
   end

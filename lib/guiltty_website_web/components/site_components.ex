@@ -93,6 +93,41 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
   end
 
   @doc """
+  The one-line install, a tab for each downloader (curl, wget). `id`
+  prefixes the tabs group and each snippet: `"\#{id}-curl"`, `"\#{id}-wget"`.
+  """
+  attr :id, :string, required: true
+  attr :class, :any, default: nil
+
+  def one_line_tabs(assigns) do
+    assigns = assign(assigns, :commands, GuilttyWebsite.Guiltty.one_line_installs())
+
+    ~H"""
+    <.pp_card variant="outlined" class={["overflow-hidden", @class]} content_class="p-0!">
+      <.pp_tabs id={@id} aria-label="Downloader">
+        <.pp_tab
+          :for={{{slug, name, _}, i} <- Enum.with_index(@commands)}
+          id={@id}
+          value={slug}
+          default_selected={i == 0}
+        >
+          <span class="font-mono">{name}</span>
+        </.pp_tab>
+      </.pp_tabs>
+      <.pp_tab_panel
+        :for={{{slug, _, cmd}, i} <- Enum.with_index(@commands)}
+        id={@id}
+        value={slug}
+        default_selected={i == 0}
+        class="p-4 sm:p-6"
+      >
+        <.code_block id={"#{@id}-#{slug}"} code={cmd} />
+      </.pp_tab_panel>
+    </.pp_card>
+    """
+  end
+
+  @doc """
   A shell snippet with a copy button. The copied text is the `<code>`'s.
   The code is an attribute, not a slot, so the formatter's indentation never
   ends up inside the `<pre>`.

@@ -160,7 +160,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.24.0", "Copy the last output", "Nov 11",
      "Ctrl+Shift+G copies what the last command printed. Ctrl+Shift+J labels every link on screen; type a label to open it. Tabs you're not looking at show ✓ or ✗ when a command finishes, and come back as they were if the part that keeps them crashes."},
     {"0.25.0", "A long command calls you back", "Nov 11",
-     "When a command that ran 10 seconds or more finishes while you're in another window, guiltty asks the desktop for attention. With Ctrl held, the pointer is a hand over a link. Observer can attach to a running guiltty and show its tabs' processes and memory."}
+     "When a command that ran 10 seconds or more finishes while you're in another window, guiltty asks the desktop for attention. With Ctrl held, the pointer is a hand over a link. Observer can attach to a running guiltty and show its tabs' processes and memory."},
+    {"0.26.2", "Install without building", "Nov 13",
+     "A precompiled release for x86_64 Linux, about 10 MB with its own Erlang inside: installing needs no Elixir and no compiler. One script installs it, with curl or wget, and asks before installing a missing library."}
   ]
 
   @chapters [
@@ -334,9 +336,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.25.0
+                v0.26.2
               </span>
-              <span>A long command calls you back when it finishes</span>
+              <span>Install without building: a precompiled release</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 
@@ -954,21 +956,25 @@ defmodule GuilttyWebsiteWeb.HomeLive do
           <div class="mx-auto max-w-4xl px-6 py-24 sm:py-32">
             <.section_header
               eyebrow="Install"
-              title="Built on your machine. Runs without Elixir."
+              title="One line. No Elixir, no compiler."
               class="mx-auto text-center"
             >
-              guiltty builds from source, so you need Elixir 1.18+ on Erlang/OTP 26+, and GCC 15+,
-              once. The installed copy carries its own Erlang runtime and needs no root.
+              A precompiled release for x86_64 Linux, about 10 MB with its own Erlang inside. It
+              installs into <code class="inline-code">~/.local</code> and needs no root.
             </.section_header>
 
             <div id="install-one-line" class="mt-12">
               <p class="step-label">
                 <span class="step-num"><.pp_icon name="hero-bolt-micro" size="xs" /></span> One line
               </p>
-              <.code_block id="one-line-cmd" class="mt-4" code={Guiltty.one_line_install()} />
+              <.one_line_tabs id="one-line" class="mt-4" />
               <p class="pp-body-small mt-3 text-pp-on-surface-variant">
-                For openSUSE, Fedora, Ubuntu/Debian and Arch. Asks before using <code class="inline-code">sudo</code>; run it again to update.
-                <a href={Guiltty.get_sh_url()} class="text-pp-primary underline underline-offset-2">
+                On Ubuntu 24.04+, Debian 12+ and any current Fedora, Arch, Manjaro or openSUSE (glibc 2.36+).
+                No curl? Ubuntu's desktop doesn't have it: use wget. If a library is missing, it asks before using <code class="inline-code">sudo</code>; run it again to update.
+                <a
+                  href={Guiltty.install_sh_url()}
+                  class="text-pp-primary underline underline-offset-2"
+                >
                   Read the script
                 </a>
                 ·
@@ -979,9 +985,13 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </p>
             </div>
 
-            <.pp_typography variant="title-medium" tag="h3" class="mt-14 mb-6">
-              Or by hand
+            <.pp_typography variant="title-medium" tag="h3" class="mt-14">
+              Or build it from source
             </.pp_typography>
+            <p class="pp-body-medium mt-2 mb-6 text-pp-on-surface-variant">
+              For working on guiltty, or on a machine the release doesn't run on. It needs Elixir 1.18+
+              on Erlang/OTP 26+ and GCC 15+; the installed copy still carries its own Erlang.
+            </p>
 
             <div class="space-y-10">
               <div>
