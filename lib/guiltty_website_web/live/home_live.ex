@@ -162,7 +162,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"0.25.0", "A long command calls you back", "Nov 11",
      "When a command that ran 10 seconds or more finishes while you're in another window, guiltty asks the desktop for attention. With Ctrl held, the pointer is a hand over a link. Observer can attach to a running guiltty and show its tabs' processes and memory."},
     {"0.26.2", "Install without building", "Nov 13",
-     "A precompiled release for x86_64 Linux, about 10 MB with its own Erlang inside: installing needs no Elixir and no compiler. One script installs it, with curl or wget, and asks before installing a missing library."}
+     "A precompiled release for x86_64 Linux, about 10 MB with its own Erlang inside: installing needs no Elixir and no compiler. One script installs it, with curl or wget, and asks before installing a missing library."},
+    {"0.26.3", "The AI pane stays out of a broadcast", "Nov 15",
+     "Ctrl+Shift+B joins every pane of the tab except the AI one, so what you type into your servers doesn't go to the AI tool beside them. A tab with an AI pane beside an ssh joins on the first press."}
   ]
 
   @chapters [
@@ -336,9 +338,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.26.2
+                v0.26.3
               </span>
-              <span>Install without building: a precompiled release</span>
+              <span>The AI pane stays out of a broadcast</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="size-4" />
             </a>
 

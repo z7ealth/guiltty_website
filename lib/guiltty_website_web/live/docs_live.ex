@@ -202,7 +202,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.26.2
+  v=0.26.3
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -1146,6 +1146,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <li>
                   A local tab (your own shell) joins on purpose with a second
                   <.keys keys="Ctrl+Shift+B" />. It's marked 🏠 and isn't checked.
+                </li>
+                <li>
+                  The AI pane beside a tab never joins: it's there to ask about the server, not to
+                  run the command again. The AI in a tab of its own can't join, and the tab bar
+                  says so.
                 </li>
               </ul>
               <.pp_typography variant="title-large" tag="h3" class="mt-8">
