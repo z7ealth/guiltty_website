@@ -189,13 +189,40 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     ServerAliveCountMax 3
   """
 
-  @manual_install ~S"""
+  # Installing without install.sh: what it does, step by step (the README's
+  # "Entirely by hand").
+  @by_hand_libraries [
+    {"openSUSE",
+     "sudo zypper install fontconfig libfreetype6 libharfbuzz0 libpng16-16 libvulkan1"},
+    {"Fedora", "sudo dnf install fontconfig freetype harfbuzz libpng vulkan-loader"},
+    {"Ubuntu, Debian",
+     "sudo apt install libfontconfig1 libfreetype6 libharfbuzz0b libpng16-16 libvulkan1"},
+    {"Arch, Manjaro",
+     "sudo pacman -Syu --needed fontconfig freetype2 harfbuzz libpng vulkan-icd-loader"}
+  ]
+
+  @by_hand_install ~S"""
   v=0.26.2
-  curl -fLO https://github.com/z7ealth/guiltty/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz
-  curl -fLO https://github.com/z7ealth/guiltty/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz.sha256
-  sha256sum -c guiltty-$v-x86_64-linux.tar.gz.sha256      # should say: OK
-  tar xzf guiltty-$v-x86_64-linux.tar.gz
-  ./guiltty-$v-x86_64-linux/install.sh                    # --uninstall, --yes work here too
+  mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
+  cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
+  ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
+  for s in 16 24 32 48 64 128 256; do
+    install -D -m 644 ~/.local/lib/guiltty/lib/guiltty-$v/priv/icons/guiltty-$s.png \
+      ~/.local/share/icons/hicolor/${s}x$s/apps/guiltty.png
+  done
+  cat > ~/.local/share/applications/guiltty.desktop <<EOF
+  [Desktop Entry]
+  Type=Application
+  Name=guiltty
+  GenericName=Terminal
+  Comment=A GPU terminal emulator in Elixir and C
+  Exec=$HOME/.local/bin/guiltty
+  Icon=guiltty
+  Terminal=false
+  Categories=System;TerminalEmulator;
+  StartupWMClass=guiltty
+  StartupNotify=false
+  EOF
   """
 
   @hack_commands ~S"""
@@ -418,7 +445,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      )
      |> assign(:install_sh_url, Guiltty.install_sh_url())
      |> assign(:releases_url, Guiltty.releases_url())
-     |> assign(:manual_install, String.trim(@manual_install))
+     |> assign(:manual_install, Guiltty.manual_install())
+     |> assign(:by_hand_libraries, @by_hand_libraries)
+     |> assign(:by_hand_install, String.trim(@by_hand_install))
      |> assign(:custom_theme, String.trim(@custom_theme))
      |> assign(:tab_styles, @tab_styles)
      |> assign(:keys_example, String.trim(@keys_example))
@@ -657,10 +686,40 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 Download the release from the <a class="doc-link" href={@releases_url}>releases page</a>, check it and run the
                 <code>install.sh</code>
                 inside it. It's the same script, and it installs that tarball instead of downloading
-                one. With wget, write <code>wget</code>
-                where this says <code>curl -fLO</code>.
+                one:
               </p>
               <.code_block id="docs-manual-install" code={@manual_install} />
+
+              <.pp_typography variant="title-large" tag="h3" class="mt-10">
+                Entirely by hand
+              </.pp_typography>
+              <p>Without any script. This is all that <code>install.sh</code> does.</p>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">
+                1. The libraries, if they're missing
+              </.pp_typography>
+              <.doc_table id="by-hand-libraries-table" head={["Distribution", "Command"]}>
+                <.pp_table_row :for={{distro, cmd} <- @by_hand_libraries}>
+                  <.pp_table_cell>{distro}</.pp_table_cell>
+                  <.pp_table_cell><code>{cmd}</code></.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">
+                2. The release, the command, the icons and the menu entry
+              </.pp_typography>
+              <p>After unpacking the tarball as above:</p>
+              <.code_block id="docs-by-hand-install" code={@by_hand_install} />
+              <p>
+                The command has to be a link into the release, not a copy: it finds the release it
+                belongs to through the link.
+              </p>
+              <.pp_typography variant="title-medium" tag="h4" class="mt-6">
+                3. Update and uninstall
+              </.pp_typography>
+              <p>
+                To update, stop guiltty first (<code>~/.local/lib/guiltty/bin/guiltty stop</code>;
+                that closes its tabs), then replace <code>~/.local/lib/guiltty</code>
+                and the link. To uninstall, remove those, the menu entry and the icons.
+              </p>
 
               <.pp_typography variant="title-large" tag="h3" class="mt-10">
                 Or build it from source

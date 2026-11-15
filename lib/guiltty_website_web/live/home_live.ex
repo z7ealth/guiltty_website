@@ -959,8 +959,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               title="One line. No Elixir, no compiler."
               class="mx-auto text-center"
             >
-              A precompiled release for x86_64 Linux, about 10 MB with its own Erlang inside. It
-              installs into <code class="inline-code">~/.local</code> and needs no root.
+              A precompiled x86_64 Linux release. Installs into <code class="inline-code">~/.local</code>, no root.
             </.section_header>
 
             <div id="install-one-line" class="mt-12">
@@ -969,8 +968,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </p>
               <.one_line_tabs id="one-line" class="mt-4" />
               <p class="pp-body-small mt-3 text-pp-on-surface-variant">
-                On Ubuntu 24.04+, Debian 12+ and any current Fedora, Arch, Manjaro or openSUSE (glibc 2.36+).
-                No curl? Ubuntu's desktop doesn't have it: use wget. If a library is missing, it asks before using <code class="inline-code">sudo</code>; run it again to update.
+                Needs glibc 2.36+. Run it again to update.
                 <a
                   href={Guiltty.install_sh_url()}
                   class="text-pp-primary underline underline-offset-2"
@@ -985,12 +983,26 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               </p>
             </div>
 
+            <div id="install-manual" class="mt-10">
+              <p class="step-label">
+                <span class="step-num"><.pp_icon name="hero-arrow-down-tray-micro" size="xs" /></span>
+                Or download it yourself
+              </p>
+              <p class="pp-body-small mt-2 text-pp-on-surface-variant">
+                From the <a
+                  href={Guiltty.releases_url()}
+                  class="text-pp-primary underline underline-offset-2"
+                >
+                  releases page</a>: check it, unpack it, run its <code class="inline-code">install.sh</code>.
+              </p>
+              <.code_block id="install-manual-cmd" class="mt-4" code={Guiltty.manual_install()} />
+            </div>
+
             <.pp_typography variant="title-medium" tag="h3" class="mt-14">
               Or build it from source
             </.pp_typography>
             <p class="pp-body-medium mt-2 mb-6 text-pp-on-surface-variant">
-              For working on guiltty, or on a machine the release doesn't run on. It needs Elixir 1.18+
-              on Erlang/OTP 26+ and GCC 15+; the installed copy still carries its own Erlang.
+              Needs Elixir 1.18+, Erlang/OTP 26+ and GCC 15+.
             </p>
 
             <div class="space-y-10">
@@ -1024,17 +1036,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                     </p>
                   </.pp_tab_panel>
                 </.pp_card>
-                <p class="pp-body-small mt-3 text-pp-on-surface-variant">
-                  openSUSE Tumbleweed has been tried all the way to a running guiltty. On the others,
-                  these package names were found in fresh containers of each, but the build itself
-                  hasn't been tried.
-                </p>
 
                 <div id="versions" class="mt-8">
                   <p class="pp-title-small">Tested Elixir and Erlang/OTP</p>
-                  <p class="pp-body-small mt-1 text-pp-on-surface-variant">
-                    The minimum is Elixir 1.18 on Erlang/OTP 26. Older versions aren't supported.
-                  </p>
                   <.pp_table_container class="mt-3">
                     <.pp_table id="versions-table">
                       <.pp_table_head>
@@ -1102,9 +1106,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 <p class="step-label"><span class="step-num">3</span> Run it</p>
                 <p class="pp-body-medium mt-3 text-pp-on-surface-variant">
                   Type <code class="inline-code">guiltty</code>
-                  or find it in your applications menu. It needs a GPU with OpenGL 3.3, and draws with
-                  Vulkan where there's a 1.3 driver. It looks best with a Nerd Font, Noto Color Emoji
-                  and a font for Chinese, Japanese and Korean.
+                  or find it in your applications menu. Needs OpenGL 3.3 or Vulkan 1.3.
                 </p>
                 <.pp_button href="/docs" variant="tonal" class="mt-6" id="install-docs">
                   <:start_icon>
