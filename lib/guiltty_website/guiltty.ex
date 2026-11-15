@@ -85,15 +85,8 @@ defmodule GuilttyWebsite.Guiltty do
   @doc "Installing a downloaded release by hand, without piping a script."
   def manual_install,
     do: """
-    v=0.26.2
-    curl -fLO #{@github}/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz
-    curl -fLO #{@github}/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz.sha256
-    #   or, with wget:
-    # wget #{@github}/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz
-    # wget #{@github}/releases/download/v$v/guiltty-$v-x86_64-linux.tar.gz.sha256
-    sha256sum -c guiltty-$v-x86_64-linux.tar.gz.sha256      # should say: OK
-    tar xzf guiltty-$v-x86_64-linux.tar.gz
-    ./guiltty-$v-x86_64-linux/install.sh                    # --uninstall, --yes work here too\
+    tar xzf guiltty-0.26.2-x86_64-linux.tar.gz
+    ./guiltty-0.26.2-x86_64-linux/install.sh    # --uninstall, --yes work here too\
     """
 
   @doc "Building from source: the clone-and-install commands."

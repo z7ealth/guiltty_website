@@ -683,7 +683,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 Without piping a script
               </.pp_typography>
               <p>
-                Download the release from the <a class="doc-link" href={@releases_url}>releases page</a>, check it and run the
+                Download the release from the <a class="doc-link" href={@releases_url}>releases page</a>, unpack it and run the
                 <code>install.sh</code>
                 inside it. It's the same script, and it installs that tarball instead of downloading
                 one:

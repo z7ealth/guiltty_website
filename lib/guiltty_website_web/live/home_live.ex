@@ -993,7 +993,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                   href={Guiltty.releases_url()}
                   class="text-pp-primary underline underline-offset-2"
                 >
-                  releases page</a>: check it, unpack it, run its <code class="inline-code">install.sh</code>.
+                  releases page</a>, unpack it, run its <code class="inline-code">install.sh</code>.
               </p>
               <.code_block id="install-manual-cmd" class="mt-4" code={Guiltty.manual_install()} />
             </div>
