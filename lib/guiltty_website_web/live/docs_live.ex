@@ -86,6 +86,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      ]}
   ]
 
+  # The windows-and-tabs showcase: {scene, chip label, chip icon}.
+  @tab_scenes [
+    {"marks", "Marks", "hero-bell"},
+    {"locked", "Locked tabs", "hero-lock-closed"},
+    {"password", "Password lock", "hero-key"},
+    {"busy", "Busy tabs", "hero-exclamation-triangle"},
+    {"rename", "Rename", "hero-pencil-square"}
+  ]
+
   # Every action in `keys:`, with its defaults, from @default_keys in
   # lib/guiltty/config.ex: {action, [key], what it does}.
   @bindings [
@@ -133,7 +142,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   # {setting, default, accepts, notes}. A {:text, _} default is words, not
   # a value.
   @settings [
-    {"font", ~s([family: "monospace", size: 18]), "family: any fontconfig name; size: 6 to 96",
+    {"font", ~s([family: "monospace", size: 12]), "family: any fontconfig name; size: 6 to 96",
      nil},
     {"theme", ~s("guiltty"), "a built-in name, or your own colors", "See Themes."},
     {"cursor", "[style: :block, blink: false, password_lock: true]",
@@ -152,7 +161,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"tab_bar", ":bottom", ":bottom or :top", nil},
     {"pane_border", "[style: :solid, thickness: :thin]",
      "style: :solid, :dashed, :double or :none; thickness: :thin or :thick", nil},
-    {"tab_style", ":flat", ":flat, :powerline, :rounded, :minimal or :separators",
+    {"tab_style", ":powerline", ":flat, :powerline, :rounded, :minimal or :separators",
      "See Tab styles."},
     {"ligatures", "true", "true or false", nil},
     {"ai", "[command: nil, position: :right]",
@@ -190,8 +199,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
   # The tab styles: {style, what it looks like}, from priv/config.example.exs.
   @tab_styles [
-    {"flat", "Side by side, the active one lighter, with a line along its edge. The default."},
-    {"powerline", "Colored blocks joined by arrows."},
+    {"powerline", "Colored blocks joined by arrows. The default."},
+    {"flat", "Side by side, the active one lighter, with a line along its edge."},
     {"rounded", "Pills with round ends, the active one filled."},
     {"minimal", "No bar: titles on the terminal's background, the line under the active one."},
     {"separators", "Titles between thin bars, the active one filled."}
@@ -218,7 +227,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.26.3
+  v=0.26.4
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -262,7 +271,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   # guiltty's priv/config.example.exs, as it ships.
   @example_config ~S"""
   [
-    font: [family: "monospace", size: 18],
+    font: [family: "monospace", size: 12],
 
     # A built-in theme by name: "guiltty" (the icon's lavender on
     # near-black, what guiltty uses without a config), "tomorrow-night",
@@ -316,15 +325,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     tab_bar: :bottom,
 
     # How the tabs look:
-    #   :flat        (the default) side by side, the active one lighter, with
+    #   :flat        side by side, the active one lighter, with
     #                a line along its edge
-    #   :powerline   colored blocks joined by arrows
+    #   :powerline   (the default) colored blocks joined by arrows
     #   :rounded     pills with round ends, the active one filled
     #   :minimal     no bar: titles on the terminal's background, the line
     #                under the active one
     #   :separators  titles between thin bars, the active one filled
     # Their colors are in theme: (tab_bar, tab_active, ... above).
-    tab_style: :flat,
+    tab_style: :powerline,
 
     # The border between split panes (Ctrl+Shift+O / E): one cell wide, a
     # line of style :solid, :dashed, :double or :none (blank), :thin or
@@ -446,6 +455,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:distros, Guiltty.distros())
      |> assign(:tested_versions, Guiltty.tested_versions())
      |> assign(:themes, Guiltty.themes())
+     |> assign(:tab_scenes, @tab_scenes)
      |> assign(:install_command, Guiltty.install_command())
      |> assign(
        :one_line_options,
@@ -847,6 +857,134 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <code>guiltty</code>
                 or <.keys keys="Ctrl+Shift+N" /> opens another.
               </p>
+              <div id="tabs-demo" data-scene="marks" class="tabs-demo doc-demo">
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Tab feature">
+                  <.pp_chip
+                    :for={{scene, label, icon} <- @tab_scenes}
+                    id={"tabs-scene-#{scene}"}
+                    variant="filter"
+                    group="tabs-scene"
+                    selected={scene == "marks"}
+                    on_toggle={JS.set_attribute({"data-scene", scene}, to: "#tabs-demo")}
+                  >
+                    <:icon><.icon name={icon} class="size-4.5" /></:icon>
+                    {label}
+                  </.pp_chip>
+                </div>
+
+                <div class="tabs-stage mt-4">
+                  <div class="tabs-closed" aria-hidden="true">
+                    <.pp_icon name="hero-lock-closed" size="none" class="size-5" />
+                    <span>window closed · the 🔒 tab keeps running</span>
+                    <code>$ guiltty</code>
+                  </div>
+                  <.terminal id="tabs-terminal" title="guiltty" class="tabs-term">
+                    <div class="tabs-scene" data-for="marks">
+                      <.p10k_prompt />
+                      <div><span class="p10k-frame">╰─</span> git log --oneline -3</div>
+                      <div><span class="t-yellow">a1f09c2</span> Lock the tab, not the window</div>
+                      <div><span class="t-yellow">7d3e815</span> Marks for background tabs</div>
+                      <div><span class="t-yellow">0c44b7e</span> Rename with Ctrl+Shift+R</div>
+                      <div><span class="p10k-frame">╰─</span> <span class="t-cursor"></span></div>
+                    </div>
+                    <div class="tabs-scene" data-for="locked">
+                      <div class="t-dim">Erlang/OTP 28 [erts-16.0] [64-bit] [smp:16:16]</div>
+                      <div class="mt-1">Interactive Elixir (1.19.0) - press Ctrl+C to exit</div>
+                      <div><span class="t-green">iex(1)&gt;</span> Node.self()</div>
+                      <div class="t-magenta">:"dev@localhost"</div>
+                      <div>
+                        <span class="t-green">iex(2)&gt;</span> :timer.tc(fn -&gt; Work.run() end)
+                      </div>
+                      <div>
+                        &#123;<span class="t-yellow">1_204_331</span>, <span class="t-cyan">:ok</span>&#125;
+                      </div>
+                      <div>
+                        <span class="t-green">iex(3)&gt;</span> <span class="t-cursor"></span>
+                      </div>
+                    </div>
+                    <div class="tabs-scene" data-for="password">
+                      <.p10k_prompt />
+                      <div><span class="p10k-frame">╰─</span> sudo pacman -Syu</div>
+                      <div>
+                        [sudo] password for you:
+                        <span class="password-lock">
+                          <.pp_icon name="hero-lock-closed-micro" size="none" class="size-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                    <div class="tabs-scene" data-for="busy">
+                      <div><span class="t-cyan">import</span> Config</div>
+                      <div>&nbsp;</div>
+                      <div><span class="t-cyan">config</span> :guiltty,</div>
+                      <div>&nbsp;&nbsp;tab_style: <span class="t-magenta">:powerline</span>,</div>
+                      <div>
+                        &nbsp;&nbsp;theme:
+                        <span class="t-green">"tokyo-night"</span><span class="t-cursor"></span>
+                      </div>
+                      <div class="t-blue">~</div>
+                      <div class="t-blue">~</div>
+                      <div class="vim-status"><b>-- INSERT --</b><span>config.exs [+]</span></div>
+                    </div>
+                    <div class="tabs-scene" data-for="rename">
+                      <.p10k_prompt />
+                      <div><span class="p10k-frame">╰─</span> ./deploy.sh production</div>
+                      <div class="t-green">✓ build 3.2s</div>
+                      <div class="t-green">✓ upload 1.1s</div>
+                      <div>… migrating</div>
+                    </div>
+
+                    <:tab_bar>
+                      <span class="tabs-scene tabs-bar" data-for="marks">
+                        <span class="term-tab is-active">~/src</span>
+                        <span class="term-tab"><span class="tab-mark t-cyan">●</span> mix test</span>
+                        <span class="term-tab"><span class="tab-mark">🔔</span> ssh web-1</span>
+                        <span class="term-tab"><span class="tab-mark t-green">✓</span> make</span>
+                      </span>
+                      <span class="tabs-scene tabs-bar" data-for="locked">
+                        <span class="term-tab is-active">🔒 iex -S mix</span>
+                        <span class="term-tab">~/src</span>
+                      </span>
+                      <span class="tabs-scene tabs-bar" data-for="password">
+                        <span class="term-tab is-active">sudo pacman -Syu</span>
+                        <span class="term-tab">~/src</span>
+                      </span>
+                      <span class="tabs-scene tabs-bar" data-for="busy">
+                        <span class="term-tab is-active">vim config.exs</span>
+                        <span class="term-tab">~/src</span>
+                        <span class="tabs-status is-warning">vim is running: press again to close</span>
+                      </span>
+                      <span class="tabs-scene tabs-bar" data-for="rename">
+                        <span class="term-tab">~/src</span>
+                        <span class="term-tab is-active">
+                          <span class="rename-typed">deploy</span><span class="rename-caret"></span>
+                        </span>
+                        <span class="tabs-status">rename tab: deploy</span>
+                      </span>
+                    </:tab_bar>
+                  </.terminal>
+                </div>
+
+                <p class="tabs-caption">
+                  <span class="tabs-scene" data-for="marks">
+                    Background tabs: <b>●</b>
+                    new output, <b>🔔</b>
+                    the bell, <b>✓</b>/<b>✗</b>
+                    a command that ended.
+                  </span>
+                  <span class="tabs-scene" data-for="locked">
+                    <.keys keys="Ctrl+Shift+L" /> and the tab outlives its window.
+                  </span>
+                  <span class="tabs-scene" data-for="password">
+                    A lock in place of the cursor while a program reads a password.
+                  </span>
+                  <span class="tabs-scene" data-for="busy">
+                    <.keys keys="Ctrl+Shift+W" /> on a busy tab asks first: press again to close.
+                  </span>
+                  <span class="tabs-scene" data-for="rename">
+                    <.keys keys="Ctrl+Shift+R" /> names the tab; empty brings the title back.
+                  </span>
+                </p>
+              </div>
               <ul>
                 <li>
                   <strong>Locked tabs.</strong> <.keys keys="Ctrl+Shift+L" /> keeps a tab running

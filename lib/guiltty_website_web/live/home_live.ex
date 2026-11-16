@@ -23,12 +23,30 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     }
   ]
 
+  @hero_features [
+    {"hero-shield-check", "Self-healing tabs"},
+    {"hero-bolt", "Vulkan + OpenGL"},
+    {"hero-lock-closed", "Lockable tabs"},
+    {"hero-signal", "Broadcast input"},
+    {"hero-arrow-path", "Live config reload"},
+    {"hero-magnifying-glass", "Scrollback search"},
+    {"hero-language", "Unicode & emoji"},
+    {"hero-code-bracket", "Ligatures"},
+    {"hero-bell", "Activity marks"},
+    {"hero-photo", "Images"},
+    {"hero-view-columns", "Split panes"},
+    {"hero-chat-bubble-left-right", "AI key"},
+    {"hero-link", "Hyperlinks"},
+    {"hero-swatch", "Built-in themes"}
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "guiltty · a GPU-accelerated terminal emulator in Elixir and C")
      |> assign(:github, Guiltty.github())
+     |> assign(:hero_features, Enum.with_index(@hero_features))
      |> assign(:hero_scenes, Jason.encode!(@hero_scenes))}
   end
 
@@ -37,10 +55,25 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     ~H"""
     <Layouts.app flash={@flash}>
       <div id="site" data-term-theme="guiltty">
-        <section id="hero" class="hero-section relative flex flex-col items-center overflow-hidden">
+        <section
+          id="hero"
+          class="hero-section relative flex flex-col items-center justify-center overflow-hidden"
+        >
           <div class="hero-glow" aria-hidden="true"></div>
 
-          <div class="relative mx-auto flex w-full max-w-4xl flex-col items-center px-4 pt-16 pb-20 sm:px-6 sm:pt-24 text-center">
+          <div class="relative mx-auto flex w-full max-w-4xl flex-col items-center px-4 py-12 sm:px-6 text-center">
+            <a
+              href={"#{@github}/blob/master/CHANGELOG.md"}
+              class="hero-pill pp-label-large mb-8"
+              id="hero-release"
+            >
+              <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
+                v0.26.4
+              </span>
+              <span>Smaller font, powerline tabs</span>
+              <.pp_icon name="hero-arrow-right-micro" size="none" class="hero-pill-arrow size-4" />
+            </a>
+
             <h1 class="hero-name">
               <.logo_mark class="hero-name-mark text-pp-primary" />
               <span>guil<span class="text-pp-primary">tty</span></span>
@@ -50,27 +83,55 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               A GPU-accelerated Linux terminal that runs on the BEAM.
             </p>
 
-            <div class="hero-term-wrap mt-12 w-full">
+            <div
+              id="hero-features"
+              class="hero-chips mt-8 flex max-w-3xl flex-wrap justify-center gap-2"
+            >
+              <.pp_chip :for={{{icon, label}, i} <- @hero_features} style={"--i: #{i}"}>
+                <:icon><.icon name={icon} class="size-4.5" /></:icon>
+                {label}
+              </.pp_chip>
+            </div>
+
+            <div class="hero-term-wrap mt-10 w-full">
               <.terminal
                 id="hero-terminal"
-                class="hero-term text-left"
+                class="hero-term tabs-powerline text-left"
                 title="you@linux:~/src"
                 tabs={[
                   {"you@linux:~", false},
                   {"● you@linux:~/guiltty", false},
                   {"you@linux:~/src", true}
                 ]}
+                body_class="hero-panes"
               >
-                <div
-                  id="hero-typing"
-                  phx-hook=".Typing"
-                  phx-update="ignore"
-                  data-scenes={@hero_scenes}
-                  class="min-h-[20rem]"
-                >
-                  <.p10k_prompt />
+                <div class="hero-pane">
+                  <div
+                    id="hero-typing"
+                    phx-hook=".Typing"
+                    phx-update="ignore"
+                    data-scenes={@hero_scenes}
+                    class="min-h-[20rem]"
+                  >
+                    <.p10k_prompt />
+                    <div>
+                      <span class="p10k-frame">╰─</span> <span class="t-cursor"></span>
+                    </div>
+                  </div>
+                </div>
+                <%!-- A split pane (Ctrl+Shift+O): unfocused, so its cursor is hollow --%>
+                <div id="hero-side-pane" class="hero-pane hero-pane-side" aria-hidden="true">
+                  <div class="t-dim">Interactive Elixir (1.20.4)</div>
+                  <div class="mt-1">
+                    <span class="t-green">iex(1)&gt;</span> Process.list |&gt; length
+                  </div>
+                  <div class="t-yellow">412</div>
+                  <div><span class="t-green">iex(2)&gt;</span> :erlang.memory(:total)</div>
+                  <div class="t-yellow">48_311_920</div>
+                  <div><span class="t-green">iex(3)&gt;</span> Node.self()</div>
+                  <div class="t-magenta">:"guiltty@127.0.0.1"</div>
                   <div>
-                    <span class="p10k-frame">╰─</span> <span class="t-cursor"></span>
+                    <span class="t-green">iex(4)&gt;</span> <span class="t-cursor-hollow"></span>
                   </div>
                 </div>
                 <div class="term-toast" aria-hidden="true">
@@ -89,22 +150,24 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 GitHub
               </.pp_button>
             </div>
+          </div>
+        </section>
 
-            <div id="hero-install" class="mt-14 w-full max-w-2xl">
-              <h2 class="hero-install-title">Install</h2>
-              <.one_line_tabs id="one-line" class="mt-5 text-left" />
-              <p class="hero-fine mt-4">
-                <a
-                  href={"#{@github}/blob/master/CHANGELOG.md"}
-                  id="hero-release"
-                  class="hero-fine-link"
-                >
-                  v0.26.3
-                </a>
-                <span aria-hidden="true">·</span>
-                <.link navigate={~p"/docs#install"} class="hero-fine-link">More ways to install</.link>
-              </p>
-            </div>
+        <section id="install-band" class="install-band px-4 py-16 sm:px-6 sm:py-20">
+          <div id="hero-install" class="mx-auto w-full max-w-2xl">
+            <h2 class="hero-install-title">Install</h2>
+            <.one_line_tabs id="one-line" class="mt-5 text-left" />
+            <p class="hero-fine mt-4">
+              <a
+                href={"#{@github}/blob/master/CHANGELOG.md"}
+                id="install-release"
+                class="hero-fine-link"
+              >
+                v0.26.4
+              </a>
+              <span aria-hidden="true">·</span>
+              <.link navigate={~p"/docs#install"} class="hero-fine-link">More ways to install</.link>
+            </p>
           </div>
         </section>
       </div>

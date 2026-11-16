@@ -169,6 +169,24 @@
   height: 2px;
   background: var(--t-4);
 }
+/* guiltty's default since 0.26.4: :powerline, colored blocks joined by
+   arrows, the active one in the theme's blue. A class on .term. */
+.term.tabs-powerline .term-tab {
+  margin-right: -1ch;
+  padding: 0 2ch 0 2.5ch;
+  background: color-mix(in srgb, var(--t-fg) 14%, var(--t-bg));
+  clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%, 1ch 50%);
+  transition: background-color 400ms ease, color 400ms ease;
+}
+.term.tabs-powerline .term-tab:first-child {
+  clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%);
+}
+.term.tabs-powerline .term-tab.is-active {
+  background: var(--t-4);
+  color: var(--t-bg);
+}
+.term.tabs-powerline .term-tab.is-active::after { content: none; }
+
 .term-body {
   padding: 0.625rem 0.75rem 1rem;
   font: 0.875rem/1.65 var(--font-mono);
@@ -315,6 +333,29 @@
   50% { opacity: 1; transform: scale(1.06); }
 }
 
+/* The release pill above the name: the version, what it brought, an arrow
+   to the changelog that nudges on hover. */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.9rem 0.3rem 0.35rem;
+  border-radius: var(--radius-pp-full);
+  border: 1px solid var(--color-pp-outline-variant);
+  background: color-mix(in srgb, var(--color-pp-surface-container) 70%, transparent);
+  color: var(--color-pp-on-surface-variant);
+  backdrop-filter: blur(8px);
+  transition: border-color 200ms ease, color 200ms ease, transform 200ms ease;
+  animation: hero-rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.hero-pill:hover {
+  border-color: var(--color-pp-primary);
+  color: var(--color-pp-on-surface);
+  transform: translateY(-1px);
+}
+.hero-pill-arrow { transition: transform 200ms ease; }
+.hero-pill:hover .hero-pill-arrow { transform: translateX(3px); }
+
 /* The nav's lockup, scaled up: the mark beside the name, at the same
    proportions (a 1.75rem mark to 1.375rem type, a 0.5rem gap). */
 .hero-name {
@@ -338,6 +379,13 @@
   animation: hero-rise 700ms 120ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+/* The feature chips under the tagline, in one by one */
+.hero-chips > * {
+  animation: hero-rise 500ms calc(160ms + var(--i, 0) * 35ms) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transition: transform 200ms ease;
+}
+.hero-chips > *:hover { transform: translateY(-2px); }
+
 @keyframes hero-rise {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
@@ -356,6 +404,33 @@
     0 18px 36px -18px rgb(0 0 0 / 0.4);
 }
 .hero-term-wrap:hover .hero-term { transform: translateY(-2px); }
+
+/* The hero terminal, split (Ctrl+Shift+O): the typing on the left, focused;
+   an iex on the right behind a one-cell separator. One pane on phones. */
+.hero-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  padding: 0 !important;
+}
+.hero-pane { min-width: 0; padding: 0.625rem 0.75rem 1rem; }
+.hero-pane-side {
+  border-left: 1px solid color-mix(in srgb, var(--t-fg) 30%, var(--t-bg));
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.t-cursor-hollow {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.2em;
+  vertical-align: -0.2em;
+  box-shadow: inset 0 0 0 1px var(--t-cursor);
+}
+@media (max-width: 767px) {
+  .hero-panes { grid-template-columns: minmax(0, 1fr); }
+  .hero-pane-side { display: none; }
+}
 
 .hero-fine {
   display: flex;
@@ -683,6 +758,129 @@
 .pane + .pane { border-left: 1px solid color-mix(in srgb, var(--t-fg) 45%, var(--t-bg)); }
 .pane .p10k-seg { height: 1.4em; }
 
+/* ───────────────────────── Windows and tabs showcase ───────────────────────── */
+
+/* One terminal, five scenes: a filter chip sets data-scene on #tabs-demo and
+   only the parts marked data-for that scene show, body, tab bar and caption. */
+.tabs-scene { display: none; }
+.tabs-demo[data-scene="marks"] [data-for="marks"],
+.tabs-demo[data-scene="locked"] [data-for="locked"],
+.tabs-demo[data-scene="password"] [data-for="password"],
+.tabs-demo[data-scene="busy"] [data-for="busy"],
+.tabs-demo[data-scene="rename"] [data-for="rename"] {
+  display: var(--scene-display, block);
+  animation: scene-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes scene-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.tabs-term .term-body { min-height: 12.5rem; line-height: 1.45; }
+.tabs-bar { --scene-display: flex; flex: 1; min-width: 0; }
+.tabs-bar .term-tab { transition: background-color 250ms ease, color 250ms ease; }
+.tab-mark { display: inline-block; animation: mark-pop 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+.term-tab:nth-child(3) .tab-mark { animation-delay: 0.4s; }
+.term-tab:nth-child(4) .tab-mark { animation-delay: 0.8s; }
+@keyframes mark-pop {
+  0%, 70%, 100% { transform: scale(1); }
+  80% { transform: scale(1.35); }
+}
+
+/* guiltty's status: at the right of the tab bar, a warning in yellow */
+.tabs-status {
+  margin-left: auto;
+  padding: 0 1.5ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tabs-status.is-warning { color: var(--t-3); }
+
+/* The lock in place of the cursor, in the cursor's color */
+.password-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.9em;
+  height: 1.2em;
+  vertical-align: -0.2em;
+  color: var(--t-cursor);
+  animation: lock-pulse 1.6s ease-in-out infinite;
+}
+@keyframes lock-pulse { 50% { opacity: 0.45; } }
+
+.vim-status {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  color: color-mix(in srgb, var(--t-fg) 70%, var(--t-bg));
+}
+
+/* Rename: the new name typed into the tab, letter by letter */
+.rename-typed {
+  display: inline-block;
+  vertical-align: bottom;
+  overflow: hidden;
+  width: 6ch;
+  animation: rename-type 3.6s steps(6, end) infinite;
+}
+@keyframes rename-type {
+  0%, 8% { width: 0; }
+  55%, 100% { width: 6ch; }
+}
+.rename-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--t-fg);
+  animation: cursor-blink 1s steps(1) infinite;
+}
+
+/* Locked: the window closes, the tab keeps running behind it, and the next
+   `guiltty` brings the window back with the tab in it. */
+.tabs-stage { position: relative; }
+.tabs-closed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px dashed var(--color-pp-outline-variant);
+  border-radius: var(--radius-pp-md);
+  color: var(--color-pp-on-surface-variant);
+  font: 500 0.875rem/1.4 var(--font-pp-plain);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+.tabs-closed code { font-family: var(--font-mono); color: var(--color-pp-primary); }
+.tabs-closed .size-5 { color: var(--color-pp-primary); }
+.tabs-demo[data-scene="locked"] .tabs-term { animation: window-cycle 7s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.tabs-demo[data-scene="locked"] .tabs-closed { animation: closed-cycle 7s ease infinite; }
+@keyframes window-cycle {
+  0%, 30% { opacity: 1; transform: none; }
+  38%, 66% { opacity: 0; transform: scale(0.94) translateY(10px); }
+  76%, 100% { opacity: 1; transform: none; }
+}
+@keyframes closed-cycle {
+  0%, 34% { opacity: 0; }
+  42%, 64% { opacity: 1; }
+  72%, 100% { opacity: 0; }
+}
+
+.tabs-caption {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  margin-top: 0.75rem !important;
+  font-size: 0.9375rem;
+}
+.tabs-caption b { font-weight: 600; color: var(--color-pp-on-surface); }
+
 /* ───────────────────────── Keys ───────────────────────── */
 
 /* PhoenixPaper's list, in two columns from md up */
@@ -962,6 +1160,9 @@
   .hero-term, .hero-term-wrap:hover .hero-term { transform: none; }
   .hero-term .term-tabs { font-size: 0.6875rem; }
   .hero-term .term-tab:first-child { display: none; }
+  .hero-term.tabs-powerline .term-tab:nth-child(2) {
+    clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%);
+  }
   .hero-term .term-title { font-size: 0.75rem; }
 
   /* The tree keeps its names; the pids would only be cut off */
@@ -1006,13 +1207,26 @@
 /* ───────────────────────── Motion preferences ───────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-glow, .hero-name, .hero-tagline, .hero-term-wrap, .pipe-link span, .logo-underscore, .cta-mark, .t-cursor {
-    animation: none;
+  .hero-glow, .hero-pill, .hero-name, .hero-tagline, .hero-term-wrap, .pipe-link span, .logo-underscore, .cta-mark, .t-cursor,
+  .hero-chips > *, .tab-mark, .password-lock, .rename-typed, .rename-caret, .tabs-term, .tabs-closed,
+  .tabs-demo [data-for] {
+    animation: none !important;
   }
+  .rename-typed { width: 6ch; }
   .hero-term { transform: none; }
 }
 
 html { background: var(--color-pp-surface); }
+
+/* The install, in its own band under the full-screen hero */
+.install-band {
+  border-top: 1px solid color-mix(in srgb, var(--color-pp-outline-variant) 50%, transparent);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-pp-surface-container-low) 70%, transparent),
+    var(--color-pp-surface)
+  );
+}
 
 /* The homepage's install heading: a small mono label between two hairlines
    that fade out, over the curl/wget tabs. */

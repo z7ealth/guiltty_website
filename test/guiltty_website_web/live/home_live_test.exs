@@ -7,7 +7,7 @@ defmodule GuilttyWebsiteWeb.HomeLiveTest do
     {:ok, view, _html} = live(conn, ~p"/")
 
     for id <-
-          ~w(#hero #hero-terminal #hero-typing #hero-install #cta-docs #cta-github) do
+          ~w(#hero #hero-features #hero-terminal #hero-typing #hero-install #cta-docs #cta-github) do
       assert has_element?(view, id)
     end
 

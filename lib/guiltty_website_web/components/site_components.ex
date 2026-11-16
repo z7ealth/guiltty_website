@@ -65,6 +65,7 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
   attr :body_class, :any, default: nil
   attr :rest, :global
   slot :inner_block, required: true
+  slot :tab_bar, doc: "the tab bar's content, in place of `tabs`"
 
   def terminal(assigns) do
     ~H"""
@@ -83,7 +84,10 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
         {render_slot(@inner_block)}
       </div>
       <%!-- At the bottom, guiltty's default since 0.15 --%>
-      <div :if={@tabs != []} class="term-tabs" aria-hidden="true">
+      <div :if={@tab_bar != []} class="term-tabs" aria-hidden="true">
+        {render_slot(@tab_bar)}
+      </div>
+      <div :if={@tab_bar == [] and @tabs != []} class="term-tabs" aria-hidden="true">
         <span :for={{label, active} <- @tabs} class={["term-tab", active && "is-active"]}>
           {label}
         </span>

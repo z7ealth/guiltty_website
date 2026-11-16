@@ -6,9 +6,10 @@ defmodule GuilttyWebsiteWeb.DocsDemosTest do
   test "the docs carry the demos in their sections", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/docs")
 
-    for id <- ~w(#self-healing #supervision-tree #split-panes #panes-terminal #ai #ai-terminal
+    for id <-
+          ~w(#self-healing #supervision-tree #windows-and-tabs #tabs-demo #tabs-terminal #split-panes #panes-terminal #ai #ai-terminal
                  #scrollback #search-terminal #images #images-terminal #themes #theme-terminal
-                 #theme-dracula) do
+                 #theme-dracula #tabs-scene-locked) do
       assert has_element?(view, id)
     end
   end
