@@ -1263,3 +1263,8 @@ html { background: var(--color-pp-surface); }
 .doc .term li + li { margin-top: 0; }
 .doc .term p { margin: 0; color: inherit; }
 .doc .unicode-sample { margin-top: 1.5rem; }
+
+/* guiltty's default since 0.27.1 (pane_border: dim_inactive): the panes
+   without the focus have their text dimmed, colors kept but fainter. */
+.pane-dim > *,
+.hero-pane-side > * { opacity: 0.55; }

@@ -35,6 +35,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-bell", "Activity marks"},
     {"hero-photo", "Images"},
     {"hero-view-columns", "Split panes"},
+    {"hero-command-line", "Scriptable from a shell"},
     {"hero-chat-bubble-left-right", "AI key"},
     {"hero-link", "Hyperlinks"},
     {"hero-swatch", "Built-in themes"}
@@ -68,9 +69,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.26.4
+                v0.27.1
               </span>
-              <span>Smaller font, powerline tabs</span>
+              <span>The other panes are dimmed</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="hero-pill-arrow size-4" />
             </a>
 
@@ -163,7 +164,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 id="install-release"
                 class="hero-fine-link"
               >
-                v0.26.4
+                v0.27.1
               </a>
               <span aria-hidden="true">·</span>
               <.link navigate={~p"/docs#install"} class="hero-fine-link">More ways to install</.link>

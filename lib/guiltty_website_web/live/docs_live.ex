@@ -159,13 +159,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"bold_is_bright", "true", "true or false", nil},
     {"broadcast_programs", ~s(["ssh", "mosh-client"]), "a list of program names", nil},
     {"tab_bar", ":bottom", ":bottom or :top", nil},
-    {"pane_border", "[style: :solid, thickness: :thin]",
-     "style: :solid, :dashed, :double or :none; thickness: :thin or :thick", nil},
+    {"pane_border", "[style: :solid, thickness: :thin, dim_inactive: true]",
+     "style: :solid, :dashed, :double or :none; thickness: :thin or :thick; dim_inactive: true or false",
+     "dim_inactive: the panes without the focus are dimmed."},
     {"tab_style", ":powerline", ":flat, :powerline, :rounded, :minimal or :separators",
      "See Tab styles."},
     {"ligatures", "true", "true or false", nil},
-    {"ai", "[command: nil, position: :right]",
-     ~s(command: a program, like "your-ai-tool"; position: :right, :down or :tab), nil},
+    {"ai", "[command: nil, position: :right, lock: true]",
+     ~s(command: a program, like "your-ai-tool"; position: :right, :down or :tab; lock: true or false),
+     "lock: its tab is locked while the tool runs."},
     {"clipboard_write", "true", "true or false", "OSC 52 from programs."},
     {"link_url", "true", "true or false", "Ctrl+click plain URLs."},
     {"screen_reports", "false", "true or false", "For test suites only."},
@@ -227,7 +229,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.26.4
+  v=0.27.1
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -257,8 +259,34 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   iex -S mix         # the same, with an iex shell alongside
   """
 
+  # The commands that control a running guiltty, from @commands in
+  # lib/guiltty/command.ex: {command, what it does}.
+  @shell_commands [
+    {"window --new", "Open a new window."},
+    {"window --list", "List the windows, their tabs and panes, with ids."},
+    {"tab --new", "Open a tab after the active one."},
+    {"tab --close", "Close the tab, every pane in it."},
+    {"tab --next, --prev", "Go to the next or previous tab."},
+    {"tab --go N", "Go to tab N (1 is the first)."},
+    {"tab --rename NAME", ~s(Name the tab; "" gives the program's title back.)},
+    {"tab --lock, --unlock", "Keep the tab running when its window closes, or not."},
+    {"pane --split-right", "Split the pane, the new one on the right."},
+    {"pane --split-down", "Split the pane, the new one below."},
+    {"pane --close", "Close the pane."},
+    {"pane --focus DIRECTION", "Move the focus left, right, up or down."},
+    {"theme --set NAME", "A built-in theme until the config file changes (drac is enough)."},
+    {"theme --list", "List the built-in themes."}
+  ]
+
+  @script_example ~S"""
+  id=$(guiltty pane --split-right)     # prints the new pane's id
+  guiltty tab --rename build
+  guiltty pane --pane "$id" --close
+  guiltty theme --set drac             # dracula, in every window
+  """
+
   @pane_border_example ~S"""
-  pane_border: [style: :dashed, thickness: :thick]
+  pane_border: [style: :dashed, thickness: :thick, dim_inactive: false]
   """
 
   @keys_example ~S"""
@@ -338,7 +366,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # The border between split panes (Ctrl+Shift+O / E): one cell wide, a
     # line of style :solid, :dashed, :double or :none (blank), :thin or
     # :thick. Its colors are in theme: (pane_border, pane_border_active).
-    pane_border: [style: :solid, thickness: :thin],
+    # dim_inactive: the panes without the focus have their text dimmed, so you
+    # see where you'd type; false keeps them as bright as the focused one.
+    pane_border: [style: :solid, thickness: :thin, dim_inactive: true],
 
     # Join ->, !=, |>, => and the like into one symbol, when the font has
     # ligatures (JetBrains Mono and Fira Code do; Source Code Pro doesn't).
@@ -348,7 +378,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # (no driver, no GPU that can show the window), guiltty says so and
     # draws with OpenGL. Applies to windows opened after a change.
     # GUILTTY_RENDERER=gl (or vulkan) in guiltty's environment wins over
-    # this, to try the other one for a run: `guiltty stop`, then
+    # this, to try the other one for a run: `guiltty release stop`, then
     # `GUILTTY_RENDERER=gl guiltty`.
     renderer: :vulkan,
 
@@ -421,7 +451,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # The AI tool the `ai` key opens, beside you (:right, :down) or in a tab of its
     # own (:tab). It's a program in a pane: what's selected goes to its prompt, and
     # nothing else on your screen does. Without a command, the key only says so.
-    # ai: [command: "", position: :right],
+    # With lock (the default), its tab is locked while the tool runs, so closing
+    # the window doesn't end it; the lock goes when the tool exits.
+    # ai: [command: "", position: :right, lock: true],
 
     # Programs can put text on the clipboard (OSC 52), from the focused pane.
     # They can never read it.
@@ -479,6 +511,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:keys_example, String.trim(@keys_example))
      |> assign(:pane_border_example, String.trim(@pane_border_example))
      |> assign(:ai_example, String.trim(@ai_example))
+     |> assign(:shell_commands, @shell_commands)
+     |> assign(:script_example, String.trim(@script_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))
@@ -1026,7 +1060,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 class="doc-demo"
                 body_class="panes-body"
               >
-                <div class="pane">
+                <div class="pane pane-dim">
                   <.p10k_prompt />
                   <div><span class="p10k-frame">╰─</span></div>
                 </div>
@@ -1060,7 +1094,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <.pp_table_cell>Close the pane</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
-              <p>The border style is set with <code>pane_border</code>:</p>
+              <p>
+                The panes without the focus are dimmed, their colors kept but fainter, so you see
+                where you'd type. The border and the dimming are set with <code>pane_border</code>:
+              </p>
               <.code_block id="docs-pane-border" label="config.exs" code={@pane_border_example} />
             </.doc_section>
 
@@ -1095,6 +1132,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <p>
                 guiltty only starts the program: no API keys, no accounts, any terminal tool works.
                 Only your selection is sent, and never with Enter.
+              </p>
+              <p>
+                While the tool runs, its tab is locked (🔒): closing the window by accident doesn't
+                end it. The lock goes when the tool exits; <code>lock: false</code> turns it off.
               </p>
             </.doc_section>
 
@@ -1275,6 +1316,13 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 Saved changes apply live. If something's wrong, the tab bar shows the error and the
                 previous config stays.
               </p>
+              <p>
+                Every setting, at its default and explained, is in
+                <a class="doc-link" href={@example_url} id="config-example-link">
+                  <code>priv/config.example.exs</code>
+                </a>
+                on GitHub.
+              </p>
             </.doc_section>
 
             <.doc_section id="settings" title="Settings">
@@ -1422,7 +1470,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
               <p>
                 Force one with <code>renderer: :gl</code>
                 (new windows) or <code>GUILTTY_RENDERER=gl</code>
-                (whole run: <code>guiltty stop</code>
+                (whole run: <code>guiltty release stop</code>
                 first).
               </p>
             </.doc_section>
@@ -1444,18 +1492,43 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <.pp_table_cell>Open a window, or bring back one with locked tabs.</.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
-                  <.pp_table_cell><code>guiltty stop</code></.pp_table_cell>
+                  <.pp_table_cell><code>guiltty help</code></.pp_table_cell>
+                  <.pp_table_cell>List every command.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty version</code></.pp_table_cell>
+                  <.pp_table_cell>Print the version.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>guiltty release stop</code></.pp_table_cell>
                   <.pp_table_cell>Stop guiltty, every tab included.</.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
-                  <.pp_table_cell><code>guiltty pid</code></.pp_table_cell>
+                  <.pp_table_cell><code>guiltty release pid</code></.pp_table_cell>
                   <.pp_table_cell>Print its process id.</.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
-                  <.pp_table_cell><code>guiltty remote</code></.pp_table_cell>
+                  <.pp_table_cell><code>guiltty release remote</code></.pp_table_cell>
                   <.pp_table_cell>An IEx shell inside it.</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
+
+              <.pp_typography variant="title-large" tag="h3" class="mt-10" id="command-control">
+                From a shell or a script
+              </.pp_typography>
+              <p>
+                <code>guiltty NOUN --ACTION</code>
+                does what the keys do, on the pane it's typed in (every shell guiltty starts has <code>GUILTTY_PANE</code>).
+                <code>--pane ID</code>
+                picks another; from outside guiltty, it goes to the window last used.
+              </p>
+              <.doc_table id="shell-commands-table" head={["guiltty …", "What it does"]}>
+                <.pp_table_row :for={{command, what} <- @shell_commands}>
+                  <.pp_table_cell class="whitespace-nowrap"><code>{command}</code></.pp_table_cell>
+                  <.pp_table_cell>{what}</.pp_table_cell>
+                </.pp_table_row>
+              </.doc_table>
+              <.code_block id="docs-script-example" label="script.sh" code={@script_example} />
             </.doc_section>
 
             <.doc_section id="environment" title="Environment variables">
@@ -1463,6 +1536,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.pp_table_row>
                   <.pp_table_cell><code>GUILTTY_CONFIG</code></.pp_table_cell>
                   <.pp_table_cell>Another config file.</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><code>GUILTTY_PANE</code></.pp_table_cell>
+                  <.pp_table_cell>
+                    Set by guiltty in each shell: its pane's id, for <code>guiltty pane …</code>.
+                  </.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
                   <.pp_table_cell><code>GUILTTY_RENDERER</code></.pp_table_cell>
@@ -1518,6 +1597,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <dt>glibc is too old</dt>
                 <dd>
                   <p>The release needs glibc 2.36+; build from source or upgrade.</p>
+                </dd>
+                <dt>A command is refused right after updating</dt>
+                <dd>
+                  <p>
+                    The guiltty still running is the old one: close its windows once (or <code>guiltty release stop</code>).
+                  </p>
                 </dd>
                 <dt>Broadcast types nothing</dt>
                 <dd>
