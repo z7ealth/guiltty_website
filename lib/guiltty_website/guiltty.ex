@@ -85,8 +85,8 @@ defmodule GuilttyWebsite.Guiltty do
   @doc "Installing a downloaded release by hand, without piping a script."
   def manual_install,
     do: """
-    tar xzf guiltty-0.27.1-x86_64-linux.tar.gz
-    ./guiltty-0.27.1-x86_64-linux/install.sh    # --uninstall, --yes work here too\
+    tar xzf guiltty-0.27.2-x86_64-linux.tar.gz
+    ./guiltty-0.27.2-x86_64-linux/install.sh    # --uninstall, --yes work here too\
     """
 
   @doc "Building from source: the clone-and-install commands."

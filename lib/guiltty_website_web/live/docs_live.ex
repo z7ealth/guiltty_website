@@ -229,7 +229,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.27.1
+  v=0.27.2
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -786,11 +786,16 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 Then run <code>guiltty</code>
                 or open it from your app menu. If the command isn't found, log in again.
               </p>
+              <p>
+                It also offers to create your config file, <code>~/.config/guiltty/config.exs</code>,
+                from the example that lists every setting. If you already have one, it asks
+                before replacing it.
+              </p>
               <.doc_table id="install-options-table" head={["Option", "What it does"]}>
                 <.pp_table_row>
                   <.pp_table_cell><code>--yes</code></.pp_table_cell>
                   <.pp_table_cell>
-                    Don't ask: install libraries, stop a running guiltty.
+                    Don't ask: install libraries, stop a running guiltty, create a missing config (never replace yours).
                   </.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
