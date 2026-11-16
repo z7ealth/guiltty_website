@@ -141,7 +141,7 @@ defmodule GuilttyWebsiteWeb.Layouts do
             <.github_mark />
           </.pp_icon_button>
         </.pp_tooltip>
-        <.pp_theme_toggle class="hidden sm:inline-flex" />
+        <.pp_theme_toggle class="hidden sm:inline-flex ml-2" />
         <.pp_icon_button
           id="mobile-nav-button"
           label="Menu"
@@ -230,12 +230,8 @@ defmodule GuilttyWebsiteWeb.Layouts do
 
   defp nav_links do
     [
-      {"Features", "/#features"},
-      {"Crash it", "/#supervision"},
-      {"Themes", "/#themes"},
-      {"Install", "/#install"},
       {"Docs", "/docs"},
-      {"Book", "/#book"}
+      {"Changelog", github_url() <> "/blob/master/CHANGELOG.md"}
     ]
   end
 

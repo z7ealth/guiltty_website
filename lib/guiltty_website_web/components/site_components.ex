@@ -233,4 +233,32 @@ defmodule GuilttyWebsiteWeb.SiteComponents do
     </span>
     """
   end
+
+  @doc """
+  Line one of a Powerlevel10k "classic" prompt: os_icon and dir on the left,
+  status and time on the right, a dotted gap between them. Its colors are
+  xterm's 256-color cube, not the theme's, as in a real terminal.
+  """
+  def p10k_prompt(assigns) do
+    ~H"""
+    <div class="p10k">
+      <span class="p10k-frame">╭─</span>
+      <span class="p10k-seg p10k-seg-left">
+        <.logo_mark class="p10k-os" />
+        <span class="p10k-sub">│</span>
+        <span class="p10k-dir"><.pp_icon name="hero-home-micro" size="none" class="size-3.5" /><span>~/<b>src</b></span></span>
+      </span>
+      <span class="p10k-gap"></span>
+      <span class="p10k-seg p10k-seg-right">
+        <span class="p10k-ok">✔</span>
+        <span class="p10k-sub">│</span>
+        <span class="p10k-time">
+          at <span class="p10k-clock">16:24:55</span>
+          <.pp_icon name="hero-clock-micro" size="none" class="size-3.5" />
+        </span>
+      </span>
+      <span class="p10k-frame">─╮</span>
+    </div>
+    """
+  end
 end

@@ -292,99 +292,87 @@
    screen. svh, so mobile browser bars showing or hiding don't make it jump. */
 .hero-section { min-height: calc(100svh - 4rem); }
 
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(
-    color-mix(in srgb, var(--color-pp-on-surface) 14%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 75%);
-}
+/* One soft light behind the terminal; nothing else in the background. */
 .hero-glow {
   position: absolute;
+  left: 50%;
+  top: 22rem;
+  width: min(60rem, 120vw);
+  height: 30rem;
+  translate: -50% 0;
   border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.35;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-pp-primary) 22%, transparent),
+    transparent
+  );
+  filter: blur(40px);
   pointer-events: none;
+  animation: glow-breathe 12s ease-in-out infinite;
 }
-.hero-glow-1 {
-  width: 38rem; height: 26rem; left: 50%; top: 8rem;
-  translate: -85% 0;
-  background: var(--color-pp-primary);
-  animation: glow-drift 16s ease-in-out infinite;
-}
-.hero-glow-2 {
-  width: 32rem; height: 24rem; left: 50%; top: 16rem;
-  translate: -5% 0;
-  background: var(--color-pp-tertiary);
-  animation: glow-drift 19s ease-in-out infinite reverse;
-}
-@keyframes glow-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(6%, -6%) scale(1.12); }
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
-.hero-pill {
+/* The nav's lockup, scaled up: the mark beside the name, at the same
+   proportions (a 1.75rem mark to 1.375rem type, a 0.5rem gap). */
+.hero-name {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.3rem 0.9rem 0.3rem 0.35rem;
-  border-radius: var(--radius-pp-full);
-  border: 1px solid var(--color-pp-outline-variant);
-  background: color-mix(in srgb, var(--color-pp-surface-container) 70%, transparent);
-  color: var(--color-pp-on-surface-variant);
-  backdrop-filter: blur(8px);
-  transition: border-color 200ms ease, color 200ms ease, transform 200ms ease;
+  gap: 0.36em;
+  font-family: var(--font-pp-brand);
+  font-weight: 400;
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  animation: hero-rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-.hero-pill:hover {
-  border-color: var(--color-pp-primary);
-  color: var(--color-pp-on-surface);
-  transform: translateY(-1px);
+.hero-name-mark { width: 1.27em; height: 1.27em; flex: none; }
+
+.hero-tagline {
+  max-width: 34rem;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--color-pp-on-surface-variant);
+  animation: hero-rise 700ms 120ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.hero-title {
-  font-family: var(--font-pp-brand);
-  font-weight: 750;
-  font-size: clamp(2.6rem, 7vw, 5.25rem);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
-  font-variation-settings: "opsz" 144;
-}
-.hero-title-accent {
-  background: linear-gradient(
-    100deg,
-    var(--color-pp-primary) 10%,
-    var(--color-pp-tertiary) 60%,
-    var(--color-pp-primary) 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: accent-sheen 8s ease-in-out infinite;
-}
-@keyframes accent-sheen {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }
 
 .hero-term-wrap {
-  perspective: 1800px;
   max-width: 54rem;
   margin-inline: auto;
+  animation: hero-rise 900ms 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .hero-term {
-  transform: rotateX(8deg);
-  transform-origin: 50% 0;
-  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 400ms ease;
+  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 400ms ease;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-pp-primary) 25%, transparent),
-    0 24px 56px -24px color-mix(in srgb, var(--color-pp-primary) 45%, transparent),
-    0 20px 40px -20px rgb(0 0 0 / 0.45);
+    0 0 0 1px color-mix(in srgb, var(--color-pp-on-surface) 10%, transparent),
+    0 30px 80px -30px color-mix(in srgb, var(--color-pp-primary) 40%, transparent),
+    0 18px 36px -18px rgb(0 0 0 / 0.4);
 }
-.hero-term-wrap:hover .hero-term { transform: rotateX(0deg); }
+.hero-term-wrap:hover .hero-term { transform: translateY(-2px); }
+
+.hero-fine {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0.6rem;
+  font-size: 0.8125rem;
+  color: var(--color-pp-on-surface-variant);
+}
+.hero-fine-link {
+  color: var(--color-pp-on-surface);
+  text-decoration: underline;
+  text-decoration-color: var(--color-pp-outline-variant);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 200ms ease, color 200ms ease;
+}
+.hero-fine-link:hover { color: var(--color-pp-primary); text-decoration-color: currentColor; }
 
 /* ───────────────────────── Pipeline ───────────────────────── */
 
@@ -1018,10 +1006,46 @@
 /* ───────────────────────── Motion preferences ───────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-glow, .hero-title-accent, .pipe-link span, .logo-underscore, .cta-mark, .t-cursor {
+  .hero-glow, .hero-name, .hero-tagline, .hero-term-wrap, .pipe-link span, .logo-underscore, .cta-mark, .t-cursor {
     animation: none;
   }
   .hero-term { transform: none; }
 }
 
 html { background: var(--color-pp-surface); }
+
+/* The homepage's install heading: a small mono label between two hairlines
+   that fade out, over the curl/wget tabs. */
+.hero-install-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-pp-primary);
+}
+.hero-install-title::before,
+.hero-install-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+.hero-install-title::before {
+  background: linear-gradient(to left, var(--color-pp-outline-variant), transparent);
+}
+.hero-install-title::after {
+  background: linear-gradient(to right, var(--color-pp-outline-variant), transparent);
+}
+
+/* Demos inside the docs: a little room around them, and none of the
+   article's prose styles (list bullets, paragraph color, inline code) inside
+   a terminal. */
+.doc .doc-demo { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.doc .term ul { margin: 0; padding-left: 0; list-style: none; }
+.doc .term li { color: inherit; }
+.doc .term li + li { margin-top: 0; }
+.doc .term p { margin: 0; color: inherit; }
+.doc .unicode-sample { margin-top: 1.5rem; }
