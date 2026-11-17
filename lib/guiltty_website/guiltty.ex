@@ -24,16 +24,16 @@ defmodule GuilttyWebsite.Guiltty do
   # {slug, name, command, note}
   @distros [
     {"opensuse", "openSUSE Tumbleweed",
-     "sudo zypper install gcc make pkg-config SDL3-devel freetype2-devel \\\n  fontconfig-devel harfbuzz-devel libpng16-devel vulkan-devel shaderc elixir erlang-epmd",
+     "sudo zypper install gcc make pkg-config SDL3-devel freetype2-devel \\\n  fontconfig-devel harfbuzz-devel libpng16-devel vulkan-devel shaderc pipewire-devel \\\n  elixir erlang-epmd",
      "The one guiltty is developed on."},
     {"fedora", "Fedora 45+",
-     "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel libpng-devel vulkan-loader-devel vulkan-headers glslc elixir",
+     "sudo dnf install gcc make pkgconf-pkg-config SDL3-devel freetype-devel \\\n  fontconfig-devel harfbuzz-devel libpng-devel vulkan-loader-devel vulkan-headers glslc \\\n  pipewire-devel elixir",
      "If Fedora's Elixir is older than 1.18 (elixir --version), leave out elixir and get Elixir and Erlang from asdf."},
     {"ubuntu", "Ubuntu 26.04+",
-     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libpng-dev libvulkan-dev glslc elixir erlang-dev",
+     "sudo apt install build-essential pkg-config libsdl3-dev libfreetype-dev \\\n  libfontconfig-dev libharfbuzz-dev libpng-dev libvulkan-dev glslc libpipewire-0.3-dev \\\n  elixir erlang-dev",
      "Older Ubuntus have neither SDL3 nor GCC 15."},
     {"arch", "Arch Linux",
-     "sudo pacman -Syu --needed base-devel sdl3 freetype2 fontconfig harfbuzz libpng \\\n  vulkan-icd-loader vulkan-headers shaderc elixir",
+     "sudo pacman -Syu --needed base-devel sdl3 freetype2 fontconfig harfbuzz libpng \\\n  vulkan-icd-loader vulkan-headers shaderc libpipewire elixir",
      "Everything is in the official repositories."}
   ]
 
@@ -85,8 +85,8 @@ defmodule GuilttyWebsite.Guiltty do
   @doc "Installing a downloaded release by hand, without piping a script."
   def manual_install,
     do: """
-    tar xzf guiltty-0.27.2-x86_64-linux.tar.gz
-    ./guiltty-0.27.2-x86_64-linux/install.sh    # --uninstall, --yes work here too\
+    tar xzf guiltty-0.28.0-x86_64-linux.tar.gz
+    ./guiltty-0.28.0-x86_64-linux/install.sh    # --uninstall, --yes work here too\
     """
 
   @doc "Building from source: the clone-and-install commands."

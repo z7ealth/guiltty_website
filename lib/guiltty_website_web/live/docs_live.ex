@@ -171,6 +171,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"clipboard_write", "true", "true or false", "OSC 52 from programs."},
     {"link_url", "true", "true or false", "Ctrl+click plain URLs."},
     {"screen_reports", "false", "true or false", "For test suites only."},
+    {"visualizer", "true", "true or false",
+     "Bars in the tab bar that move with your music. Needs PipeWire."},
     {"renderer", ":vulkan", ":vulkan or :gl", "New windows."},
     {"scrollback", "10_000", "0 to 1,000,000", "New tabs."},
     {"keys", {:text, "see Keys"}, "action: [key, ...]", nil}
@@ -229,7 +231,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.27.2
+  v=0.28.0
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -466,7 +468,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
     # Answer DECRQCRA and the title reports, for terminal test suites. Leave it
     # off: these let a program read your screen, even from the far end of ssh.
-    # screen_reports: false
+    # screen_reports: false,
+
+    # Bars in the tab bar that dance to whatever your speakers play (Spotify,
+    # a video...). Needs PipeWire. While it's on, guiltty records the sound
+    # output (never the microphone) to measure it; false turns that off.
+    # visualizer: true
   ]
   """
 
@@ -767,6 +774,12 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 <.pp_table_row>
                   <.pp_table_cell>Vulkan loader and headers, glslc</.pp_table_cell>
                   <.pp_table_cell>the Vulkan renderer and its shaders</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell>PipeWire (dev files)</.pp_table_cell>
+                  <.pp_table_cell>
+                    the visualizer (only its headers: it's loaded when it runs)
+                  </.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
               <.doc_table id="docs-versions-table" head={["Elixir", "Erlang/OTP", "Tested"]}>
@@ -1446,6 +1459,17 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   </p>
                 </div>
               </div>
+              <p>
+                With many tabs, titles shrink to fit; past that the bar scrolls to keep the active
+                tab in view, with a count of the hidden tabs at each end (<code>‹3</code>, <code>5›</code>). Click a count to go to the next hidden tab.
+              </p>
+              <p>
+                At the right of the bar, 16 bars move with whatever your speakers play (Spotify,
+                a video, anything), bass on the left. To measure it, guiltty records the sound
+                output, never the microphone. It needs PipeWire; without it there are just no bars.
+                <code>visualizer: false</code>
+                turns it off.
+              </p>
             </.doc_section>
 
             <.doc_section id="fonts" title="Fonts and ligatures">
