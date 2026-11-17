@@ -148,7 +148,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"theme", ~s("guiltty"), "a built-in name, or your own colors", "See Themes."},
     {"cursor", "[style: :block, blink: false, password_lock: true]",
      "style: :block, :bar or :underline", "password_lock: a lock while a password is read."},
-    {"window: padding", "6", "0 to 100", "Pixels around the text."},
+    {"window: padding", "6", "0 to 100",
+     "Pixels around the text, but not between it and the tab bar."},
     {"window: columns, rows", "80, 24", "10 to 1000, 3 to 1000",
      "The size of a new window, in cells."},
     {"window: opacity", "1.0", "0.1 to 1.0", "Needs a compositor. New windows."},
@@ -232,7 +233,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.28.0
+  v=0.29.0
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -278,7 +279,14 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"pane --close", "Close the pane."},
     {"pane --focus DIRECTION", "Move the focus left, right, up or down."},
     {"theme --set NAME", "A built-in theme until the config file changes (drac is enough)."},
-    {"theme --list", "List the built-in themes."}
+    {"theme --list", "List the built-in themes."},
+    {"ai --set-command PROGRAM",
+     ~s(What the AI key opens, until the config file changes. Quote one with arguments: "claude --continue".)},
+    {"ai --set-position POSITION", "Open the AI tool on the right, down or in a tab."},
+    {"tab-bar --set-position SIDE",
+     "Move the tab bar to the top or the bottom, in every window."},
+    {"tab-bar --set-style STYLE",
+     "Draw the tabs flat, powerline, rounded, minimal or with separators."}
   ]
 
   @script_example ~S"""
@@ -286,6 +294,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   guiltty tab --rename build
   guiltty pane --pane "$id" --close
   guiltty theme --set drac             # dracula, in every window
+  guiltty tab-bar --set-style rounded  # until config.exs changes
   """
 
   @pane_border_example ~S"""
@@ -1571,6 +1580,11 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <.pp_table_cell>{what}</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
+              <p>
+                The <code>--set</code>
+                actions last until the config file changes; put them in <code>config.exs</code>
+                to keep them.
+              </p>
               <.code_block id="docs-script-example" label="script.sh" code={@script_example} />
             </.doc_section>
 
