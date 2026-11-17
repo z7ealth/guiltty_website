@@ -187,6 +187,37 @@
 }
 .term.tabs-powerline .term-tab.is-active::after { content: none; }
 
+/* The visualizer (0.28): 16 one-cell bars at the right end of the bar,
+   in the accent color, a space on each side. guiltty draws them with the
+   eighth blocks ▁▂▃▄▅▆▇█, so they move in steps. Their room is kept: the
+   tab titles shrink around them instead. */
+.term-tabs .term-tab { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.tab-viz {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  margin-left: auto;
+  padding: 0 1ch;
+  height: 1.7em;
+}
+.tab-viz-bar {
+  width: 1ch;
+  height: 100%;
+  background: var(--t-4);
+  background-clip: content-box;
+  padding: 0 1px;
+  transform-origin: bottom;
+  transform: scaleY(calc(var(--peak) * 0.5));
+  animation: tab-viz var(--dur) steps(3, jump-none) var(--delay) infinite alternate;
+}
+@keyframes tab-viz {
+  0%   { transform: scaleY(calc(var(--peak) * 0.125)); }
+  30%  { transform: scaleY(var(--peak)); }
+  55%  { transform: scaleY(calc(var(--peak) * 0.5)); }
+  80%  { transform: scaleY(calc(var(--peak) * 0.85)); }
+  100% { transform: scaleY(calc(var(--peak) * 0.25)); }
+}
+
 .term-body {
   padding: 0.625rem 0.75rem 1rem;
   font: 0.875rem/1.65 var(--font-mono);
@@ -1208,7 +1239,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-glow, .hero-pill, .hero-name, .hero-tagline, .hero-term-wrap, .pipe-link span, .logo-underscore, .cta-mark, .t-cursor,
-  .hero-chips > *, .tab-mark, .password-lock, .rename-typed, .rename-caret, .tabs-term, .tabs-closed,
+  .hero-chips > *, .tab-mark, .tab-viz-bar, .password-lock, .rename-typed, .rename-caret, .tabs-term, .tabs-closed,
   .tabs-demo [data-for] {
     animation: none !important;
   }

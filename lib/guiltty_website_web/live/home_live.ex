@@ -38,7 +38,29 @@ defmodule GuilttyWebsiteWeb.HomeLive do
     {"hero-command-line", "Scriptable from a shell"},
     {"hero-chat-bubble-left-right", "AI key"},
     {"hero-link", "Hyperlinks"},
-    {"hero-swatch", "Built-in themes"}
+    {"hero-swatch", "Built-in themes"},
+    {"hero-musical-note", "Music visualizer"}
+  ]
+
+  # The visualizer's 16 bars, bass on the left: {peak, seconds per loop,
+  # delay}. The bass bars reach highest and move slowest.
+  @viz_bars [
+    {0.95, 0.9, 0.0},
+    {1.0, 1.1, -0.3},
+    {0.9, 0.8, -0.6},
+    {0.8, 1.0, -0.2},
+    {0.85, 0.7, -0.5},
+    {0.7, 0.9, -0.1},
+    {0.75, 0.65, -0.4},
+    {0.6, 0.8, -0.7},
+    {0.65, 0.6, -0.2},
+    {0.55, 0.75, -0.5},
+    {0.5, 0.55, -0.3},
+    {0.45, 0.7, -0.6},
+    {0.4, 0.5, -0.1},
+    {0.35, 0.6, -0.4},
+    {0.3, 0.45, -0.2},
+    {0.25, 0.55, -0.5}
   ]
 
   @impl true
@@ -48,6 +70,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
      |> assign(:page_title, "guiltty · a GPU-accelerated terminal emulator in Elixir and C")
      |> assign(:github, Guiltty.github())
      |> assign(:hero_features, Enum.with_index(@hero_features))
+     |> assign(:viz_bars, @viz_bars)
      |> assign(:hero_scenes, Jason.encode!(@hero_scenes))}
   end
 
@@ -99,13 +122,22 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 id="hero-terminal"
                 class="hero-term tabs-powerline text-left"
                 title="you@linux:~/src"
-                tabs={[
-                  {"you@linux:~", false},
-                  {"● you@linux:~/guiltty", false},
-                  {"you@linux:~/src", true}
-                ]}
                 body_class="hero-panes"
               >
+                <:tab_bar>
+                  <span class="term-tab">you@linux:~</span>
+                  <span class="term-tab">● you@linux:~/guiltty</span>
+                  <span class="term-tab is-active">you@linux:~/src</span>
+                  <%!-- The visualizer (visualizer: true, the default): 16 bars
+                       at the right, in the accent color, moving with the music --%>
+                  <span id="hero-visualizer" class="tab-viz">
+                    <span
+                      :for={{peak, dur, delay} <- @viz_bars}
+                      class="tab-viz-bar"
+                      style={"--peak: #{peak}; --dur: #{dur}s; --delay: #{delay}s"}
+                    ></span>
+                  </span>
+                </:tab_bar>
                 <div class="hero-pane">
                   <div
                     id="hero-typing"
