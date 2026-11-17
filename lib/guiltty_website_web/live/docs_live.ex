@@ -49,6 +49,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   @toc [
     {"Getting started",
      [
+       {"prologue", "Prologue"},
        {"overview", "Overview"},
        {"self-healing", "Self-healing"},
        {"requirements", "Requirements"},
@@ -658,7 +659,20 @@ defmodule GuilttyWebsiteWeb.DocsLive do
 
           <article class="doc pp-body-large min-w-0">
             <%!-- ───────────────────────── Getting started ───────────────────────── --%>
-            <.doc_section id="overview" title="Overview" divider={false}>
+            <.doc_section id="prologue" title="Prologue" divider={false}>
+              <figure id="prologue-quote" class="doc-prologue">
+                <blockquote>
+                  <p>
+                    I made guiltty mainly to learn, and because I enjoy building tools for my own
+                    use. It's open source and free, so anyone who likes it as much as I do can
+                    make it part of their day.
+                  </p>
+                </blockquote>
+                <figcaption>z7ealth</figcaption>
+              </figure>
+            </.doc_section>
+
+            <.doc_section id="overview" title="Overview">
               <p>
                 guiltty is a GPU-accelerated terminal for Linux. Elixir runs the parser, screen,
                 tabs and config; C does the PTY, the hot path and the pixels, with a renderer

@@ -6,8 +6,18 @@
 
 /* ───────────────────────── Terminal palettes ───────────────────────── */
 
+/* The tab accent and the pane borders: unset in a theme, guiltty derives
+   them from the palette (blue, bright black, blue); a theme can set its own
+   (theme.ex's @named_extras). Each theme block below sets the --t-N these
+   read, on the same element, so they resolve per theme. */
+[data-term-theme] {
+  --t-accent: var(--t-4);
+  --t-pane-border: var(--t-8);
+  --t-pane-border-active: var(--t-4);
+}
 [data-term-theme="guiltty"] {
   --t-fg: #d9d9e3; --t-bg: #0d1117; --t-cursor: #9184d9;
+  --t-accent: #9184d9; --t-pane-border: #30363d; --t-pane-border-active: #9184d9;
   --t-0: #161b22; --t-1: #e0707e; --t-2: #8fcf9a; --t-3: #e6c27a;
   --t-4: #7aa2e8; --t-5: #9184d9; --t-6: #79c7d1; --t-7: #c9cad6;
   --t-8: #5b5f73; --t-9: #f08a96; --t-10: #a9e0b2; --t-11: #f0d595;
@@ -141,9 +151,9 @@
  * guiltty's tab bar, as build_tab_bar() draws it: one cell row a little
  * lighter than the background (8% of the text color), tabs "  title  "
  * side by side in the muted text color (55%), the active one lighter
- * still (16%) in the full text color with an accent line in the theme's
- * blue along the edge that faces the terminal: the bar is at the bottom
- * (the default), so its top.
+ * still (16%) in the full text color with a line in the accent color (the
+ * theme's tab_accent; unset, the palette's blue) along the edge that faces
+ * the terminal: the bar is at the bottom (the default), so its top.
  */
 .term-tabs {
   display: flex;
@@ -167,10 +177,10 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 2px;
-  background: var(--t-4);
+  background: var(--t-accent);
 }
 /* guiltty's default since 0.26.4: :powerline, colored blocks joined by
-   arrows, the active one in the theme's blue. A class on .term. */
+   arrows, the active one in the accent color. A class on .term. */
 .term.tabs-powerline .term-tab {
   margin-right: -1ch;
   padding: 0 2ch 0 2.5ch;
@@ -182,7 +192,7 @@
   clip-path: polygon(0 0, calc(100% - 1ch) 0, 100% 50%, calc(100% - 1ch) 100%, 0 100%);
 }
 .term.tabs-powerline .term-tab.is-active {
-  background: var(--t-4);
+  background: var(--t-accent);
   color: var(--t-bg);
 }
 .term.tabs-powerline .term-tab.is-active::after { content: none; }
@@ -203,7 +213,7 @@
 .tab-viz-bar {
   width: 1ch;
   height: 100%;
-  background: var(--t-4);
+  background: var(--t-accent);
   background-clip: content-box;
   padding: 0 1px;
   transform-origin: bottom;
@@ -445,7 +455,7 @@
 }
 .hero-pane { min-width: 0; padding: 0.625rem 0.75rem 1rem; }
 .hero-pane-side {
-  border-left: 1px solid color-mix(in srgb, var(--t-fg) 30%, var(--t-bg));
+  border-left: 1px solid var(--t-pane-border-active);
   white-space: nowrap;
   overflow: hidden;
   font-size: 0.8125rem;
@@ -786,7 +796,7 @@
   line-height: 1.4;
 }
 .pane { padding: 0.5rem 0.625rem; min-width: 0; overflow: hidden; white-space: nowrap; }
-.pane + .pane { border-left: 1px solid color-mix(in srgb, var(--t-fg) 45%, var(--t-bg)); }
+.pane + .pane { border-left: 1px solid var(--t-pane-border-active); }
 .pane .p10k-seg { height: 1.4em; }
 
 /* ───────────────────────── Windows and tabs showcase ───────────────────────── */
@@ -1086,6 +1096,24 @@
   overflow-wrap: anywhere;
 }
 .doc .code-block { margin-top: 1rem; }
+
+/* The prologue: the author's note, a quote with a lavender rule and a byline */
+.doc-prologue {
+  margin-top: 1.25rem;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 3px solid var(--t-accent);
+}
+.doc-prologue blockquote p {
+  margin-top: 0;
+  font-style: italic;
+  color: var(--color-pp-on-surface);
+}
+.doc-prologue figcaption {
+  margin-top: 0.75rem;
+  font: 500 0.875rem/1 var(--font-mono);
+  color: var(--color-pp-on-surface-variant);
+}
+.doc-prologue figcaption::before { content: "— "; }
 .doc-anchor { color: inherit; }
 .doc-anchor:hover { color: var(--color-pp-primary); }
 .doc-link {
@@ -1152,7 +1180,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--t-4);
+  background: var(--t-accent);
 }
 .tabstyle-flat .tabstyle-tab.is-active::after { top: 0; }
 .tabstyle-minimal .tabstyle-tab.is-active::after { bottom: 0; left: 2ch; right: 2ch; }
@@ -1168,13 +1196,13 @@
 }
 .tabstyle-powerline .tabstyle-tab.is-active,
 .tabstyle-separators .tabstyle-tab.is-active {
-  background: var(--t-4);
+  background: var(--t-accent);
   color: var(--t-bg);
 }
 
 .tabstyle-rounded { gap: 0.5ch; padding: 0.2rem 0.5ch; }
 .tabstyle-rounded .tabstyle-tab { border-radius: 999px; line-height: 1.6; }
-.tabstyle-rounded .tabstyle-tab.is-active { background: var(--t-4); color: var(--t-bg); }
+.tabstyle-rounded .tabstyle-tab.is-active { background: var(--t-accent); color: var(--t-bg); }
 
 .tabstyle-minimal { background: var(--t-bg); }
 .tabstyle-minimal .tabstyle-tab.is-active { color: var(--t-fg); }

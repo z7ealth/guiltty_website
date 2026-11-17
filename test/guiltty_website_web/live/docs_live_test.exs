@@ -7,7 +7,7 @@ defmodule GuilttyWebsiteWeb.DocsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/docs")
 
     sections =
-      ~w(overview requirements install update windows-and-tabs split-panes ai scrollback broadcast keys
+      ~w(prologue overview requirements install update windows-and-tabs split-panes ai scrollback broadcast keys
          images programs config-file settings themes tab-styles fonts renderer example-config command environment
          troubleshooting hacking learn-more)
 
