@@ -129,6 +129,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      "Open the AI tool, and go back. super+shift+f23 is the laptop AI key."},
     {"split_right", ["ctrl+shift+o"], "Split right."},
     {"split_down", ["ctrl+shift+e"], "Split down."},
+    {"zoom_pane", ["ctrl+shift+enter"], "Show the focused pane over the whole tab, and back."},
+    {"read_only", ["ctrl+shift+i"], "Stop typing, paste and clicks reaching the pane, and back."},
+    {"fullscreen", ["f11"], "The window over the whole screen, and back."},
     {"focus_left", ["ctrl+shift+left"], "Focus the pane to the left."},
     {"focus_right", ["ctrl+shift+right"], "Focus the pane to the right."},
     {"focus_up", ["ctrl+shift+up"], "Focus the pane above."},
@@ -143,7 +146,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   # {setting, default, accepts, notes}. A {:text, _} default is words, not
   # a value.
   @settings [
-    {"font", ~s([family: "monospace", size: 12]), "family: any fontconfig name; size: 6 to 96",
+    {"font", ~s([family: "monospace", size: 14]), "family: any fontconfig name; size: 6 to 96",
      nil},
     {"theme", ~s("guiltty"), "a built-in name, or your own colors", "See Themes."},
     {"cursor", "[style: :block, blink: false, password_lock: true]",
@@ -153,6 +156,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"window: columns, rows", "80, 24", "10 to 1000, 3 to 1000",
      "The size of a new window, in cells."},
     {"window: opacity", "1.0", "0.1 to 1.0", "Needs a compositor. New windows."},
+    {"window: start", ":normal", ":normal, :maximized or :fullscreen",
+     "How a new window first shows. :normal keeps columns x rows."},
     {"shell", {:text, "your login shell"}, ~s([command: "/usr/bin/zsh", args: ["-l"]]),
      "The program each new tab runs."},
     {"working_directory", ":inherit", ":inherit, :home or a path", nil},
@@ -170,6 +175,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"ai", "[command: nil, position: :right, lock: true]",
      ~s(command: a program, like "your-ai-tool"; position: :right, :down or :tab; lock: true or false),
      "lock: its tab is locked while the tool runs."},
+    {"exec", "[]", ~s([%{key: "ctrl+shift+m", command: "btop", position: :tab}, ...]),
+     "Your own keys run programs. See Your programs."},
     {"clipboard_write", "true", "true or false", "OSC 52 from programs."},
     {"link_url", "true", "true or false", "Ctrl+click plain URLs."},
     {"screen_reports", "false", "true or false", "For test suites only."},
@@ -233,7 +240,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   ]
 
   @by_hand_install ~S"""
-  v=0.29.0
+  v=0.31.0
   mkdir -p ~/.local/lib ~/.local/bin ~/.local/share/applications
   cp -a guiltty-$v-x86_64-linux/release ~/.local/lib/guiltty
   ln -sf ~/.local/lib/guiltty/lib/guiltty-$v/priv/guiltty ~/.local/bin/guiltty
@@ -267,7 +274,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   # lib/guiltty/command.ex: {command, what it does}.
   @shell_commands [
     {"window --new", "Open a new window."},
-    {"window --list", "List the windows, their tabs and panes, with ids."},
+    {"window --list",
+     "List the windows, their tabs and panes, with ids; zoomed tabs and read-only panes are marked."},
     {"tab --new", "Open a tab after the active one."},
     {"tab --close", "Close the tab, every pane in it."},
     {"tab --next, --prev", "Go to the next or previous tab."},
@@ -278,6 +286,8 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     {"pane --split-down", "Split the pane, the new one below."},
     {"pane --close", "Close the pane."},
     {"pane --focus DIRECTION", "Move the focus left, right, up or down."},
+    {"pane --zoom, --unzoom", "Show the pane over its whole tab, or bring the others back."},
+    {"pane --read-only, --writable", "Stop your typing from reaching the pane, or let it again."},
     {"theme --set NAME", "A built-in theme until the config file changes (drac is enough)."},
     {"theme --list", "List the built-in themes."},
     {"ai --set-command PROGRAM",
@@ -295,6 +305,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   guiltty pane --pane "$id" --close
   guiltty theme --set drac             # dracula, in every window
   guiltty tab-bar --set-style rounded  # until config.exs changes
+  guiltty pane --pane "$id" --read-only  # watch it, don't type in it
+  """
+
+  @exec_example ~S"""
+  exec: [
+    %{key: "ctrl+shift+m", command: "btop", position: :tab},
+    %{key: "ctrl+shift+d", command: "yazi"},             # :right of the pane
+    %{key: "ctrl+alt+p", command: "flameshot gui", position: :background}
+  ]
   """
 
   @pane_border_example ~S"""
@@ -311,7 +330,9 @@ defmodule GuilttyWebsiteWeb.DocsLive do
   # guiltty's priv/config.example.exs, as it ships.
   @example_config ~S"""
   [
-    font: [family: "monospace", size: 12],
+    # Commented out, guiltty uses your system's monospace font (fontconfig's
+    # "monospace"). To pick one, name its family as `fc-list : family` prints it.
+    # font: [family: "JetBrainsMono Nerd Font", size: 14],
 
     # A built-in theme by name: "guiltty" (the icon's lavender on
     # near-black, what guiltty uses without a config), "tomorrow-night",
@@ -333,7 +354,10 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       rows: 24,
       # The background's opacity, 0.1 to 1.0. Needs a compositor; applies to
       # windows opened after a change.
-      opacity: 1.0
+      opacity: 1.0,
+      # How a new window first shows: :normal (columns x rows), :maximized
+      # or :fullscreen (the fullscreen key leaves it).
+      start: :normal
     ],
 
     # The program each new tab runs. Without a command: your login shell.
@@ -444,6 +468,15 @@ defmodule GuilttyWebsiteWeb.DocsLive do
       # half its room.
       split_right: ["ctrl+shift+o"],
       split_down: ["ctrl+shift+e"],
+      # The focused pane over the whole tab, and back. The others keep
+      # running, hidden; moving the focus or splitting brings them back.
+      zoom_pane: ["ctrl+shift+enter"],
+      # What you type, paste or click stops reaching the focused pane, and
+      # comes back on the same key: for a pane tailing a log, or a production
+      # shell you only want to watch.
+      read_only: ["ctrl+shift+i"],
+      # The window over the whole screen, and back.
+      fullscreen: ["f11"],
       # The focus to the pane in that direction (a click works too).
       focus_left: ["ctrl+shift+left"],
       focus_right: ["ctrl+shift+right"],
@@ -467,14 +500,33 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # the window doesn't end it; the lock goes when the tool exits.
     # ai: [command: "", position: :right, lock: true],
 
+    # Your own keys, each running a program: beside the focused pane (:right,
+    # :down), in a tab (:tab), in a window of its own (:window), or in the
+    # background with no terminal at all (:background: a screenshot tool, a
+    # script). It starts where a new tab would, and GUILTTY_PANE names the pane
+    # you were in, so a script can call `guiltty pane ...`. A pane closes when its
+    # program exits; a background program that fails shows its last line.
+    # The command is split like a shell would, but runs no shell: for pipes or
+    # $(...), write sh -c '...'. A key guiltty already uses is an error.
+    # A bare name is looked up in the PATH guiltty started with, which
+    # doesn't include folders your ~/.zshrc or ~/.bashrc adds. If the key
+    # says "not found", give the full path, e.g. "/home/me/bin/extop"
+    # (book chapter 16, "When a bare name isn't found").
+    # exec: [
+    #   %{key: "ctrl+shift+y", command: "extop", position: :tab},
+    #   %{key: "ctrl+shift+d", command: "yazi", position: :right},
+    #   # A desktop notification with the time. sh runs the $(...).
+    #   %{key: "ctrl+alt+p", command: "sh -c 'notify-send \"It is $(date +%H:%M)\"'", position: :background}
+    # ],
+
     # Programs can put text on the clipboard (OSC 52), from the focused pane.
     # They can never read it.
     # clipboard_write: true,
 
     # Ctrl+click opens URLs in plain text (http, https, mailto, file), like the
     # one a server prints when it starts. Hold Ctrl to see them underlined.
-    # Links a program marks (OSC 8) open either way.
-    # link_url: true,
+    # Links a program marks (OSC 8) open either way; false turns Ctrl+click off.
+    # link_url: false,
 
     # Answer DECRQCRA and the title reports, for terminal test suites. Leave it
     # off: these let a program read your screen, even from the far end of ssh.
@@ -483,7 +535,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
     # Bars in the tab bar that dance to whatever your speakers play (Spotify,
     # a video...). Needs PipeWire. While it's on, guiltty records the sound
     # output (never the microphone) to measure it; false turns that off.
-    # visualizer: true
+    # visualizer: false
   ]
   """
 
@@ -530,6 +582,7 @@ defmodule GuilttyWebsiteWeb.DocsLive do
      |> assign(:ai_example, String.trim(@ai_example))
      |> assign(:shell_commands, @shell_commands)
      |> assign(:script_example, String.trim(@script_example))
+     |> assign(:exec_example, String.trim(@exec_example))
      |> assign(:ssh_alive, String.trim(@ssh_alive))
      |> assign(:hack_commands, String.trim(@hack_commands))
      |> assign(:example_config, String.trim(@example_config))
@@ -1131,10 +1184,34 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                   <.pp_table_cell>Move the separator</.pp_table_cell>
                 </.pp_table_row>
                 <.pp_table_row>
+                  <.pp_table_cell><.keys keys="Ctrl+Shift+Enter" /></.pp_table_cell>
+                  <.pp_table_cell>Zoom the pane over the tab, and back</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
+                  <.pp_table_cell><.keys keys="Ctrl+Shift+I" /></.pp_table_cell>
+                  <.pp_table_cell>Make the pane read-only, and back</.pp_table_cell>
+                </.pp_table_row>
+                <.pp_table_row>
                   <.pp_table_cell><.keys keys="Ctrl+Shift+W" /></.pp_table_cell>
                   <.pp_table_cell>Close the pane</.pp_table_cell>
                 </.pp_table_row>
               </.doc_table>
+              <p>
+                <strong>Zoom.</strong>
+                The focused pane fills the tab, and the tab shows a 🔍. The others keep running,
+                hidden, at their old size; moving the focus, splitting or closing the zoomed pane
+                brings them back.
+              </p>
+              <p>
+                <strong>Read-only.</strong>
+                The pane shows everything, but what you type, paste or click doesn't reach its
+                program, and a broadcast skips it: for a pane tailing a log, or a production shell
+                you only want to watch. The tab shows an 👁 meanwhile.
+              </p>
+              <p>
+                Both are kept like locks and names: a window opened again, or the tabs restarting
+                after a crash, finds them as they were.
+              </p>
               <p>
                 The panes without the focus are dimmed, their colors kept but fainter, so you see
                 where you'd type. The border and the dimming are set with <code>pane_border</code>:
@@ -1343,6 +1420,34 @@ defmodule GuilttyWebsiteWeb.DocsLive do
                 your layout.
               </p>
               <.code_block id="docs-keys-example" label="config.exs" code={@keys_example} />
+              <.pp_typography variant="title-large" tag="h3" class="mt-8" id="exec">
+                Your programs
+              </.pp_typography>
+              <p>
+                <code>exec</code>
+                binds your own keys to programs. Each runs <code>:right</code>
+                (the default) or <code>:down</code>
+                of the focused pane, in a <code>:tab</code>, in a <code>:window</code>
+                of its own, or in the <code>:background</code>
+                with no terminal (a screenshot tool, a script).
+              </p>
+              <.code_block id="docs-exec-example" label="config.exs" code={@exec_example} />
+              <p>
+                They start where a new tab would, and <code>GUILTTY_PANE</code>
+                names the pane you were in, so a script can call <code>guiltty pane …</code>. The
+                command is split like a shell would, but runs no shell: for pipes or
+                <code>$(...)</code>
+                write <code>sh -c '...'</code>. A background program that fails shows its last line
+                in the tab bar, and <.keys keys="Ctrl+Shift+H" /> lists your keys under "Your
+                programs".
+              </p>
+              <p>
+                A key guiltty already uses, or that two entries share, is an error that says which.
+                A bare name is looked up in the <code>PATH</code>
+                guiltty started with, so a folder only <code>~/.zshrc</code>
+                or <code>~/.bashrc</code>
+                adds isn't searched: give the full path for those.
+              </p>
             </.doc_section>
 
             <%!-- ───────────────────────── Configuration ───────────────────────── --%>

@@ -92,9 +92,9 @@ defmodule GuilttyWebsiteWeb.HomeLive do
               id="hero-release"
             >
               <span class="rounded-pp-full bg-pp-primary px-2 py-0.5 text-pp-on-primary pp-label-medium">
-                v0.29.0
+                v0.31.0
               </span>
-              <span>Set the AI tool and the tab bar from a shell</span>
+              <span>Zoom, read-only panes, fullscreen</span>
               <.pp_icon name="hero-arrow-right-micro" size="none" class="hero-pill-arrow size-4" />
             </a>
 
@@ -196,7 +196,7 @@ defmodule GuilttyWebsiteWeb.HomeLive do
                 id="install-release"
                 class="hero-fine-link"
               >
-                v0.29.0
+                v0.31.0
               </a>
               <span aria-hidden="true">·</span>
               <.link navigate={~p"/docs#install"} class="hero-fine-link">More ways to install</.link>
